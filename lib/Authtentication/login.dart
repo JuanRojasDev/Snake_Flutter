@@ -1,8 +1,8 @@
-import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:sqlite_flutter_crud/Authtentication/signup.dart';
-import 'package:sqlite_flutter_crud/Views/notes.dart';
+import 'dart:convert';
+import 'home.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({Key? key}) : super(key: key);
@@ -18,8 +18,7 @@ class _LoginScreenState extends State<LoginScreen> {
   bool _isLoginTrue = false;
 
   Future<void> _login() async {
-    final String url =
-        'http://localhost:3000/login'; // Cambia la URL por la del servidor
+    final String url = 'http://localhost:3000/login';
     final Map<String, String> body = {
       'usrName': _usernameController.text,
       'usrPassword': _passwordController.text,
@@ -30,15 +29,25 @@ class _LoginScreenState extends State<LoginScreen> {
         body: jsonEncode(body), headers: headers);
 
     if (response.statusCode == 200) {
-      // Inicio de sesión exitoso, navegar a la siguiente pantalla
+      // Inicio de sesión exitoso, navegar a la siguiente pantalla (home.dart)
       Navigator.pushReplacement(
-          context, MaterialPageRoute(builder: (context) => const Notes()));
+          context,
+          MaterialPageRoute(
+              builder: (context) => HomeScreen())); // Navegar a home.dart
     } else {
       // Mostrar un mensaje de error al usuario
       setState(() {
         _isLoginTrue = true;
       });
     }
+  }
+
+  Future<void> _continueAsGuest() async {
+    // Navegar a la pantalla de inicio como invitado (home.dart)
+    Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(
+            builder: (context) => HomeScreen())); // Navegar a home.dart
   }
 
   @override
@@ -146,7 +155,30 @@ class _LoginScreenState extends State<LoginScreen> {
                         "Nombre de usuario o contraseña incorrectos",
                         style: TextStyle(color: Colors.red),
                       )
-                    : const SizedBox(),
+                    : const SizedBox(height: 20),
+                const Divider(
+                  height: 20,
+                  thickness: 2,
+                  color: Colors.black,
+                  indent: 20,
+                  endIndent: 20,
+                ),
+                const SizedBox(height: 20),
+                Container(
+                  height: 55,
+                  width: MediaQuery.of(context).size.width * .9,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(2),
+                    color: Colors.grey.shade300,
+                  ),
+                  child: TextButton(
+                    onPressed: _continueAsGuest,
+                    child: const Text(
+                      "Continuar como invitado",
+                      style: TextStyle(color: Colors.black),
+                    ),
+                  ),
+                ),
               ],
             ),
           ),

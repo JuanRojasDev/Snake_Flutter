@@ -1,6 +1,11 @@
-<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.example.your_app_name">
+
+    <!-- Permiso de acceso a Internet -->
+    <uses-permission android:name="android.permission.INTERNET"/>
+
     <application
-        android:label="sqlite_flutter_crud"
+        android:label="Snake Meta"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
         <activity
