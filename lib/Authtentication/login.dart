@@ -18,16 +18,14 @@ class _LoginScreenState extends State<LoginScreen> {
   bool _isLoginTrue = false;
 
   Future<void> _login() async {
-<<<<<<< HEAD
-    final String url = 'http://localhost:3000/login';
-=======
     final String url =
         'https://back-1-9ehs.onrender.com/users/login'; // Cambia la URL por la del servidor
->>>>>>> ee8e290871fe1c80fae723bf6eb8f03a02ab3c7e
+
     final Map<String, String> body = {
       'email': _usernameController.text,
       'password': _passwordController.text,
     };
+
     final Map<String, String> headers = {'Content-Type': 'application/json'};
 
     final response = await http.post(Uri.parse(url),
