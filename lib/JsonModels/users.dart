@@ -18,23 +18,20 @@ class Users {
   });
 
   factory Users.fromMap(Map<String, dynamic> json) => Users(
-        usrId: json["usrId"],
-        usrName: json["usrName"],
-        usrEmail: json["usrEmail"],
-        usrPassword: json["usrPassword"],
-        usrDob: json["usrDob"],
+        usrId: json["idUsuario"],
+        usrName: json["nombres"],
+        usrEmail: json["correo"],
+        usrPassword: json["contraseña"],
+        usrDob: json["fecha_n"],
       );
 
   Map<String, dynamic> toMap() => {
-        "usrId": usrId,
-        "usrName": usrName,
-        "usrEmail": usrEmail,
+        "idUsuario": usrId,
+        "nombres": usrName,
+        "correo": usrEmail,
         "usrPassword": usrPassword,
-        "usrDob": usrDob,
+        "fecha_n": usrDob,
       };
 
-  Map<String, dynamic> toJson() {
-    // Add a throw statement to ensure the method doesn't complete normally
-    throw UnimplementedError();
-  }
+
 }
