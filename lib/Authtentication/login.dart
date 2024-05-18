@@ -19,10 +19,10 @@ class _LoginScreenState extends State<LoginScreen> {
 
   Future<void> _login() async {
     final String url =
-        'http://localhost:3000/login'; // Cambia la URL por la del servidor
+        'https://back-1-9ehs.onrender.com/users/login'; // Cambia la URL por la del servidor
     final Map<String, String> body = {
-      'usrName': _usernameController.text,
-      'usrPassword': _passwordController.text,
+      'email': _usernameController.text,
+      'password': _passwordController.text,
     };
     final Map<String, String> headers = {'Content-Type': 'application/json'};
 
@@ -35,6 +35,8 @@ class _LoginScreenState extends State<LoginScreen> {
           context, MaterialPageRoute(builder: (context) => const Notes()));
     } else {
       // Mostrar un mensaje de error al usuario
+
+      print('This will be logged to the console in the browser.');
       setState(() {
         _isLoginTrue = true;
       });
@@ -77,7 +79,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     decoration: const InputDecoration(
                       icon: Icon(Icons.person),
                       border: InputBorder.none,
-                      hintText: "Usuario",
+                      hintText: "Correo",
                     ),
                   ),
                 ),

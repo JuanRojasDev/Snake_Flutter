@@ -32,21 +32,29 @@ class _SignUpState extends State<SignUp> {
         usrPassword: password.text,
         usrDob: selectedDate?.toIso8601String(),
       );
-
-      // Convertir el usuario a un mapa para enviarlo al servidor
-      Map<String, dynamic> userMap = user.toJson();
+      //crear el body de la solicitud
+      final Map<String, String> body = {
+          "nombres": user.usrName,
+          "correo": user.usrEmail,
+          "direccion": "string",
+          "contraseña": user.usrPassword,
+          "apellido": "null",
+          "fecha_n": 'user.usrDob',
+          "rol": "null",
+          "edad": '0'
+    };
       // Realizar la solicitud POST al servidor
-      var url = Uri.parse('http://tu_ip_o_dominio:3000/signup');
+      var url = Uri.parse('https://back-1-9ehs.onrender.com/users/create');
       var response = await http.post(
         url,
         headers: <String, String>{
           'Content-Type': 'application/json; charset=UTF-8',
         },
-        body: jsonEncode(userMap),
+        body: jsonEncode(body),
       );
 
       // Verificar el código de estado de la respuesta
-      if (response.statusCode == 201) {
+      if (response.statusCode == 200) {
         // El usuario se registró exitosamente
         if (!mounted) return;
         Navigator.pushReplacement(
