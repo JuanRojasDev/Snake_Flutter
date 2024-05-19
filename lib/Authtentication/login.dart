@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:sqlite_flutter_crud/Authtentication/signup.dart';
+import 'package:sqlite_flutter_crud/JsonModels/Usuario.dart';
 import 'dart:convert';
+import '../JsonModels/users.dart';
 import 'home.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -18,8 +20,13 @@ class _LoginScreenState extends State<LoginScreen> {
   bool _isLoginTrue = false;
 
   Future<void> _login() async {
+    //final String url =
+    //    'https://back-1-9ehs.onrender.com/users/login'; // server ip
+
     final String url =
-        'https://back-1-9ehs.onrender.com/users/login'; // Cambia la URL por la del servidor
+        'http://127.0.0.1:8000/users/login'; // local ip
+
+    
 
     final Map<String, String> body = {
       'email': _usernameController.text,
@@ -31,12 +38,18 @@ class _LoginScreenState extends State<LoginScreen> {
     final response = await http.post(Uri.parse(url),
         body: jsonEncode(body), headers: headers);
 
+
     if (response.statusCode == 200) {
       // Inicio de sesión exitoso, navegar a la siguiente pantalla (home.dart)
+        Map<String, dynamic> jsonResponse = jsonDecode(response.body);
+        Usuario user = Usuario.fromJson(jsonResponse);
+        print(user.nombres);
+
       Navigator.pushReplacement(
           context,
           MaterialPageRoute(
-              builder: (context) => HomeScreen())); // Navegar a home.dart
+              builder: (context) => HomeScreen(usuario: user,))); // Navegar a home.dart
+      
     } else {
       // Mostrar un mensaje de error al usuario
 

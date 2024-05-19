@@ -1,8 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:sqlite_flutter_crud/Authtentication/login.dart';
 
+import '../JsonModels/Usuario.dart';
+
 class HomeScreen extends StatelessWidget {
+  
+  final Usuario? usuario;
+
+HomeScreen({this.usuario});
+  
   @override
+
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
@@ -38,8 +46,8 @@ class HomeScreen extends StatelessWidget {
           padding: EdgeInsets.zero,
           children: <Widget>[
             UserAccountsDrawerHeader(
-              accountName: Text('Tu Nombre'),
-              accountEmail: Text('email@example.com'),
+              accountName: Text(usuario?.nombres ?? 'Usuario no disponible'),
+              accountEmail: Text(usuario?.correo ?? 'Usuario no disponible'),
               currentAccountPicture: CircleAvatar(
                 backgroundImage:
                     AssetImage('lib/assets/your_profile_picture.jpg'),
