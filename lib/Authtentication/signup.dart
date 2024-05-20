@@ -34,6 +34,7 @@ class _SignUpState extends State<SignUp> {
       );
       //crear el body de la solicitud
       final Map<String, String> body = {
+<<<<<<< HEAD
         "nombres": user.usrName,
         "correo": user.usrEmail,
         "direccion": "string",
@@ -47,6 +48,21 @@ class _SignUpState extends State<SignUp> {
       var url = Uri.parse('https://back-1-9ehs.onrender.com/users/create');
       // Remove the line 'server;'
       //var url = Uri.parse('http://127.0.0.1:8000/users/create');
+=======
+          "nombres": user.usrName,
+          "correo": user.usrEmail,
+          "direccion": "string",
+          "contraseña": user.usrPassword,
+          "apellido": "null",
+          "fecha_n": 'user.usrDob',
+          "rol": "null",
+          "edad": '0'
+    };
+      // Realizar la solicitud POST al servidor
+      var url = Uri.parse('https://back-1-9ehs.onrender.com/users/create');server
+      //var url = Uri.parse('http://127.0.0.1:8000/users/create');
+      
+>>>>>>> 3ba1d22dbc15e871792a2a3084c49387f9c95fe2
 
       var response = await http.post(
         url,

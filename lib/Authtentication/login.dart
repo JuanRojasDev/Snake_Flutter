@@ -20,11 +20,20 @@ class _LoginScreenState extends State<LoginScreen> {
   bool _isLoginTrue = false;
 
   Future<void> _login() async {
+<<<<<<< HEAD
     final String url =
         'https://back-1-9ehs.onrender.com/users/login'; // server ip
 
     //final String url ='http://127.0.0.1:8000/users/login'; // local ip
 
+=======
+    final String url =    'https://back-1-9ehs.onrender.com/users/login'; // server ip
+
+    //final String url ='http://127.0.0.1:8000/users/login'; // local ip
+
+    
+
+>>>>>>> 3ba1d22dbc15e871792a2a3084c49387f9c95fe2
     final Map<String, String> body = {
       'email': _usernameController.text,
       'password': _passwordController.text,
@@ -35,18 +44,32 @@ class _LoginScreenState extends State<LoginScreen> {
     final response = await http.post(Uri.parse(url),
         body: jsonEncode(body), headers: headers);
 
+<<<<<<< HEAD
     if (response.statusCode == 200) {
       // Inicio de sesión exitoso, navegar a la siguiente pantalla (home.dart)
       Map<String, dynamic> jsonResponse = jsonDecode(response.body);
       Usuario user = Usuario.fromJson(jsonResponse);
       print(user.nombres);
+=======
+
+    if (response.statusCode == 200) {
+      // Inicio de sesión exitoso, navegar a la siguiente pantalla (home.dart)
+        Map<String, dynamic> jsonResponse = jsonDecode(response.body);
+        Usuario user = Usuario.fromJson(jsonResponse);
+        print(user.nombres);
+>>>>>>> 3ba1d22dbc15e871792a2a3084c49387f9c95fe2
 
       Navigator.pushReplacement(
           context,
           MaterialPageRoute(
+<<<<<<< HEAD
               builder: (context) => HomeScreen(
                     usuario: user,
                   ))); // Navegar a home.dart
+=======
+              builder: (context) => HomeScreen(usuario: user,))); // Navegar a home.dart
+      
+>>>>>>> 3ba1d22dbc15e871792a2a3084c49387f9c95fe2
     } else {
       // Mostrar un mensaje de error al usuario
 
