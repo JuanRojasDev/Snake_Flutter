@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:sqlite_flutter_crud/Authtentication/login.dart';
-<<<<<<< HEAD
+
 import '../JsonModels/Usuario.dart';
-import 'package:sqlite_flutter_crud/Authtentication/report.dart'; // Importa tu pantalla de reporte aquí
 
 class HomeScreen extends StatelessWidget {
   final Usuario? usuario;
@@ -10,19 +9,6 @@ class HomeScreen extends StatelessWidget {
   HomeScreen({this.usuario});
 
   @override
-=======
-
-import '../JsonModels/Usuario.dart';
-
-class HomeScreen extends StatelessWidget {
-  
-  final Usuario? usuario;
-
-HomeScreen({this.usuario});
-  
-  @override
-
->>>>>>> 3ba1d22dbc15e871792a2a3084c49387f9c95fe2
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
@@ -181,13 +167,6 @@ HomeScreen({this.usuario});
                     icon: Icon(Icons.edit),
                     onPressed: () {
                       // Acción para el botón de escribir
-<<<<<<< HEAD
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => ReportPage()));
-=======
->>>>>>> 3ba1d22dbc15e871792a2a3084c49387f9c95fe2
                     },
                   ),
                   IconButton(

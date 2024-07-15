@@ -4,6 +4,13 @@ A new Flutter project.
 
 ## Getting Started
 
+# Comandos
+flutter run -d chrome -t lib/main.dart
+
+## Comando para construir la APK
+
+flutter build apk
+
 This project is a starting point for a Flutter application.
 
 A few resources to get you started if this is your first Flutter project:

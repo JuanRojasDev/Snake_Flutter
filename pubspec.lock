@@ -41,7 +41,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.18.0"
-<<<<<<< HEAD
   cross_file:
     dependency: transitive
     description:
@@ -50,8 +49,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "0.3.4+1"
-=======
->>>>>>> 3ba1d22dbc15e871792a2a3084c49387f9c95fe2
   cupertino_icons:
     dependency: "direct main"
     description:
@@ -76,7 +73,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.1.2"
-<<<<<<< HEAD
   file_selector_linux:
     dependency: transitive
     description:
@@ -109,8 +105,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "0.9.3+1"
-=======
->>>>>>> 3ba1d22dbc15e871792a2a3084c49387f9c95fe2
   flutter:
     dependency: "direct main"
     description: flutter
@@ -124,7 +118,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.0.3"
-<<<<<<< HEAD
   flutter_plugin_android_lifecycle:
     dependency: transitive
     description:
@@ -133,21 +126,16 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.0.19"
-=======
->>>>>>> 3ba1d22dbc15e871792a2a3084c49387f9c95fe2
   flutter_test:
     dependency: "direct dev"
     description: flutter
     source: sdk
     version: "0.0.0"
-<<<<<<< HEAD
   flutter_web_plugins:
     dependency: transitive
     description: flutter
     source: sdk
     version: "0.0.0"
-=======
->>>>>>> 3ba1d22dbc15e871792a2a3084c49387f9c95fe2
   http:
     dependency: "direct main"
     description:
@@ -164,7 +152,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "4.0.2"
-<<<<<<< HEAD
   image_picker:
     dependency: "direct main"
     description:
@@ -229,8 +216,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "0.2.1+1"
-=======
->>>>>>> 3ba1d22dbc15e871792a2a3084c49387f9c95fe2
   intl:
     dependency: "direct main"
     description:
@@ -295,7 +280,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.11.0"
-<<<<<<< HEAD
   mime:
     dependency: transitive
     description:
@@ -304,8 +288,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.0.5"
-=======
->>>>>>> 3ba1d22dbc15e871792a2a3084c49387f9c95fe2
   path:
     dependency: "direct main"
     description:
@@ -505,8 +487,4 @@ packages:
     version: "1.0.4"
 sdks:
   dart: ">=3.3.0 <4.0.0"
-<<<<<<< HEAD
   flutter: ">=3.19.0"
-=======
-  flutter: ">=3.16.6"
->>>>>>> 3ba1d22dbc15e871792a2a3084c49387f9c95fe2

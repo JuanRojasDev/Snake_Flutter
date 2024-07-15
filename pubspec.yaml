@@ -10,10 +10,7 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-<<<<<<< HEAD
   image_picker: ^0.8.4+8
-=======
->>>>>>> 3ba1d22dbc15e871792a2a3084c49387f9c95fe2
   cupertino_icons: ^1.0.2
   sqflite: ^2.3.0
   path: ^1.8.3

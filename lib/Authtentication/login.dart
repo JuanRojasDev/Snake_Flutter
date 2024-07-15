@@ -20,20 +20,9 @@ class _LoginScreenState extends State<LoginScreen> {
   bool _isLoginTrue = false;
 
   Future<void> _login() async {
-<<<<<<< HEAD
     final String url =
         'https://back-1-9ehs.onrender.com/users/login'; // server ip
 
-    //final String url ='http://127.0.0.1:8000/users/login'; // local ip
-
-=======
-    final String url =    'https://back-1-9ehs.onrender.com/users/login'; // server ip
-
-    //final String url ='http://127.0.0.1:8000/users/login'; // local ip
-
-    
-
->>>>>>> 3ba1d22dbc15e871792a2a3084c49387f9c95fe2
     final Map<String, String> body = {
       'email': _usernameController.text,
       'password': _passwordController.text,
@@ -44,32 +33,18 @@ class _LoginScreenState extends State<LoginScreen> {
     final response = await http.post(Uri.parse(url),
         body: jsonEncode(body), headers: headers);
 
-<<<<<<< HEAD
     if (response.statusCode == 200) {
       // Inicio de sesión exitoso, navegar a la siguiente pantalla (home.dart)
       Map<String, dynamic> jsonResponse = jsonDecode(response.body);
       Usuario user = Usuario.fromJson(jsonResponse);
       print(user.nombres);
-=======
-
-    if (response.statusCode == 200) {
-      // Inicio de sesión exitoso, navegar a la siguiente pantalla (home.dart)
-        Map<String, dynamic> jsonResponse = jsonDecode(response.body);
-        Usuario user = Usuario.fromJson(jsonResponse);
-        print(user.nombres);
->>>>>>> 3ba1d22dbc15e871792a2a3084c49387f9c95fe2
 
       Navigator.pushReplacement(
           context,
           MaterialPageRoute(
-<<<<<<< HEAD
               builder: (context) => HomeScreen(
                     usuario: user,
                   ))); // Navegar a home.dart
-=======
-              builder: (context) => HomeScreen(usuario: user,))); // Navegar a home.dart
-      
->>>>>>> 3ba1d22dbc15e871792a2a3084c49387f9c95fe2
     } else {
       // Mostrar un mensaje de error al usuario
 
@@ -91,134 +66,156 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.green.shade100,
-      body: Center(
-        child: SingleChildScrollView(
-          child: Padding(
-            padding: const EdgeInsets.all(10.0),
-            child: Column(
-              children: [
-                const Text(
+      backgroundColor: Colors.white,
+      body: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.all(20.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start, // Alineación superior
+            children: [
+              const SizedBox(height: 10), // Espacio desde la parte superior
+              const Center(
+                child: Text(
                   "Iniciar Sesión",
                   style: TextStyle(
-                      fontSize: 32,
+                      fontSize: 36,
                       fontWeight: FontWeight.bold,
                       color: Colors.black),
                 ),
-                const SizedBox(height: 15),
-                Image.asset(
-                  "lib/assets/login.png",
-                  width: 210,
+              ),
+              const SizedBox(height: 20), // Aumenta este valor para más espacio
+              Container(
+                margin: const EdgeInsets.all(8),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(8),
+                  color: Color(0xFFF6F6F6)
+                      .withOpacity(0.8), // Color llamativo para el fondo
+                  border: Border.all(
+                      color: Color(0xFFBFBFBF), width: 0.4), // Borde más grueso
                 ),
-                const SizedBox(height: 15),
-                Container(
-                  margin: const EdgeInsets.all(8),
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(8),
-                    color: Colors.white.withOpacity(.2),
+                child: TextField(
+                  controller: _usernameController,
+                  decoration: const InputDecoration(
+                    icon: Icon(Icons.email,
+                        color: Color(0xFFBFBFBF)), // Color del icono
+                    border: InputBorder.none,
+                    hintText: "Correo Electrónico",
+                    hintStyle: TextStyle(
+                        color: Color(
+                            0xFFBFBFBF)), // Color del icono // Color del texto del hint
                   ),
-                  child: TextField(
-                    controller: _usernameController,
-                    decoration: const InputDecoration(
-                      icon: Icon(Icons.person),
-                      border: InputBorder.none,
-                      hintText: "Correo",
-                    ),
-                  ),
+                  style: const TextStyle(
+                      color: Colors.white), // Color del texto de entrada
                 ),
-                Container(
-                  margin: const EdgeInsets.all(8),
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(8),
-                    color: Colors.white.withOpacity(.2),
-                  ),
-                  child: TextField(
-                    controller: _passwordController,
-                    obscureText: !_isVisible,
-                    decoration: InputDecoration(
-                      icon: const Icon(Icons.lock),
-                      border: InputBorder.none,
-                      hintText: "Contraseña",
-                      suffixIcon: IconButton(
-                        onPressed: () {
-                          setState(() {
-                            _isVisible = !_isVisible;
-                          });
-                        },
-                        icon: Icon(_isVisible
-                            ? Icons.visibility
-                            : Icons.visibility_off),
-                      ),
-                    ),
-                  ),
+              ),
+              Container(
+                margin: const EdgeInsets.all(8),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(8),
+                  color: Color(0xFFF6F6F6)
+                      .withOpacity(0.8), // Color llamativo para el fondo
+                  border: Border.all(
+                      color: Color(0xFFBFBFBF), width: 0.4), // Borde más grueso
                 ),
-                const SizedBox(height: 10),
-                Container(
-                  height: 55,
-                  width: MediaQuery.of(context).size.width * .9,
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(2),
-                    color: Colors.green.shade400,
-                  ),
-                  child: TextButton(
-                    onPressed: _login,
-                    child: const Text(
-                      "Iniciar Sesión",
-                      style: TextStyle(color: Colors.white),
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 10),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    const Text("No tienes cuenta aún?"),
-                    TextButton(
+                child: TextField(
+                  controller: _passwordController,
+                  obscureText: !_isVisible,
+                  decoration: InputDecoration(
+                    icon: const Icon(Icons.lock,
+                        color: Color(0xFFBFBFBF)), // Color del icono
+                    border: InputBorder.none,
+                    hintText: "Contraseña",
+                    hintStyle: const TextStyle(
+                        color: Color(
+                            0xFFBFBFBF)), // Color del icono // Color del texto del hint
+                    suffixIcon: IconButton(
                       onPressed: () {
-                        Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => const SignUp()));
+                        setState(() {
+                          _isVisible = !_isVisible;
+                        });
                       },
-                      child: const Text("Registrarse"),
+                      icon: Icon(
+                          _isVisible ? Icons.visibility : Icons.visibility_off,
+                          color: Colors.white), // Color del icono del botón
                     ),
-                  ],
-                ),
-                _isLoginTrue
-                    ? const Text(
-                        "Nombre de usuario o contraseña incorrectos",
-                        style: TextStyle(color: Colors.red),
-                      )
-                    : const SizedBox(height: 20),
-                const Divider(
-                  height: 20,
-                  thickness: 2,
-                  color: Colors.black,
-                  indent: 20,
-                  endIndent: 20,
-                ),
-                const SizedBox(height: 20),
-                Container(
-                  height: 55,
-                  width: MediaQuery.of(context).size.width * .9,
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(2),
-                    color: Colors.grey.shade300,
                   ),
-                  child: TextButton(
-                    onPressed: _continueAsGuest,
+                  style: const TextStyle(
+                      color: Colors.white), // Color del texto de entrada
+                ),
+              ),
+              const SizedBox(height: 10),
+              Container(
+                height: 55,
+                width: MediaQuery.of(context).size.width * .9,
+                decoration: BoxDecoration(
+                  borderRadius:
+                      BorderRadius.circular(27.5), // Hace el botón circular
+                  color: Color(0xFF5DB075),
+                ),
+                child: TextButton(
+                  onPressed: _login,
+                  child: const Text(
+                    "Iniciar Sesión",
+                    style: TextStyle(color: Colors.white, fontSize: 18.0),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 10),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const Text("No tienes cuenta aún?"),
+                  TextButton(
+                    onPressed: () {
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => const SignUp()));
+                    },
                     child: const Text(
-                      "Continuar como invitado",
-                      style: TextStyle(color: Colors.black),
+                      "Registrarse",
+                      style: TextStyle(
+                          color:
+                              Color(0xFF5DB075)), // Cambia el color del texto
                     ),
                   ),
+                ],
+              ),
+              _isLoginTrue
+                  ? const Text(
+                      "Nombre de usuario o contraseña incorrectos",
+                      style: TextStyle(color: Colors.red),
+                    )
+                  : const SizedBox(height: 20),
+              const Divider(
+                height: 20,
+                thickness: 2,
+                color: Colors.black,
+                indent: 20,
+                endIndent: 20,
+              ),
+              const SizedBox(height: 20),
+              Container(
+                height: 55,
+                width: MediaQuery.of(context).size.width * .9,
+                decoration: BoxDecoration(
+                  borderRadius:
+                      BorderRadius.circular(27.5), // Hace el botón circular
+                  color: Colors.grey.shade300,
                 ),
-              ],
-            ),
+                child: TextButton(
+                  onPressed: _continueAsGuest,
+                  child: const Text(
+                    "Continuar como invitado",
+                    style: TextStyle(color: Colors.black, fontSize: 16.0),
+                  ),
+                ),
+              ),
+            ],
           ),
         ),
       ),
