@@ -1,15 +1,35 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:sqlite_flutter_crud/Authtentication/login.dart';
+import 'package:sqlite_flutter_crud/Providers/Home_Body_provider.dart';
+import 'package:sqlite_flutter_crud/Views/Galeria/Screen_Galeria.dart';
 
 import '../JsonModels/Usuario.dart';
 
-class HomeScreen extends StatelessWidget {
+class HomeScreen extends StatefulWidget {
   final Usuario? usuario;
 
-  HomeScreen({this.usuario});
+  const HomeScreen({this.usuario, Key? key}) : super(key: key);
+
+  @override
+  _HomeScreenState createState() => _HomeScreenState();
+}
+
+
+
+class _HomeScreenState extends State<HomeScreen> {
+  Widget bodyContent = Body_init();
+
+  void updateBodyContent(Widget newContent) {
+    setState(() {
+      bodyContent = newContent;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
+    final body_Provider = context.watch<Home_Body_Provider>();
+
     return Scaffold(
       appBar: AppBar(
         title: Text('Inicio',
@@ -44,8 +64,8 @@ class HomeScreen extends StatelessWidget {
           padding: EdgeInsets.zero,
           children: <Widget>[
             UserAccountsDrawerHeader(
-              accountName: Text(usuario?.nombres ?? 'Usuario no disponible'),
-              accountEmail: Text(usuario?.correo ?? 'Usuario no disponible'),
+              accountName: Text(widget.usuario?.nombres ?? 'Usuario no disponible'),
+              accountEmail: Text(widget.usuario?.correo ?? 'Usuario no disponible'),
               currentAccountPicture: CircleAvatar(
                 backgroundImage:
                     AssetImage('lib/assets/your_profile_picture.jpg'),
@@ -107,100 +127,117 @@ class HomeScreen extends StatelessWidget {
           ],
         ),
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          children: [
-            TextField(
-              decoration: InputDecoration(
-                hintText: 'Buscar serpientes',
-                prefixIcon: Icon(Icons.search, color: Colors.black),
-                filled: true,
-                fillColor: Color(0xFFF0F0F0),
-                contentPadding: EdgeInsets.symmetric(vertical: 0),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(30),
-                  borderSide: BorderSide.none,
-                ),
-              ),
-            ),
-            SizedBox(height: 20),
-            Expanded(
-              child: Column(
-                children: [
-                  CategoryCard(
-                    title: 'Serpientes Venenosas',
-                    imageUrl: 'lib/assets/mamba_verde.jpg',
-                    onTap: () {
-                      // Acción al pulsar la tarjeta de serpientes venenosas
-                    },
-                  ),
-                  SizedBox(height: 20),
-                  CategoryCard(
-                    title: 'Serpientes No Venenosas',
-                    imageUrl: 'lib/assets/mamba_negra.jpg',
-                    onTap: () {
-                      // Acción al pulsar la tarjeta de serpientes no venenosas
-                    },
-                  ),
-                ],
-              ),
-            ),
-            SizedBox(
-              height: 10,
-            ), // Espacio adicional entre las tarjetas y la barra de navegación inferior
-            BottomAppBar(
-              color: Colors.white,
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment
-                    .spaceEvenly, // Ajusta el espacio entre los botones
-                children: [
-                  IconButton(
-                    iconSize: 30, // Ajusta el tamaño del ícono
-                    icon: Icon(Icons.help_outline),
-                    onPressed: () {
-                      // Acción para el botón de ayuda
-                    },
-                  ),
-                  IconButton(
-                    iconSize: 30, // Ajusta el tamaño del ícono
-                    icon: Icon(Icons.edit),
-                    onPressed: () {
-                      // Acción para el botón de escribir
-                    },
-                  ),
-                  IconButton(
-                    iconSize: 40, // Ajusta el tamaño del ícono
-                    icon: Icon(Icons.home,
-                        color: Colors.green), // Resalta la opción de inicio
-                    onPressed: () {
-                      // Acción para el botón de inicio
-                    },
-                  ),
-                  IconButton(
-                    iconSize: 30, // Ajusta el tamaño del ícono
-                    icon: Icon(Icons.message),
-                    onPressed: () {
-                      // Acción para el botón de mensajes
-                    },
-                  ),
-                  IconButton(
-                    iconSize: 30, // Ajusta el tamaño del ícono
-                    icon: Icon(Icons.person),
-                    onPressed: () {
-                      // Acción para el botón de perfil
-                    },
-                  ),
-                ],
-              ),
-            ),
-          ],
-        ),
-      ),
+      body: body_Provider.Body_ini,
       backgroundColor: Colors.white,
     );
   }
 }
+
+
+class Body_init extends StatelessWidget {
+  const Body_init({
+    super.key,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final body_Provider = context.watch<Home_Body_Provider>();
+    return Padding(
+      padding: const EdgeInsets.all(16.0),
+      child: Column(
+        children: [
+          TextField(
+            decoration: InputDecoration(
+              hintText: 'Buscar serpientes',
+              prefixIcon: Icon(Icons.search, color: Colors.black),
+              filled: true,
+              fillColor: Color(0xFFF0F0F0),
+              contentPadding: EdgeInsets.symmetric(vertical: 0),
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(30),
+                borderSide: BorderSide.none,
+              ),
+            ),
+          ),
+          SizedBox(height: 20),
+          Expanded(
+            child: Column(
+              children: [
+                CategoryCard(
+                  title: 'Serpientes Venenosas',
+                  imageUrl: 'lib/assets/mamba_verde.jpg',
+                  onTap: () {
+                    // Acción al pulsar la tarjeta de serpientes venenosas
+                    body_Provider.cahngedBodyHome(Screen_galeria());
+                  },
+                ),
+                SizedBox(height: 20),
+                CategoryCard(
+                  title: 'Serpientes No Venenosas',
+                  imageUrl: 'lib/assets/mamba_negra.jpg',
+                  onTap: () {
+                    // Acción al pulsar la tarjeta de serpientes no venenosas
+                  },
+                ),
+              ],
+            ),
+          ),
+          SizedBox(
+            height: 10,
+          ), // Espacio adicional entre las tarjetas y la barra de navegación inferior
+          BottomAppBar(
+            color: Colors.white,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment
+                  .spaceEvenly, // Ajusta el espacio entre los botones
+              children: [
+                IconButton(
+                  iconSize: 30, // Ajusta el tamaño del ícono
+                  icon: Icon(Icons.help_outline),
+                  onPressed: () {
+                    // Acción para el botón de ayuda
+                  },
+                ),
+                IconButton(
+                  iconSize: 30, // Ajusta el tamaño del ícono
+                  icon: Icon(Icons.edit),
+                  onPressed: () {
+                    // Acción para el botón de escribir
+                  },
+                ),
+                IconButton(
+                  iconSize: 40, // Ajusta el tamaño del ícono
+                  icon: Icon(Icons.home,
+                      color: Colors.green), // Resalta la opción de inicio
+                  onPressed: () {
+                    // Acción para el botón de inicio
+                  },
+                ),
+                IconButton(
+                  iconSize: 30, // Ajusta el tamaño del ícono
+                  icon: Icon(Icons.message),
+                  onPressed: () {
+                    // Acción para el botón de mensajes
+                  },
+                ),
+                IconButton(
+                  iconSize: 30, // Ajusta el tamaño del ícono
+                  icon: Icon(Icons.person),
+                  onPressed: () {
+                    // Acción para el botón de perfil
+                  },
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+
+
 
 class CategoryCard extends StatefulWidget {
   final String title;
