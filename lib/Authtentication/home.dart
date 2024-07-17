@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:sqlite_flutter_crud/Authtentication/login.dart';
 import 'package:sqlite_flutter_crud/Providers/Home_Body_provider.dart';
-import 'package:sqlite_flutter_crud/Views/Galeria/Screen_Galeria.dart';
+import 'package:sqlite_flutter_crud/Views/snake_Info/Galeria/Screen_Galeria.dart';
 
 import '../JsonModels/Usuario.dart';
 
