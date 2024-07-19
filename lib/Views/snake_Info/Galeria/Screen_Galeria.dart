@@ -24,7 +24,7 @@ class Screen_galeria extends StatelessWidget {
      final body_Provider = context.watch<Home_Body_Provider>();
     return GestureDetector(
       onTap: () {
-        body_Provider.cahngedBodyHome(Info_Snake(infoInt: index,));
+        body_Provider.cahngedBodyHome(Info_Snake(infoInt: index,imgUrl: 'https://www.anipedia.net/images/fotos-serpiente-coral.jpg', nameSnake: 'Coral',));
       },
       child: Card(
           
