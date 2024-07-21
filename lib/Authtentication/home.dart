@@ -1,10 +1,13 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:sqlite_flutter_crud/Authtentication/login.dart';
 import 'package:sqlite_flutter_crud/Providers/Home_Body_provider.dart';
 import 'package:sqlite_flutter_crud/Views/snake_Info/Galeria/Screen_Galeria.dart';
-
+import 'package:http/http.dart' as http;
 import '../JsonModels/Usuario.dart';
+import '../Providers/sanke_class.dart';
 
 class HomeScreen extends StatefulWidget {
   final Usuario? usuario;
@@ -142,6 +145,29 @@ class Body_init extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final body_Provider = context.watch<Home_Body_Provider>();
+
+                          Future<void> fectSnakes() async {
+                        final String url =
+                            'https://back-1-9ehs.onrender.com/Snake/all'; // server ip
+
+
+                        final Map<String, String> headers = {'Content-Type': 'application/json'};
+
+                        final response = await http.get(Uri.parse(url), headers: headers);
+                         List<Serpiente> serpientes = [];
+                        if (response.statusCode == 200) {
+                          var jsonResponse = jsonDecode(response.body);
+                          print(jsonResponse[0]);
+                          for (var element in jsonResponse) {
+                            
+                            serpientes.add(Serpiente.fromJson(element));
+                          }
+                          print(serpientes.length);
+                          body_Provider.cahngedBodyHome(Screen_galeria(serpientes: serpientes,));
+                        }
+                      }
+
+
     return Padding(
       padding: const EdgeInsets.all(16.0),
       child: Column(
@@ -168,7 +194,8 @@ class Body_init extends StatelessWidget {
                   imageUrl: 'lib/assets/mamba_verde.jpg',
                   onTap: () {
                     // Acción al pulsar la tarjeta de serpientes venenosas
-                    body_Provider.cahngedBodyHome(Screen_galeria());
+                    fectSnakes();
+                    
                   },
                 ),
                 SizedBox(height: 20),
