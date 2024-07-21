@@ -8,6 +8,7 @@ class Users {
   final String usrEmail;
   final String usrPassword;
   final String? usrDob;
+  final String? token;
 
   Users({
     this.usrId,
@@ -15,6 +16,7 @@ class Users {
     required this.usrEmail,
     required this.usrPassword,
     this.usrDob,
+    this.token,
   });
 
   factory Users.fromMap(Map<String, dynamic> json) => Users(
