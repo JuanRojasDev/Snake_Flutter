@@ -146,10 +146,11 @@ class Body_init extends StatelessWidget {
   Widget build(BuildContext context) {
     final body_Provider = context.watch<Home_Body_Provider>();
 
-                          Future<void> fectSnakes() async {
+                      Future<void> fectSnakesPoison(bool valid) async {
                         final String url =
-                            'https://back-1-9ehs.onrender.com/Snake/all'; // server ip
+                            'https://back-1-9ehs.onrender.com/Snakes/poison?valid='+valid.toString(); // server ip
 
+                        print(url);
 
                         final Map<String, String> headers = {'Content-Type': 'application/json'};
 
@@ -157,13 +158,15 @@ class Body_init extends StatelessWidget {
                          List<Serpiente> serpientes = [];
                         if (response.statusCode == 200) {
                           var jsonResponse = jsonDecode(response.body);
-                          print(jsonResponse[0]);
-                          for (var element in jsonResponse) {
-                            
-                            serpientes.add(Serpiente.fromJson(element));
-                          }
-                          print(serpientes.length);
-                          body_Provider.cahngedBodyHome(Screen_galeria(serpientes: serpientes,));
+       
+                            if(jsonResponse != []){
+                            for (var element in jsonResponse) {
+                              serpientes.add(Serpiente.fromJson(element));
+                            }
+                            }
+
+                            body_Provider.cahngedBodyHome(Screen_galeria(serpientes: serpientes,));
+
                         }
                       }
 
@@ -194,7 +197,7 @@ class Body_init extends StatelessWidget {
                   imageUrl: 'lib/assets/mamba_verde.jpg',
                   onTap: () {
                     // Acción al pulsar la tarjeta de serpientes venenosas
-                    fectSnakes();
+                    fectSnakesPoison(true);
                     
                   },
                 ),
@@ -204,6 +207,7 @@ class Body_init extends StatelessWidget {
                   imageUrl: 'lib/assets/mamba_negra.jpg',
                   onTap: () {
                     // Acción al pulsar la tarjeta de serpientes no venenosas
+                    fectSnakesPoison(false);
                   },
                 ),
               ],

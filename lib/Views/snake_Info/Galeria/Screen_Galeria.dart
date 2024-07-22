@@ -25,7 +25,8 @@ class _Screen_galeriaState extends State<Screen_galeria> {
   Widget build(BuildContext context) {
     final snake_Provider = context.watch<Snake_Provider>();
     List<Serpiente> serpientes = widget.serpientes;
-    return SafeArea(
+    if(serpientes.length > 0){
+          return SafeArea(
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 10),
         child: GridView.count(
@@ -34,6 +35,8 @@ class _Screen_galeriaState extends State<Screen_galeria> {
         ),
       ),
     );
+    }
+    return Text("Lista en base de datos vacia");
   }
   
   
