@@ -9,23 +9,44 @@ class Info_Snake extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        Container(
-           
-          child: Image(image: NetworkImage('https://back-1-9ehs.onrender.com/view_image/?imagen='+infoSnake.imagen)),
-            width: 900,
-            height: 250,),
-            SizedBox(height: 15,),
-        Text(infoSnake.nombre3),
-        Text(infoSnake.clase),
-        Text(infoSnake.especie),
-        Text(infoSnake.familia),
-        Text(infoSnake.genero),
-        Text(infoSnake.nombreCientifico),
-        Text(infoSnake.venenosa.toString()),
-
-      ],
+    return Padding(
+      padding: const EdgeInsets.all(10.0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Container(
+             
+            child: Image(image: NetworkImage('https://back-1-9ehs.onrender.com/view_image/?imagen='+infoSnake.imagen),
+                        fit: BoxFit.fill,
+                        alignment: Alignment.topCenter),
+              width: 900,
+              height: 250,
+              decoration: BoxDecoration(
+                border: Border.all(color: Colors.black)
+              ),),
+          Text(infoSnake.nombre3,
+                style: TextStyle(
+                  fontSize: 30,
+                  fontStyle: FontStyle.italic,
+                ),
+              ),
+          textBasicStyle("clase",infoSnake.clase),
+          textBasicStyle("Especie",infoSnake.especie),
+          textBasicStyle("familia",infoSnake.familia),
+          textBasicStyle("genero",infoSnake.genero),
+          textBasicStyle("nombre Cientifico",infoSnake.nombreCientifico),
+          textBasicStyle("Es Venenosa",infoSnake.venenosa ? 'Si' : 'No'),
+      
+        ],
+      ),
     );
   }
+
+  Row textBasicStyle(String text1,String text2) => Row(
+    children: [
+      Text(text1+" : ", style: TextStyle(fontSize: 20), ),
+      Text(text2,  style: TextStyle(fontSize: 20), ),
+    ],
+  );
 }
+

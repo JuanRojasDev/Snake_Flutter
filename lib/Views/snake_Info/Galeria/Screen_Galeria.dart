@@ -57,14 +57,14 @@ class _Screen_galeriaState extends State<Screen_galeria> {
             decoration:  BoxDecoration(
               image: DecorationImage(
                 image: NetworkImage('https://back-1-9ehs.onrender.com/view_image/?imagen='+serpiente.imagen),
-                fit: BoxFit.cover,
+                fit: BoxFit.fill,
                 alignment: Alignment.topCenter,
               ),
             ),
             child:  Column(
               mainAxisAlignment: MainAxisAlignment.end,
               children: [
-                Text(serpiente.nombre3,style: TextStyle(backgroundColor: Color.fromARGB(255, 127, 191, 223))),
+                Text(serpiente.nombre3,style: TextStyle(backgroundColor: Colors.white)),
                 SizedBox(height: 8,)],),
           ),
         ),
