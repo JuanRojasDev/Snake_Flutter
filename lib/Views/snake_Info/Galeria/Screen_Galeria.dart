@@ -36,7 +36,8 @@ class _Screen_galeriaState extends State<Screen_galeria> {
       ),
     );
     }
-    return Text("Lista en base de datos vacia");
+    return Text("Lista en base de datos vacia. Agregar datos para un correcto funcionamiento");
+    
   }
   
   
