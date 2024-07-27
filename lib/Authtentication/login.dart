@@ -187,9 +187,11 @@ class _LoginScreenState extends State<LoginScreen> {
                 ],
               ),
               _isLoginTrue
-                  ? const Text(
-                      "Nombre de usuario o contraseña incorrectos",
-                      style: TextStyle(color: Colors.red),
+                  ? Center(
+                      child: const Text(
+                        "Nombre de usuario o contraseña incorrectos",
+                        style: TextStyle(color: Colors.red),
+                      ),
                     )
                   : const SizedBox(height: 20),
               const Divider(
