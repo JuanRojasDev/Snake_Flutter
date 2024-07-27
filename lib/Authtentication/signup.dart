@@ -122,7 +122,6 @@ class _SignUpState extends State<SignUp> {
                             color: Color(
                                 0xFFBFBFBF)), // Color del icono // Color del texto del hint
                       ),
-                      style: const TextStyle(color: Color(0xFFBFBFBF)),
                     ),
                   ),
                   Container(
@@ -156,7 +155,6 @@ class _SignUpState extends State<SignUp> {
                             color: Color(
                                 0xFFBFBFBF)), // Color del icono // Color del texto del hint
                       ),
-                      style: const TextStyle(color: Colors.white),
                     ),
                   ),
                   Container(
