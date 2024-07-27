@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:sqlite_flutter_crud/Providers/sanke_class.dart';
+import 'package:sqlite_flutter_crud/Providers/snake_class.dart';
 
 class Info_Snake extends StatelessWidget {
   final Serpiente infoSnake;

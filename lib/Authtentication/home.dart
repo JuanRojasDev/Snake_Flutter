@@ -7,7 +7,7 @@ import 'package:sqlite_flutter_crud/Providers/Home_Body_provider.dart';
 import 'package:sqlite_flutter_crud/Views/snake_Info/Galeria/Screen_Galeria.dart';
 import 'package:http/http.dart' as http;
 import '../JsonModels/Usuario.dart';
-import '../Providers/sanke_class.dart';
+import '../Providers/snake_class.dart';
 
 class HomeScreen extends StatefulWidget {
   final Usuario? usuario;
@@ -165,7 +165,7 @@ class Body_init extends StatelessWidget {
           }
         }
 
-        body_Provider.cahngedBodyHome(Screen_galeria(
+        body_Provider.changedBodyHome(Screen_galeria(
           serpientes: serpientes,
         ));
       }
