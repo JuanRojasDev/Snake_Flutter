@@ -47,8 +47,6 @@ class _LoginScreenState extends State<LoginScreen> {
                   ))); // Navegar a home.dart
     } else {
       // Mostrar un mensaje de error al usuario
-
-      print('This will be logged to the console in the browser.');
       setState(() {
         _isLoginTrue = true;
       });
@@ -98,8 +96,9 @@ class _LoginScreenState extends State<LoginScreen> {
                 child: TextField(
                   controller: _usernameController,
                   decoration: const InputDecoration(
-                    icon: Icon(Icons.email,
-                        color: Color(0xFFBFBFBF)), // Color del icono
+                    icon: Icon(
+                      Icons.email,
+                    ), // Color del icono
                     border: InputBorder.none,
                     hintText: "Correo Electrónico",
                     hintStyle: TextStyle(
@@ -107,7 +106,7 @@ class _LoginScreenState extends State<LoginScreen> {
                             0xFFBFBFBF)), // Color del icono // Color del texto del hint
                   ),
                   style: const TextStyle(
-                      color: Colors.white), // Color del texto de entrada
+                      color: Colors.black), // Color del texto de entrada
                 ),
               ),
               Container(
@@ -125,11 +124,10 @@ class _LoginScreenState extends State<LoginScreen> {
                   controller: _passwordController,
                   obscureText: !_isVisible,
                   decoration: InputDecoration(
-                    icon: const Icon(Icons.lock,
-                        color: Color(0xFFBFBFBF)), // Color del icono
+                    icon: const Icon(Icons.lock),
                     border: InputBorder.none,
                     hintText: "Contraseña",
-                    hintStyle: const TextStyle(
+                    hintStyle: TextStyle(
                         color: Color(
                             0xFFBFBFBF)), // Color del icono // Color del texto del hint
                     suffixIcon: IconButton(
@@ -140,14 +138,11 @@ class _LoginScreenState extends State<LoginScreen> {
                       },
                       icon: Icon(
                           _isVisible ? Icons.visibility : Icons.visibility_off,
-                          color: Colors.white), // Color del icono del botón
+                          color: Color(0xFFBFBFBF)),
                     ),
                   ),
-                  style: const TextStyle(
-                      color: Colors.white), // Color del texto de entrada
                 ),
               ),
-              const SizedBox(height: 10),
               Container(
                 height: 55,
                 width: MediaQuery.of(context).size.width * .9,
@@ -157,6 +152,12 @@ class _LoginScreenState extends State<LoginScreen> {
                   color: Color(0xFF5DB075),
                 ),
                 child: TextButton(
+                  style: TextButton.styleFrom(
+                    backgroundColor: Color(0xFF5DB075),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(27.5),
+                    ),
+                  ),
                   onPressed: _login,
                   child: const Text(
                     "Iniciar Sesión",
@@ -208,6 +209,12 @@ class _LoginScreenState extends State<LoginScreen> {
                   color: Colors.grey.shade300,
                 ),
                 child: TextButton(
+                  style: TextButton.styleFrom(
+                    backgroundColor: Colors.grey.shade300,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(27.5),
+                    ),
+                  ),
                   onPressed: _continueAsGuest,
                   child: const Text(
                     "Continuar como invitado",

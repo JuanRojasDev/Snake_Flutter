@@ -1,8 +1,8 @@
 import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:sqlite_flutter_crud/Authtentication/login.dart';
+import 'package:sqlite_flutter_crud/Authtentication/report.dart';
 import 'package:sqlite_flutter_crud/Providers/Home_Body_provider.dart';
 import 'package:sqlite_flutter_crud/Views/snake_Info/Galeria/Screen_Galeria.dart';
 import 'package:http/http.dart' as http;
@@ -17,8 +17,6 @@ class HomeScreen extends StatefulWidget {
   @override
   _HomeScreenState createState() => _HomeScreenState();
 }
-
-
 
 class _HomeScreenState extends State<HomeScreen> {
   Widget bodyContent = Body_init();
@@ -67,8 +65,10 @@ class _HomeScreenState extends State<HomeScreen> {
           padding: EdgeInsets.zero,
           children: <Widget>[
             UserAccountsDrawerHeader(
-              accountName: Text(widget.usuario?.nombres ?? 'Usuario no disponible'),
-              accountEmail: Text(widget.usuario?.correo ?? 'Usuario no disponible'),
+              accountName:
+                  Text(widget.usuario?.nombres ?? 'Usuario no disponible'),
+              accountEmail:
+                  Text(widget.usuario?.correo ?? 'Usuario no disponible'),
               currentAccountPicture: CircleAvatar(
                 backgroundImage:
                     AssetImage('lib/assets/your_profile_picture.jpg'),
@@ -136,40 +136,40 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 }
 
-
 class Body_init extends StatelessWidget {
-  const Body_init({
-    super.key,
-  });
+  final Usuario? usuario;
+
+  const Body_init({Key? key, this.usuario}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     final body_Provider = context.watch<Home_Body_Provider>();
 
-                      Future<void> fectSnakesPoison(bool valid) async {
-                        final String url =
-                            'https://back-1-9ehs.onrender.com/Snakes/poison?valid='+valid.toString(); // server ip
+    Future<void> fectSnakesPoison(bool valid) async {
+      final String url =
+          'https://back-1-9ehs.onrender.com/Snakes/poison?valid=' +
+              valid.toString(); // server ip
 
-                        print(url);
+      print(url);
 
-                        final Map<String, String> headers = {'Content-Type': 'application/json'};
+      final Map<String, String> headers = {'Content-Type': 'application/json'};
 
-                        final response = await http.get(Uri.parse(url), headers: headers);
-                         List<Serpiente> serpientes = [];
-                        if (response.statusCode == 200) {
-                          var jsonResponse = jsonDecode(response.body);
-       
-                            if(jsonResponse != []){
-                            for (var element in jsonResponse) {
-                              serpientes.add(Serpiente.fromJson(element));
-                            }
-                            }
+      final response = await http.get(Uri.parse(url), headers: headers);
+      List<Serpiente> serpientes = [];
+      if (response.statusCode == 200) {
+        var jsonResponse = jsonDecode(response.body);
 
-                            body_Provider.cahngedBodyHome(Screen_galeria(serpientes: serpientes,));
+        if (jsonResponse != []) {
+          for (var element in jsonResponse) {
+            serpientes.add(Serpiente.fromJson(element));
+          }
+        }
 
-                        }
-                      }
-
+        body_Provider.cahngedBodyHome(Screen_galeria(
+          serpientes: serpientes,
+        ));
+      }
+    }
 
     return Padding(
       padding: const EdgeInsets.all(16.0),
@@ -198,7 +198,6 @@ class Body_init extends StatelessWidget {
                   onTap: () {
                     // Acción al pulsar la tarjeta de serpientes venenosas
                     fectSnakesPoison(true);
-                    
                   },
                 ),
                 SizedBox(height: 20),
@@ -234,6 +233,11 @@ class Body_init extends StatelessWidget {
                   icon: Icon(Icons.edit),
                   onPressed: () {
                     // Acción para el botón de escribir
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => ReportPage(usuario: usuario)),
+                    );
                   },
                 ),
                 IconButton(
@@ -267,9 +271,6 @@ class Body_init extends StatelessWidget {
   }
 }
 
-
-
-
 class CategoryCard extends StatefulWidget {
   final String title;
   final String imageUrl;
@@ -300,47 +301,39 @@ class _CategoryCardState extends State<CategoryCard> {
             _isHovering = false;
           });
         },
-        child: Card(
-          elevation: _isHovering ? 10 : 2, // Elevación aumentada al hacer hover
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(8),
+        child: AnimatedContainer(
+          duration: Duration(milliseconds: 200),
+          decoration: BoxDecoration(
+            color: _isHovering ? Colors.green : Colors.white,
+            borderRadius: BorderRadius.circular(20),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.grey.withOpacity(0.5),
+                spreadRadius: 2,
+                blurRadius: 5,
+                offset: Offset(0, 3),
+              ),
+            ],
           ),
-          child: Stack(
+          child: Column(
             children: [
               ClipRRect(
-                borderRadius: BorderRadius.circular(8),
-                child: ScaleTransition(
-                  scale: _isHovering
-                      ? Tween(begin: 1.0, end: 1.1).animate(CurvedAnimation(
-                          parent: ModalRoute.of(context)!.animation!,
-                          curve: Curves.easeInOut,
-                        ))
-                      : Tween(begin: 1.1, end: 1.0).animate(CurvedAnimation(
-                          parent: ModalRoute.of(context)!.animation!,
-                          curve: Curves.easeInOut,
-                        )),
-                  child: Image.asset(
-                    widget.imageUrl,
-                    width: double.infinity,
-                    height: MediaQuery.of(context).size.height / 3,
-                    fit: BoxFit.cover,
-                  ),
+                borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+                child: Image.asset(
+                  widget.imageUrl,
+                  fit: BoxFit.cover,
+                  height: 150,
+                  width: double.infinity,
                 ),
               ),
-              Container(
-                width: double.infinity,
-                height: MediaQuery.of(context).size.height / 3,
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(8),
-                  color: Colors.black.withOpacity(0.2),
-                ),
-                alignment: Alignment.center,
+              Padding(
+                padding: const EdgeInsets.all(16.0),
                 child: Text(
                   widget.title,
                   style: TextStyle(
-                    fontSize: 24,
-                    color: Colors.white,
+                    fontSize: 18,
                     fontWeight: FontWeight.bold,
+                    color: _isHovering ? Colors.white : Colors.black,
                   ),
                 ),
               ),

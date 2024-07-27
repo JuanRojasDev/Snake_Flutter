@@ -75,7 +75,7 @@ class _SignUpState extends State<SignUp> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.green.shade100,
+      backgroundColor: Colors.white,
       body: Center(
         child: SingleChildScrollView(
           child: Padding(
@@ -84,26 +84,27 @@ class _SignUpState extends State<SignUp> {
               key: formKey,
               child: Column(
                 children: [
-                  const Text(
-                    "Registrar",
-                    style: TextStyle(
-                        fontSize: 32,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.black),
+                  const SizedBox(height: 10), // Espacio desde la parte superior
+                  const Center(
+                    child: Text(
+                      "Registrarse",
+                      style: TextStyle(
+                          fontSize: 36,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.black),
+                    ),
                   ),
-                  const SizedBox(height: 15),
-                  Image.asset(
-                    "lib/assets/login.png",
-                    width: 210,
-                  ),
-                  const SizedBox(height: 15),
+                  const SizedBox(height: 20),
                   Container(
                     margin: const EdgeInsets.all(8),
                     padding:
                         const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(8),
-                      color: Colors.white.withOpacity(.2),
+                      color: Color(0xFFF6F6F6).withOpacity(0.8),
+                      border: Border.all(
+                          color: Color(0xFFBFBFBF),
+                          width: 0.4), // Borde más grueso
                     ),
                     child: TextFormField(
                       controller: username,
@@ -117,7 +118,11 @@ class _SignUpState extends State<SignUp> {
                         icon: Icon(Icons.person),
                         border: InputBorder.none,
                         hintText: "Nombre de usuario",
+                        hintStyle: TextStyle(
+                            color: Color(
+                                0xFFBFBFBF)), // Color del icono // Color del texto del hint
                       ),
+                      style: const TextStyle(color: Color(0xFFBFBFBF)),
                     ),
                   ),
                   Container(
@@ -126,7 +131,11 @@ class _SignUpState extends State<SignUp> {
                         const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(8),
-                      color: Colors.white.withOpacity(.2),
+                      color: Color(0xFFF6F6F6)
+                          .withOpacity(0.8), // Color llamativo para el fondo
+                      border: Border.all(
+                          color: Color(0xFFBFBFBF),
+                          width: 0.4), // Borde más grueso
                     ),
                     child: TextFormField(
                       controller: email,
@@ -143,7 +152,11 @@ class _SignUpState extends State<SignUp> {
                         icon: Icon(Icons.email),
                         border: InputBorder.none,
                         hintText: "Correo electrónico",
+                        hintStyle: TextStyle(
+                            color: Color(
+                                0xFFBFBFBF)), // Color del icono // Color del texto del hint
                       ),
+                      style: const TextStyle(color: Colors.white),
                     ),
                   ),
                   Container(
@@ -152,7 +165,11 @@ class _SignUpState extends State<SignUp> {
                         const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(8),
-                      color: Colors.white.withOpacity(.2),
+                      color: Color(0xFFF6F6F6)
+                          .withOpacity(0.8), // Color llamativo para el fondo
+                      border: Border.all(
+                          color: Color(0xFFBFBFBF),
+                          width: 0.4), // Borde más grueso
                     ),
                     child: TextFormField(
                       controller: password,
@@ -166,9 +183,12 @@ class _SignUpState extends State<SignUp> {
                       },
                       obscureText: !isVisible,
                       decoration: InputDecoration(
-                        icon: const Icon(Icons.lock),
+                        icon: Icon(Icons.lock),
                         border: InputBorder.none,
                         hintText: "Contraseña",
+                        hintStyle: TextStyle(
+                            color: Color(
+                                0xFFBFBFBF)), // Color del icono // Color del texto del hint
                         suffixIcon: IconButton(
                           onPressed: () {
                             setState(() {
@@ -188,7 +208,11 @@ class _SignUpState extends State<SignUp> {
                         const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(8),
-                      color: Colors.white.withOpacity(.2),
+                      color: Color(0xFFF6F6F6)
+                          .withOpacity(0.8), // Color llamativo para el fondo
+                      border: Border.all(
+                          color: Color(0xFFBFBFBF),
+                          width: 0.4), // Borde más grueso
                     ),
                     child: TextFormField(
                       controller: confirmPassword,
@@ -205,6 +229,9 @@ class _SignUpState extends State<SignUp> {
                         icon: Icon(Icons.lock),
                         border: InputBorder.none,
                         hintText: "Confirmar contraseña",
+                        hintStyle: TextStyle(
+                            color: Color(
+                                0xFFBFBFBF)), //Color del icono // Color del texto del hint
                       ),
                     ),
                   ),
@@ -214,7 +241,11 @@ class _SignUpState extends State<SignUp> {
                         const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(8),
-                      color: Colors.white.withOpacity(.2),
+                      color: Color(0xFFF6F6F6)
+                          .withOpacity(0.8), // Color llamativo para el fondo
+                      border: Border.all(
+                          color: Color(0xFFBFBFBF),
+                          width: 0.4), // Borde más grueso
                     ),
                     child: Row(
                       children: [
@@ -242,6 +273,14 @@ class _SignUpState extends State<SignUp> {
                                       ? "Fecha de nacimiento"
                                       : "${selectedDate!.day}/${selectedDate!.month}/${selectedDate!.year}",
                                   border: InputBorder.none,
+                                  hintStyle: TextStyle(
+                                    color: Color(
+                                        0xFFBFBFBF), // Color del texto del hint
+                                  ),
+                                ),
+                                style: const TextStyle(
+                                  color: Colors
+                                      .white, // Color del texto de entrada
                                 ),
                                 validator: (value) {
                                   if (selectedDate == null) {
@@ -261,14 +300,15 @@ class _SignUpState extends State<SignUp> {
                     height: 55,
                     width: MediaQuery.of(context).size.width * .9,
                     decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(8),
-                      color: Colors.green.shade400,
+                      borderRadius:
+                          BorderRadius.circular(27.5), // Hace el botón circular
+                      color: Color(0xFF5DB075),
                     ),
                     child: TextButton(
                       onPressed: signUp,
                       child: const Text(
-                        "REGISTRARSE",
-                        style: TextStyle(color: Colors.white),
+                        "Registrarse",
+                        style: TextStyle(color: Colors.white, fontSize: 18.0),
                       ),
                     ),
                   ),
@@ -281,7 +321,12 @@ class _SignUpState extends State<SignUp> {
                         onPressed: () {
                           Navigator.pop(context);
                         },
-                        child: const Text("Iniciar Sesión"),
+                        child: const Text(
+                          "Iniciar Sesión",
+                          style: TextStyle(
+                              color: Color(
+                                  0xFF5DB075)), // Cambia el color del texto
+                        ),
                       ),
                     ],
                   ),
