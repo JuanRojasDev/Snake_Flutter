@@ -30,6 +30,8 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     final body_Provider = context.watch<Home_Body_Provider>();
+    int _selectedIndex = 0;
+
 
     return Scaffold(
       appBar: AppBar(
@@ -131,7 +133,54 @@ class _HomeScreenState extends State<HomeScreen> {
         ),
       ),
       body: body_Provider.Body_ini,
+      
       backgroundColor: Colors.white,
+      
+      bottomNavigationBar: BottomAppBar(
+          color: Colors.white,
+          child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly, // Ajusta el espacio entre los botones
+            children: [
+                IconButton(
+                  iconSize: 30, // Ajusta el tamaño del ícono
+                  icon: Icon(Icons.help_outline),
+                  onPressed: () {
+                    // Acción para el botón de ayuda
+                  },
+                ),
+                IconButton(
+                  iconSize: 30, // Ajusta el tamaño del ícono
+                  icon: Icon(Icons.edit),
+                  onPressed: () {
+                    // Acción para el botón de escribir
+                  },
+                ),
+                IconButton(
+                  iconSize: 40, // Ajusta el tamaño del ícono
+                  icon: Icon(Icons.home,
+                      color: Colors.green), // Resalta la opción de inicio
+                  onPressed: () {
+                    // Acción para el botón de inicio
+                    body_Provider.changedBodyHome(Body_init());
+                  },
+                ),
+                IconButton(
+                  iconSize: 30, // Ajusta el tamaño del ícono
+                  icon: Icon(Icons.message),
+                  onPressed: () {
+                    // Acción para el botón de mensajes
+                  },
+                ),
+                IconButton(
+                  iconSize: 30, // Ajusta el tamaño del ícono
+                  icon: Icon(Icons.person),
+                  onPressed: () {
+                    // Acción para el botón de perfil
+                  },
+                ),
+              ],
+          ),
+        )
     );
   }
 }
@@ -214,57 +263,7 @@ class Body_init extends StatelessWidget {
           ),
           SizedBox(
             height: 10,
-          ), // Espacio adicional entre las tarjetas y la barra de navegación inferior
-          BottomAppBar(
-            color: Colors.white,
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment
-                  .spaceEvenly, // Ajusta el espacio entre los botones
-              children: [
-                IconButton(
-                  iconSize: 30, // Ajusta el tamaño del ícono
-                  icon: Icon(Icons.help_outline),
-                  onPressed: () {
-                    // Acción para el botón de ayuda
-                  },
-                ),
-                IconButton(
-                  iconSize: 30, // Ajusta el tamaño del ícono
-                  icon: Icon(Icons.edit),
-                  onPressed: () {
-                    // Acción para el botón de escribir
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) => ReportPage(usuario: usuario)),
-                    );
-                  },
-                ),
-                IconButton(
-                  iconSize: 40, // Ajusta el tamaño del ícono
-                  icon: Icon(Icons.home,
-                      color: Colors.green), // Resalta la opción de inicio
-                  onPressed: () {
-                    // Acción para el botón de inicio
-                  },
-                ),
-                IconButton(
-                  iconSize: 30, // Ajusta el tamaño del ícono
-                  icon: Icon(Icons.message),
-                  onPressed: () {
-                    // Acción para el botón de mensajes
-                  },
-                ),
-                IconButton(
-                  iconSize: 30, // Ajusta el tamaño del ícono
-                  icon: Icon(Icons.person),
-                  onPressed: () {
-                    // Acción para el botón de perfil
-                  },
-                ),
-              ],
-            ),
-          ),
+          ), 
         ],
       ),
     );
