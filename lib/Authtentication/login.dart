@@ -71,7 +71,7 @@ class _LoginScreenState extends State<LoginScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start, // Alineación superior
             children: [
-              const SizedBox(height: 10), // Espacio desde la parte superior
+              const SizedBox(height: 180), // Espacio desde la parte superior
               const Center(
                 child: Text(
                   "Iniciar Sesión",
