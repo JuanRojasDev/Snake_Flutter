@@ -133,80 +133,7 @@ class _ReportPageState extends State<ReportPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      appBar: AppBar(
-        title: Text('Reporte de Serpientes'),
-        backgroundColor: Color(0xFF5DB075),
-      ),
-      drawer: Drawer(
-        child: ListView(
-          padding: EdgeInsets.zero,
-          children: <Widget>[
-            UserAccountsDrawerHeader(
-              accountName:
-                  Text(widget.usuario?.nombres ?? 'Usuario no disponible'),
-              accountEmail:
-                  Text(widget.usuario?.correo ?? 'Usuario no disponible'),
-              currentAccountPicture: CircleAvatar(
-                backgroundImage:
-                    AssetImage('lib/assets/your_profile_picture.jpg'),
-              ),
-              decoration: BoxDecoration(color: Color(0xFF5DB075)),
-            ),
-            ListTile(
-              leading: Icon(Icons.person),
-              title: Text('Mi Perfil'),
-              onTap: () {
-                // Acción para ir a Mi Perfil
-              },
-            ),
-            ListTile(
-              leading: Icon(Icons.article),
-              title: Text('Mis Publicaciones'),
-              onTap: () {
-                // Acción para ir a Mis Publicaciones
-              },
-            ),
-            ListTile(
-              leading: Icon(Icons.favorite),
-              title: Text('Mis Me Gusta'),
-              onTap: () {
-                // Acción para ir a Mis Me Gusta
-              },
-            ),
-            ListTile(
-              leading: Icon(Icons.message),
-              title: Text('Menciones'),
-              onTap: () {
-                // Acción para ir a Menciones
-              },
-            ),
-            ListTile(
-              leading: Icon(Icons.settings),
-              title: Text('Configuración'),
-              onTap: () {
-                // Acción para ir a Configuración
-              },
-            ),
-            ListTile(
-              leading: Icon(Icons.info),
-              title: Text('Acerca de'),
-              onTap: () {
-                // Acción para ir a Acerca de
-              },
-            ),
-            Divider(),
-            ListTile(
-              leading: Icon(Icons.logout, color: Colors.red),
-              title: Text('Cerrar Sesión', style: TextStyle(color: Colors.red)),
-              onTap: () {
-                // Acción para cerrar sesión y redirigir al login
-                Navigator.pushReplacement(context,
-                    MaterialPageRoute(builder: (context) => LoginScreen()));
-              },
-            ),
-          ],
-        ),
-      ),
+
       floatingActionButton: FloatingActionButton(
         onPressed: () {
           showModalBottomSheet(
@@ -294,55 +221,7 @@ class _ReportPageState extends State<ReportPage> {
             ),
           );
         },
-      ),
-      bottomNavigationBar: BottomAppBar(
-        color: Colors.white,
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          children: [
-            IconButton(
-              iconSize: 30,
-              icon: Icon(Icons.help_outline),
-              onPressed: () {
-                // Acción para el botón de ayuda
-              },
-            ),
-            IconButton(
-              iconSize: 30,
-              icon: Icon(Icons.edit),
-              onPressed: () {
-                Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) =>
-                            ReportPage(usuario: widget.usuario)));
-              },
-            ),
-            IconButton(
-              iconSize: 40,
-              icon: Icon(Icons.home, color: Colors.green),
-              onPressed: () {
-                Navigator.push(context,
-                    MaterialPageRoute(builder: (context) => HomeScreen()));
-              },
-            ),
-            IconButton(
-              iconSize: 30,
-              icon: Icon(Icons.message),
-              onPressed: () {
-                // Acción para el botón de mensajes
-              },
-            ),
-            IconButton(
-              iconSize: 30,
-              icon: Icon(Icons.person),
-              onPressed: () {
-                // Acción para el botón de perfil
-              },
-            ),
-          ],
-        ),
-      ),
+      )
     );
   }
 }

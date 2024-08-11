@@ -4,7 +4,7 @@ import 'package:provider/provider.dart';
 import 'package:sqlite_flutter_crud/Authtentication/login.dart';
 import 'package:sqlite_flutter_crud/Authtentication/report.dart';
 import 'package:sqlite_flutter_crud/Providers/Home_Body_provider.dart';
-import 'package:sqlite_flutter_crud/Views/snake_Info/Galeria/Screen_Galeria.dart';
+import 'package:sqlite_flutter_crud/Views/snake/snake_Info/Galeria/Screen_Galeria.dart';
 import 'package:http/http.dart' as http;
 import '../JsonModels/Usuario.dart';
 import '../Providers/snake_class.dart';
@@ -153,6 +153,8 @@ class _HomeScreenState extends State<HomeScreen> {
                   icon: Icon(Icons.edit),
                   onPressed: () {
                     // Acción para el botón de escribir
+                    body_Provider.changedBodyHome(ReportPage(usuario: null));
+
                   },
                 ),
                 IconButton(

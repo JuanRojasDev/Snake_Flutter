@@ -6,7 +6,7 @@ import 'package:http/http.dart' as http;
 import 'package:provider/provider.dart';
 import 'package:sqlite_flutter_crud/Providers/snake_class.dart';
 import 'package:sqlite_flutter_crud/Providers/snake_provider.dart';
-import 'package:sqlite_flutter_crud/Views/snake_Info/Info_snake/info_Snale.dart';
+import 'package:sqlite_flutter_crud/Views/snake/snake_Info/Info_snake/info_Snale.dart';
 
 class Screen_galeria extends StatefulWidget {
     List<Serpiente> serpientes;
