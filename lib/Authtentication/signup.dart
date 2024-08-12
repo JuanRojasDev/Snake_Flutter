@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:loading_indicator/loading_indicator.dart';
 import 'dart:convert';
 import 'package:sqlite_flutter_crud/Authtentication/login.dart';
 import 'package:sqlite_flutter_crud/JsonModels/users.dart';
@@ -47,6 +48,26 @@ class _SignUpState extends State<SignUp> {
       var url = Uri.parse('https://back-1-9ehs.onrender.com/users/create');
       //var url = Uri.parse('http://127.0.0.1:8000/users/create');
 
+            showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) {
+      return Overlay(
+            initialEntries: [
+              OverlayEntry(
+                builder: (context) => Center(
+                  child: LoadingIndicator(
+                    indicatorType: Indicator.ballPulse,
+                    colors: const [Color.fromARGB(255, 36, 235, 18), Color.fromARGB(255, 25, 224, 128),Color.fromARGB(255, 59, 235, 150),Color.fromARGB(255, 116, 241, 181)],
+                    pathBackgroundColor: Color.fromARGB(255, 138, 209, 5),
+                  ),
+                ),
+              ),
+            ],
+          );
+        },
+      );
+
       var response = await http.post(
         url,
         headers: <String, String>{
@@ -65,6 +86,7 @@ class _SignUpState extends State<SignUp> {
         );
       } else {
         // El registro no se pudo completar
+        Navigator.pop(context);
         setState(() {
           isSignUpTrue = true;
         });

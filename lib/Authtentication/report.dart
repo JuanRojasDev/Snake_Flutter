@@ -17,13 +17,11 @@ class ReportPage extends StatefulWidget {
 class Report {
   String title;
   String description;
-  String comment;
   Uint8List? imageBytes;
 
   Report({
     required this.title,
     required this.description,
-    required this.comment,
     this.imageBytes,
   });
 }
@@ -45,8 +43,7 @@ class _ReportPageState extends State<ReportPage> {
         TextEditingController(text: report?.title ?? '');
     TextEditingController descriptionController =
         TextEditingController(text: report?.description ?? '');
-    TextEditingController commentController =
-        TextEditingController(text: report?.comment ?? '');
+
     Uint8List? imageBytes = report?.imageBytes;
 
     showDialog(
@@ -65,10 +62,7 @@ class _ReportPageState extends State<ReportPage> {
                   controller: descriptionController,
                   decoration: InputDecoration(labelText: 'Descripción'),
                 ),
-                TextField(
-                  controller: commentController,
-                  decoration: InputDecoration(labelText: 'Comentario'),
-                ),
+
                 SizedBox(height: 10),
                 imageBytes == null
                     ? Text('No hay imagen seleccionada.')
@@ -102,14 +96,12 @@ class _ReportPageState extends State<ReportPage> {
                     _reports.add(Report(
                       title: titleController.text,
                       description: descriptionController.text,
-                      comment: commentController.text,
                       imageBytes: imageBytes,
                     ));
                   } else {
                     _reports[index!] = Report(
                       title: titleController.text,
                       description: descriptionController.text,
-                      comment: commentController.text,
                       imageBytes: imageBytes,
                     );
                   }
@@ -197,7 +189,6 @@ class _ReportPageState extends State<ReportPage> {
                     ),
                   ),
                   SizedBox(height: 10),
-                  Text(report.comment),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.end,
                     children: [

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:loading_indicator/loading_indicator.dart';
 import 'package:sqlite_flutter_crud/Authtentication/signup.dart';
 import 'package:sqlite_flutter_crud/JsonModels/Usuario.dart';
 import 'dart:convert';
@@ -28,6 +29,26 @@ class _LoginScreenState extends State<LoginScreen> {
       'password': _passwordController.text,
     };
 
+      showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) {
+return Overlay(
+      initialEntries: [
+        OverlayEntry(
+          builder: (context) => Center(
+            child: LoadingIndicator(
+              indicatorType: Indicator.ballPulse,
+              colors: const [Color.fromARGB(255, 36, 235, 18), Color.fromARGB(255, 25, 224, 128),Color.fromARGB(255, 59, 235, 150),Color.fromARGB(255, 116, 241, 181)],
+              pathBackgroundColor: Color.fromARGB(255, 138, 209, 5),
+            ),
+          ),
+        ),
+      ],
+    );
+      },
+      );
+
     final Map<String, String> headers = {'Content-Type': 'application/json'};
 
     final response = await http.post(Uri.parse(url),
@@ -47,10 +68,13 @@ class _LoginScreenState extends State<LoginScreen> {
                   ))); // Navegar a home.dart
     } else {
       // Mostrar un mensaje de error al usuario
+      Navigator.pop(context);
       setState(() {
         _isLoginTrue = true;
       });
     }
+
+
   }
 
   Future<void> _continueAsGuest() async {
