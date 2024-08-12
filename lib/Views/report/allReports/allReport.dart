@@ -2,8 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:sqlite_flutter_crud/Authtentication/home.dart';
 import 'dart:typed_data';
-import 'package:sqlite_flutter_crud/Authtentication/login.dart';
-import '../JsonModels/Usuario.dart';
+import '../../../JsonModels/Usuario.dart';
 
 class ReportPage extends StatefulWidget {
   final Usuario? usuario;
@@ -14,7 +13,7 @@ class ReportPage extends StatefulWidget {
   _ReportPageState createState() => _ReportPageState();
 }
 
-class Report {
+class Report extends ChangeNotifier {
   String title;
   String description;
   Uint8List? imageBytes;
@@ -24,17 +23,35 @@ class Report {
     required this.description,
     this.imageBytes,
   });
+
+    Future<void> _pickImage(Function(Uint8List?) onImagePicked) async {
+    try {
+      final pickedFile = await ImagePicker().pickImage(source: ImageSource.gallery);
+      if (pickedFile != null) {
+        final bytes = await pickedFile.readAsBytes();
+        onImagePicked(bytes);
+      }
+    } catch (error) {
+      // Handle error (e.g., print message, show snackbar)
+      print("Error picking image: $error");
+    }
+  }
+
 }
 
 class _ReportPageState extends State<ReportPage> {
   List<Report> _reports = [];
 
   Future<void> _pickImage(Function(Uint8List?) onImagePicked) async {
-    final pickedFile =
-        await ImagePicker().pickImage(source: ImageSource.gallery);
-    if (pickedFile != null) {
-      final bytes = await pickedFile.readAsBytes();
-      onImagePicked(bytes);
+    try {
+      final pickedFile = await ImagePicker().pickImage(source: ImageSource.gallery);
+      if (pickedFile != null) {
+        final bytes = await pickedFile.readAsBytes();
+        onImagePicked(bytes);
+      }
+    } catch (error) {
+      // Handle error (e.g., print message, show snackbar)
+      print("Error picking image: $error");
     }
   }
 

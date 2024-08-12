@@ -33,20 +33,20 @@ class _LoginScreenState extends State<LoginScreen> {
       context: context,
       barrierDismissible: false,
       builder: (context) {
-return Overlay(
-      initialEntries: [
-        OverlayEntry(
-          builder: (context) => Center(
-            child: LoadingIndicator(
-              indicatorType: Indicator.ballPulse,
-              colors: const [Color.fromARGB(255, 36, 235, 18), Color.fromARGB(255, 25, 224, 128),Color.fromARGB(255, 59, 235, 150),Color.fromARGB(255, 116, 241, 181)],
-              pathBackgroundColor: Color.fromARGB(255, 138, 209, 5),
-            ),
-          ),
-        ),
-      ],
-    );
-      },
+      return Overlay(
+            initialEntries: [
+              OverlayEntry(
+                builder: (context) => Center(
+                  child: LoadingIndicator(
+                    indicatorType: Indicator.ballPulse,
+                    colors: const [Color.fromARGB(255, 36, 235, 18), Color.fromARGB(255, 25, 224, 128),Color.fromARGB(255, 59, 235, 150),Color.fromARGB(255, 116, 241, 181)],
+                    pathBackgroundColor: Color.fromARGB(255, 138, 209, 5),
+                  ),
+                ),
+              ),
+            ],
+          );
+        },
       );
 
     final Map<String, String> headers = {'Content-Type': 'application/json'};
