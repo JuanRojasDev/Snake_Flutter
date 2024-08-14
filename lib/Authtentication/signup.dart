@@ -18,9 +18,11 @@ class _SignUpState extends State<SignUp> {
   final email = TextEditingController();
   final password = TextEditingController();
   final confirmPassword = TextEditingController();
+  final birthDateController = TextEditingController();
   DateTime? selectedDate;
 
   bool isVisible = false;
+  bool isVisibleConfirm = false;
   bool isSignUpTrue = false;
   final db = DatabaseHelper();
   final formKey = GlobalKey<FormState>();
@@ -48,17 +50,22 @@ class _SignUpState extends State<SignUp> {
       var url = Uri.parse('https://back-1-9ehs.onrender.com/users/create');
       //var url = Uri.parse('http://127.0.0.1:8000/users/create');
 
-            showDialog(
-      context: context,
-      barrierDismissible: false,
-      builder: (context) {
-      return Overlay(
+      showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (context) {
+          return Overlay(
             initialEntries: [
               OverlayEntry(
                 builder: (context) => Center(
                   child: LoadingIndicator(
                     indicatorType: Indicator.ballPulse,
-                    colors: const [Color.fromARGB(255, 36, 235, 18), Color.fromARGB(255, 25, 224, 128),Color.fromARGB(255, 59, 235, 150),Color.fromARGB(255, 116, 241, 181)],
+                    colors: const [
+                      Color.fromARGB(255, 36, 235, 18),
+                      Color.fromARGB(255, 25, 224, 128),
+                      Color.fromARGB(255, 59, 235, 150),
+                      Color.fromARGB(255, 116, 241, 181)
+                    ],
                     pathBackgroundColor: Color.fromARGB(255, 138, 209, 5),
                   ),
                 ),
@@ -169,7 +176,7 @@ class _SignUpState extends State<SignUp> {
                         }
                         return null;
                       },
-                      decoration: const InputDecoration(
+                      decoration: InputDecoration(
                         icon: Icon(Icons.email),
                         border: InputBorder.none,
                         hintText: "Correo electrónico",
@@ -244,14 +251,26 @@ class _SignUpState extends State<SignUp> {
                         }
                         return null;
                       },
-                      obscureText: true,
-                      decoration: const InputDecoration(
+                      obscureText: !isVisibleConfirm,
+                      decoration: InputDecoration(
                         icon: Icon(Icons.lock),
                         border: InputBorder.none,
                         hintText: "Confirmar contraseña",
                         hintStyle: TextStyle(
                             color: Color(
                                 0xFFBFBFBF)), //Color del icono // Color del texto del hint
+                        suffixIcon: IconButton(
+                          onPressed: () {
+                            setState(() {
+                              isVisibleConfirm = !isVisibleConfirm;
+                            });
+                          },
+                          icon: Icon(
+                            isVisibleConfirm
+                                ? Icons.visibility
+                                : Icons.visibility_off,
+                          ),
+                        ),
                       ),
                     ),
                   ),
@@ -267,52 +286,31 @@ class _SignUpState extends State<SignUp> {
                           color: Color(0xFFBFBFBF),
                           width: 0.4), // Borde más grueso
                     ),
-                    child: Row(
-                      children: [
-                        const Icon(Icons.calendar_today),
-                        const SizedBox(width: 10),
-                        Expanded(
-                          child: GestureDetector(
-                            onTap: () async {
-                              DateTime? pickedDate = await showDatePicker(
-                                context: context,
-                                initialDate: DateTime.now(),
-                                firstDate: DateTime(1900),
-                                lastDate: DateTime.now(),
-                              );
-                              if (pickedDate != null) {
-                                setState(() {
-                                  selectedDate = pickedDate;
-                                });
-                              }
-                            },
-                            child: AbsorbPointer(
-                              child: TextFormField(
-                                decoration: InputDecoration(
-                                  hintText: selectedDate == null
-                                      ? "Fecha de nacimiento"
-                                      : "${selectedDate!.day}/${selectedDate!.month}/${selectedDate!.year}",
-                                  border: InputBorder.none,
-                                  hintStyle: TextStyle(
-                                    color: Color(
-                                        0xFFBFBFBF), // Color del texto del hint
-                                  ),
-                                ),
-                                style: const TextStyle(
-                                  color: Colors
-                                      .white, // Color del texto de entrada
-                                ),
-                                validator: (value) {
-                                  if (selectedDate == null) {
-                                    return "La fecha de nacimiento es requerida";
-                                  }
-                                  return null;
-                                },
-                              ),
-                            ),
-                          ),
-                        ),
-                      ],
+                    child: TextFormField(
+                      controller: birthDateController,
+                      decoration: InputDecoration(
+                        icon: Icon(Icons.calendar_today),
+                        border: InputBorder.none,
+                        hintText: "Fecha de Nacimiento",
+                        hintStyle: TextStyle(
+                            color:
+                                Color(0xFFBFBFBF)), // Color del texto del hint
+                      ),
+                      onTap: () async {
+                        DateTime? pickedDate = await showDatePicker(
+                          context: context,
+                          initialDate: DateTime.now(),
+                          firstDate: DateTime(1900),
+                          lastDate: DateTime(2100),
+                        );
+
+                        if (pickedDate != null) {
+                          setState(() {
+                            birthDateController.text =
+                                "${pickedDate.day}/${pickedDate.month}/${pickedDate.year}";
+                          });
+                        }
+                      },
                     ),
                   ),
                   const SizedBox(height: 10),

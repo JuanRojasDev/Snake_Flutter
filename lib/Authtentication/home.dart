@@ -2,7 +2,8 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:sqlite_flutter_crud/Authtentication/login.dart';
-import 'package:sqlite_flutter_crud/Authtentication/report.dart';
+import 'package:sqlite_flutter_crud/Views/report/reportsMe/report.dart';
+import 'package:sqlite_flutter_crud/Views/profile/profile.dart';
 import 'package:sqlite_flutter_crud/Providers/Home_Body_provider.dart';
 import 'package:sqlite_flutter_crud/Views/snake/snake_Info/Galeria/Screen_Galeria.dart';
 import 'package:http/http.dart' as http;
@@ -31,10 +32,13 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     final body_Provider = context.watch<Home_Body_Provider>();
     int _selectedIndex = 0;
+    String _appBarTitle = 'Inicio';
 
     return Scaffold(
         appBar: AppBar(
-          title: Text('Inicio',
+          title: Text(
+              body_Provider
+                  .appBarTitle, // Actualiza el título según el icono seleccionado
               style: TextStyle(
                   color: Colors.black,
                   fontWeight: FontWeight.bold,
@@ -142,40 +146,53 @@ class _HomeScreenState extends State<HomeScreen> {
             children: [
               IconButton(
                 iconSize: 30, // Ajusta el tamaño del ícono
-                icon: Icon(Icons.help_outline),
-                onPressed: () {
-                  // Acción para el botón de ayuda
-                },
-              ),
-              IconButton(
-                iconSize: 30, // Ajusta el tamaño del ícono
-                icon: Icon(Icons.edit),
+                icon: Icon(
+                  Icons.edit,
+                  color: body_Provider.selectedIndex == 1
+                      ? Colors.green
+                      : Color(0xFF6e7168),
+                ), // Resalta la opción de escribir
                 onPressed: () {
                   // Acción para el botón de escribir
+                  body_Provider
+                      .setSelectedIndex(1); // Actualiza el selectedIndex
+                  body_Provider.setAppBarTitle(
+                      'Publicaciones'); // Cambia el título del AppBar
                   body_Provider.changedBodyHome(ReportPage(usuario: null));
                 },
               ),
               IconButton(
                 iconSize: 40, // Ajusta el tamaño del ícono
-                icon: Icon(Icons.home,
-                    color: Colors.green), // Resalta la opción de inicio
+                icon: Icon(
+                  Icons.home,
+                  color: body_Provider.selectedIndex == 0
+                      ? Colors.green
+                      : Color(0xFF6e7168),
+                ), // Resalta la opción de inicio
                 onPressed: () {
                   // Acción para el botón de inicio
+                  body_Provider
+                      .setSelectedIndex(0); // Actualiza el selectedIndex
+                  body_Provider
+                      .setAppBarTitle('Inicio'); // Cambia el título del AppBar
                   body_Provider.changedBodyHome(Body_init());
                 },
               ),
               IconButton(
                 iconSize: 30, // Ajusta el tamaño del ícono
-                icon: Icon(Icons.message),
-                onPressed: () {
-                  // Acción para el botón de mensajes
-                },
-              ),
-              IconButton(
-                iconSize: 30, // Ajusta el tamaño del ícono
-                icon: Icon(Icons.person),
+                icon: Icon(
+                  Icons.person,
+                  color: body_Provider.selectedIndex == 2
+                      ? Colors.green
+                      : Color(0xFF6e7168),
+                ),
                 onPressed: () {
                   // Acción para el botón de perfil
+                  body_Provider
+                      .setSelectedIndex(2); // Actualiza el selectedIndex
+                  body_Provider.setAppBarTitle(
+                      'Mi Perfil'); // Cambia el título del AppBar
+                  body_Provider.changedBodyHome(ProfilePage(usuario: null));
                 },
               ),
             ],
@@ -226,7 +243,7 @@ class Body_init extends StatelessWidget {
           TextField(
             decoration: InputDecoration(
               hintText: 'Buscar serpientes',
-              prefixIcon: Icon(Icons.search, color: Colors.black),
+              prefixIcon: Icon(Icons.search),
               filled: true,
               fillColor: Color(0xFFF0F0F0),
               contentPadding: EdgeInsets.symmetric(vertical: 0),

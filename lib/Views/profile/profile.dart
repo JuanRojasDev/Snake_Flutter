@@ -5,13 +5,13 @@ import 'dart:typed_data';
 import 'package:sqlite_flutter_crud/Authtentication/login.dart';
 import '../../../JsonModels/Usuario.dart';
 
-class ReportPage extends StatefulWidget {
+class ProfilePage extends StatefulWidget {
   final Usuario? usuario;
 
-  ReportPage({this.usuario});
+  ProfilePage({this.usuario});
 
   @override
-  _ReportPageState createState() => _ReportPageState();
+  _ProfilePageState createState() => _ProfilePageState();
 }
 
 class Report extends ChangeNotifier {
@@ -26,7 +26,7 @@ class Report extends ChangeNotifier {
   });
 }
 
-class _ReportPageState extends State<ReportPage> {
+class _ProfilePageState extends State<ProfilePage> {
   List<Report> _reports = [];
 
   Future<void> _pickImage(Function(Uint8List?) onImagePicked) async {
@@ -153,7 +153,7 @@ class _ReportPageState extends State<ReportPage> {
             );
           },
           child: Icon(Icons.add),
-          backgroundColor: Color(0xFF4CAF50),
+          backgroundColor: Color(0xFF5DB075),
         ),
         body: ListView.builder(
           itemCount: _reports.length,
