@@ -1,220 +1,204 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:sqlite_flutter_crud/Authtentication/home.dart';
-import 'dart:typed_data';
 import 'package:sqlite_flutter_crud/Authtentication/login.dart';
 import '../../../JsonModels/Usuario.dart';
 
 class ProfilePage extends StatefulWidget {
   final Usuario? usuario;
 
-  ProfilePage({this.usuario});
+  const ProfilePage({this.usuario, Key? key}) : super(key: key);
 
   @override
   _ProfilePageState createState() => _ProfilePageState();
 }
 
-class Report extends ChangeNotifier {
-  String title;
-  String description;
-  Uint8List? imageBytes;
-
-  Report({
-    required this.title,
-    required this.description,
-    this.imageBytes,
-  });
-}
-
 class _ProfilePageState extends State<ProfilePage> {
-  List<Report> _reports = [];
+  File? _profileImage;
+  File? _coverImage;
+  String _name = "Nombre";
+  String _status = "Descripción";
 
-  Future<void> _pickImage(Function(Uint8List?) onImagePicked) async {
-    try {
-      final pickedFile =
-          await ImagePicker().pickImage(source: ImageSource.gallery);
-      if (pickedFile != null) {
-        final bytes = await pickedFile.readAsBytes();
-        onImagePicked(bytes);
-      }
-    } catch (error) {
-      // Handle error (e.g., print message, show snackbar)
-      print("Error picking image: $error");
+  final _nameController = TextEditingController();
+  final _statusController = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+    _nameController.text = _name;
+    _statusController.text = _status;
+  }
+
+  Future<void> _pickImage(bool isProfileImage) async {
+    final pickedFile =
+        await ImagePicker().pickImage(source: ImageSource.gallery);
+    if (pickedFile != null) {
+      setState(() {
+        if (isProfileImage) {
+          _profileImage = File(pickedFile.path);
+        } else {
+          _coverImage = File(pickedFile.path);
+        }
+      });
     }
   }
 
-  void _showReportForm(BuildContext context, {Report? report, int? index}) {
-    TextEditingController titleController =
-        TextEditingController(text: report?.title ?? '');
-    TextEditingController descriptionController =
-        TextEditingController(text: report?.description ?? '');
-
-    Uint8List? imageBytes = report?.imageBytes;
-
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: Text(report == null ? 'Escribir Reporte' : 'Editar Reporte'),
-          content: SingleChildScrollView(
-            child: Column(
-              children: [
-                TextField(
-                  controller: titleController,
-                  decoration: InputDecoration(labelText: 'Título'),
-                ),
-                TextField(
-                  controller: descriptionController,
-                  decoration: InputDecoration(labelText: 'Descripción'),
-                ),
-                SizedBox(height: 10),
-                imageBytes == null
-                    ? Text('No hay imagen seleccionada.')
-                    : Image.memory(
-                        imageBytes!,
-                        height: 150,
-                      ),
-                ElevatedButton(
-                  onPressed: () => _pickImage((bytes) {
-                    setState(() {
-                      imageBytes = bytes;
-                    });
-                  }),
-                  child: Text('Seleccionar Imagen'),
-                ),
-              ],
-            ),
-          ),
-          actions: [
-            TextButton(
-              child: Text('Cancelar'),
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-            ),
-            TextButton(
-              child: Text('Guardar'),
-              onPressed: () {
-                setState(() {
-                  if (report == null) {
-                    _reports.add(Report(
-                      title: titleController.text,
-                      description: descriptionController.text,
-                      imageBytes: imageBytes,
-                    ));
-                  } else {
-                    _reports[index!] = Report(
-                      title: titleController.text,
-                      description: descriptionController.text,
-                      imageBytes: imageBytes,
-                    );
-                  }
-                });
-                Navigator.of(context).pop();
-              },
-            ),
-          ],
-        );
-      },
-    );
+  void _saveName() {
+    setState(() {
+      _name = _nameController.text;
+    });
   }
 
-  void _deleteReport(int index) {
+  void _saveStatus() {
     setState(() {
-      _reports.removeAt(index);
+      _status = _statusController.text;
     });
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        backgroundColor: Colors.white,
-        floatingActionButton: FloatingActionButton(
-          onPressed: () {
-            showModalBottomSheet(
-              context: context,
-              builder: (BuildContext context) {
-                return Container(
-                  height: 100,
-                  child: Column(
+      backgroundColor: Colors.grey[200],
+      body: SingleChildScrollView(
+        child: Column(
+          children: [
+            Stack(
+              clipBehavior: Clip.none,
+              children: [
+                GestureDetector(
+                  onTap: () => _pickImage(false),
+                  child: Container(
+                    height: 250,
+                    width: double.infinity,
+                    decoration: BoxDecoration(
+                      image: _coverImage != null
+                          ? DecorationImage(
+                              image: FileImage(_coverImage!),
+                              fit: BoxFit.cover,
+                            )
+                          : null,
+                      color: Color(0xFF5DB074),
+                    ),
+                    child: _coverImage == null
+                        ? Center(
+                            child: Icon(Icons.camera_alt,
+                                color: Colors.white, size: 50),
+                          )
+                        : null,
+                  ),
+                ),
+                Positioned(
+                  bottom: -50,
+                  left: MediaQuery.of(context).size.width / 2 - 88,
+                  child: GestureDetector(
+                    onTap: () => _pickImage(true),
+                    child: CircleAvatar(
+                      radius: 90, // Ajusta el tamaño del círculo aquí
+                      backgroundColor: Colors.white,
+                      child: CircleAvatar(
+                        radius: 85, // Ajusta el tamaño de la imagen aquí
+                        backgroundImage: _profileImage != null
+                            ? FileImage(_profileImage!)
+                            : AssetImage('lib/assets/default_profile.png')
+                                as ImageProvider,
+                        child: _profileImage == null
+                            ? Icon(Icons.camera_alt,
+                                color: Colors.white, size: 55)
+                            : null,
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            SizedBox(height: 55),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 30),
+              child: Column(
+                children: [
+                  TextField(
+                    controller: _nameController,
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      fontSize: 28,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.black87,
+                    ),
+                    decoration: InputDecoration(
+                      border: InputBorder.none,
+                    ),
+                    onSubmitted: (value) => _saveName(),
+                  ),
+                  SizedBox(height: 5),
+                  TextField(
+                    controller: _statusController,
+                    textAlign: TextAlign.center,
+                    maxLength: 100,
+                    style: TextStyle(
+                      fontSize: 18,
+                      color: Colors.black54,
+                    ),
+                    decoration: InputDecoration(
+                      border: InputBorder.none,
+                    ),
+                    onSubmitted: (value) => _saveStatus(),
+                  ),
+                  Divider(
+                    thickness: 2,
+                    color: Colors.grey[300],
+                  ),
+                  SizedBox(height: 10),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: [
-                      ListTile(
-                        leading: Icon(Icons.note_add),
-                        title: Text('Escribir Reporte'),
+                      _buildProfileOption(
+                        title: "Publicaciones",
+                        icon: Icons.article,
                         onTap: () {
-                          Navigator.of(context).pop();
-                          _showReportForm(context);
+                          // Acción al pulsar "Publicaciones"
+                        },
+                      ),
+                      _buildProfileOption(
+                        title: "Fotos",
+                        icon: Icons.photo_library,
+                        onTap: () {
+                          // Acción al pulsar "Fotos"
                         },
                       ),
                     ],
                   ),
-                );
-              },
-            );
-          },
-          child: Icon(Icons.add),
-          backgroundColor: Color(0xFF5DB075),
-        ),
-        body: ListView.builder(
-          itemCount: _reports.length,
-          itemBuilder: (context, index) {
-            final report = _reports[index];
-            return Card(
-              margin: EdgeInsets.all(10),
-              color: Color(0xFFFAF3E0), // Color blanco hueso
-              child: Padding(
-                padding: EdgeInsets.all(15),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    Text(
-                      report.title,
-                      style: TextStyle(
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold,
-                      ),
-                      textAlign: TextAlign.center,
-                    ),
-                    SizedBox(height: 10),
-                    report.imageBytes != null
-                        ? Image.memory(
-                            report.imageBytes!,
-                            height: 150,
-                          )
-                        : Text('No hay imagen seleccionada.'),
-                    SizedBox(height: 10),
-                    Text(
-                      report.description,
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontStyle: FontStyle.italic,
-                        color: Colors.grey,
-                      ),
-                    ),
-                    SizedBox(height: 10),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.end,
-                      children: [
-                        IconButton(
-                          icon: Icon(Icons.edit),
-                          onPressed: () {
-                            _showReportForm(context,
-                                report: report, index: index);
-                          },
-                        ),
-                        IconButton(
-                          icon: Icon(Icons.delete, color: Colors.red),
-                          onPressed: () {
-                            _deleteReport(index);
-                          },
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
+                ],
               ),
-            );
-          },
-        ));
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildProfileOption({
+    required String title,
+    required IconData icon,
+    required VoidCallback onTap,
+  }) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Column(
+        children: [
+          Icon(icon, size: 30, color: Colors.green[700]),
+          SizedBox(height: 5),
+          Text(
+            title,
+            style: TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.bold,
+              color: Colors.black87,
+            ),
+          ),
+        ],
+      ),
+    );
   }
 }
