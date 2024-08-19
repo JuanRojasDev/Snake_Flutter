@@ -158,7 +158,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       .setSelectedIndex(1); // Actualiza el selectedIndex
                   body_Provider.setAppBarTitle(
                       'Publicaciones'); // Cambia el título del AppBar
-                  body_Provider.changedBodyHome(ReportPage(usuario: null));
+                  body_Provider.changedBodyHome(ReportPage(usuario: widget.usuario,));
                 },
               ),
               IconButton(
@@ -192,7 +192,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       .setSelectedIndex(2); // Actualiza el selectedIndex
                   body_Provider.setAppBarTitle(
                       'Mi Perfil'); // Cambia el título del AppBar
-                  body_Provider.changedBodyHome(ProfilePage(usuario: null));
+                  body_Provider.changedBodyHome(ProfilePage(usuario: widget.usuario));
                 },
               ),
             ],

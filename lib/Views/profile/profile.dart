@@ -27,7 +27,7 @@ class _ProfilePageState extends State<ProfilePage> {
   @override
   void initState() {
     super.initState();
-    _nameController.text = _name;
+    _nameController.text =  widget.usuario?.nombres ?? 'Usuario no disponible';
     _statusController.text = _status;
   }
 
@@ -51,6 +51,7 @@ class _ProfilePageState extends State<ProfilePage> {
     });
   }
 
+
   void _saveStatus() {
     setState(() {
       _status = _statusController.text;
@@ -59,6 +60,7 @@ class _ProfilePageState extends State<ProfilePage> {
 
   @override
   Widget build(BuildContext context) {
+
     return Scaffold(
       backgroundColor: Colors.grey[200],
       body: SingleChildScrollView(
