@@ -154,6 +154,8 @@ class _HomeScreenState extends State<HomeScreen> {
                 ), // Resalta la opción de escribir
                 onPressed: () {
                   // Acción para el botón de escribir
+
+                  
                   body_Provider
                       .setSelectedIndex(1); // Actualiza el selectedIndex
                   body_Provider.setAppBarTitle(

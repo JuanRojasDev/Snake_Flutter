@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:http/http.dart' as http;
 import 'package:loading_indicator/loading_indicator.dart';
 import 'package:sqlite_flutter_crud/Authtentication/signup.dart';
@@ -19,7 +20,7 @@ class _LoginScreenState extends State<LoginScreen> {
   final TextEditingController _passwordController = TextEditingController();
   bool _isVisible = false;
   bool _isLoginTrue = false;
-
+  final storage = new FlutterSecureStorage();
   Future<void> _login() async {
     final String url =
         'https://back-1-9ehs.onrender.com/users/login'; // server ip
@@ -58,7 +59,8 @@ class _LoginScreenState extends State<LoginScreen> {
       // Inicio de sesión exitoso, navegar a la siguiente pantalla (home.dart)
       Map<String, dynamic> jsonResponse = jsonDecode(response.body);
       Usuario user = Usuario.fromJson(jsonResponse);
-      print(user.nombres);
+      print(user.Token);
+      await storage.write(key: 'jwt', value: user.Token);
 
       Navigator.pushReplacement(
           context,

@@ -33,4 +33,16 @@ class Reporte {
       usuario_id_usuario: json['usuario_id_usuario'],
     );
   }
+
+  Map<String, dynamic> toMap() => {
+      "titulo": titulo,
+      "descripcion": descripcion,
+      "imagen": imagen,
+      "reportId": reportId,
+      "serpientes_id_serpientes":serpientes_id_serpientes,
+      "created_at": created_at,
+      "usuario_id_usuario":usuario_id_usuario,
+      };
+
+  
 }

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:provider/provider.dart';
 import 'package:sqlite_flutter_crud/Authtentication/login.dart';
 import 'package:sqlite_flutter_crud/Providers/Home_Body_provider.dart';
@@ -24,10 +25,16 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
+    AndroidOptions _getAndroidOptions() => const AndroidOptions(
+          encryptedSharedPreferences: true,
+        );
+    final storage = FlutterSecureStorage(aOptions: _getAndroidOptions());
     return MultiProvider(
-      providers: [ChangeNotifierProvider(create: (_) => Home_Body_Provider()),
-                  ChangeNotifierProvider(create: (_) => Snake_Provider()),
-                  ChangeNotifierProvider(create: (_) => Reporte_Provider())],
+      providers: [
+        ChangeNotifierProvider(create: (_) => Home_Body_Provider()),
+        ChangeNotifierProvider(create: (_) => Snake_Provider()),
+        ChangeNotifierProvider(create: (_) => Reporte_Provider())
+      ],
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
         title: 'Snake Meta',

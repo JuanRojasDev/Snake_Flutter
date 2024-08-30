@@ -55,82 +55,6 @@ class _ReportPageState extends State<ReportPage> {
     }
   }
 
-  void _showReportForm(BuildContext context, {Report? report, int? index}) {
-    TextEditingController titleController =
-        TextEditingController(text: report?.title ?? '');
-    TextEditingController descriptionController =
-        TextEditingController(text: report?.description ?? '');
-
-    Uint8List? imageBytes = report?.imageBytes;
-
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: Text(report == null ? 'Escribir Reporte' : 'Editar Reporte'),
-          content: SingleChildScrollView(
-            child: Column(
-              children: [
-                TextField(
-                  controller: titleController,
-                  decoration: InputDecoration(labelText: 'Título'),
-                ),
-                TextField(
-                  controller: descriptionController,
-                  decoration: InputDecoration(labelText: 'Descripción'),
-                ),
-
-                SizedBox(height: 10),
-                imageBytes == null
-                    ? Text('No hay imagen seleccionada.')
-                    : Image.memory(
-                        imageBytes!,
-                        height: 150,
-                      ),
-                ElevatedButton(
-                  onPressed: () => _pickImage((bytes) {
-                    setState(() {
-                      imageBytes = bytes;
-                    });
-                  }),
-                  child: Text('Seleccionar Imagen'),
-                ),
-              ],
-            ),
-          ),
-          actions: [
-            TextButton(
-              child: Text('Cancelar'),
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-            ),
-            TextButton(
-              child: Text('Guardar'),
-              onPressed: () {
-                setState(() {
-                  if (report == null) {
-                    _reports.add(Report(
-                      title: titleController.text,
-                      description: descriptionController.text,
-                      imageBytes: imageBytes,
-                    ));
-                  } else {
-                    _reports[index!] = Report(
-                      title: titleController.text,
-                      description: descriptionController.text,
-                      imageBytes: imageBytes,
-                    );
-                  }
-                });
-                Navigator.of(context).pop();
-              },
-            ),
-          ],
-        );
-      },
-    );
-  }
 
   void _deleteReport(int index) {
     setState(() {
@@ -140,6 +64,11 @@ class _ReportPageState extends State<ReportPage> {
 
   @override
   Widget build(BuildContext context) {
+
+
+
+
+
     return Scaffold(
       backgroundColor: Colors.white,
 
@@ -157,7 +86,7 @@ class _ReportPageState extends State<ReportPage> {
                       title: Text('Escribir Reporte'),
                       onTap: () {
                         Navigator.of(context).pop();
-                        _showReportForm(context);
+                        
                       },
                     ),
                   ],
@@ -212,8 +141,7 @@ class _ReportPageState extends State<ReportPage> {
                       IconButton(
                         icon: Icon(Icons.edit),
                         onPressed: () {
-                          _showReportForm(context,
-                              report: report, index: index);
+                          
                         },
                       ),
                       IconButton(
