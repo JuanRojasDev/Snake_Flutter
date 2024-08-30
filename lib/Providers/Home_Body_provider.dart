@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:sqlite_flutter_crud/Authtentication/home.dart';
+import 'package:sqlite_flutter_crud/Views/snake/snake_Info/Galeria/Screen_Galeria.dart';
 
 class Home_Body_Provider extends ChangeNotifier {
-  Widget Body_ini = Body_init();
+  Widget Body_ini = Screen_galeria();
   int _selectedIndex = 0; // Por defecto, selecciona el botón de inicio
   String _appBarTitle =
       'Inicio'; // Por defecto, el título del AppBar es 'Inicio'

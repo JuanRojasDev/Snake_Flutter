@@ -20,7 +20,7 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  Widget bodyContent = Body_init();
+  Widget bodyContent = Screen_galeria();
 
   void updateBodyContent(Widget newContent) {
     setState(() {
@@ -177,7 +177,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       .setSelectedIndex(0); // Actualiza el selectedIndex
                   body_Provider
                       .setAppBarTitle('Inicio'); // Cambia el título del AppBar
-                  body_Provider.changedBodyHome(Body_init());
+                  body_Provider.changedBodyHome(Screen_galeria());
                 },
               ),
               IconButton(
@@ -232,9 +232,7 @@ class Body_init extends StatelessWidget {
           }
         }
 
-        body_Provider.changedBodyHome(Screen_galeria(
-          serpientes: serpientes,
-        ));
+        body_Provider.changedBodyHome(Screen_galeria());
       }
     }
 
