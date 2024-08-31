@@ -82,8 +82,6 @@ class _ReportPageState extends State<ReportPage> {
       reportProvider.fecthData = true;
     }
 
-    List<Reporte> listReportes = reportProvider.reportesAll;
-
     return Scaffold(
         backgroundColor: Colors.white,
         floatingActionButton: FloatingActionButton(
@@ -103,12 +101,22 @@ class _ReportPageState extends State<ReportPage> {
           child: Icon(Icons.add),
           backgroundColor: Color(0xFF4CAF50),
         ),
-        body: SingleChildScrollView(
-          child: Column(
-            children: List.generate(reportProvider.reportesAll.length,
-                (index) => _reportCard(context, reportProvider.reportesAll[index])),
-          ),
-        ));
+        body: SafeArea(
+         
+            child: Column(
+          children: [
+            Expanded(
+              child: ListView.builder(
+                scrollDirection: Axis.vertical,
+                itemCount: reportProvider.reportesAll.length,
+                itemBuilder: (context, index) {
+                  return _reportCard(
+                      context, reportProvider.reportesAll[index]);
+                },
+              ),
+            ),
+          ],
+        )));
   }
 
   Widget _reportCard(BuildContext context, Reporte report) {
@@ -167,7 +175,7 @@ class _ReportPageState extends State<ReportPage> {
                   IconButton(
                     icon: Icon(Icons.delete, color: Colors.red),
                     onPressed: () {
-                      _deleteReport(report.reportId ?? 0);
+                      print(report.reportId);
                     },
                   ),
                 ],

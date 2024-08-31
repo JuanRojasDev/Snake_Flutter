@@ -6,9 +6,9 @@ class Usuario {
   final String? contrasena;
   final String? apellido;
   final String fechaN;
-  final String? rol;
   final int? edad;
   final String? Token;
+  final String? imagen;
 
   Usuario({
     required this.nombres,
@@ -17,9 +17,9 @@ class Usuario {
     this.contrasena,
     this.apellido,
     required this.fechaN,
-    this.rol,
     this.edad,
     this.Token,
+    this.imagen,
   });
 
   factory Usuario.fromJson(Map<String, dynamic> json) {
@@ -30,8 +30,8 @@ class Usuario {
       contrasena: json['data']['contraseña'],
       apellido: json['data']['apellido'],
       fechaN: json['data']['fecha_n'],
-      rol: json['data']['rol'],
       edad: json['data']['edad'],
+      imagen: json['data']['imagen'],
       Token: json['access_token']
     );
   }

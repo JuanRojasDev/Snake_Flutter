@@ -7,10 +7,13 @@ class Reporte_Provider extends ChangeNotifier {
   List<Reporte> reportesAll = [];
   bool fecthData = false;
 
-
   void setReportes(List<Reporte> nuevosReportes) {
     reportesAll = nuevosReportes;
     notifyListeners();
+  }
+
+  void deleteReport(int reportId) {
+    reportesAll.remove(reportId);
   }
 
   void agregarReportes(Reporte nuevosReportes) {
@@ -18,7 +21,9 @@ class Reporte_Provider extends ChangeNotifier {
     notifyListeners();
   }
 
-    Future<void> fetchAllReports() async {
+
+
+  Future<void> fetchAllReports() async {
     try {
       final response = await http
           .get(Uri.parse('https://back-1-9ehs.onrender.com/Reporte/all'));
@@ -36,5 +41,4 @@ class Reporte_Provider extends ChangeNotifier {
       print('Error fetching reports: $e');
     }
   }
-
 }

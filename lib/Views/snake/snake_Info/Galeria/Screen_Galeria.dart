@@ -80,13 +80,16 @@ class _Screen_galeriaState extends State<Screen_galeria> {
             children: [
               // Background image filling the container
               Container(
+                width: 400,
+                height: 600,
                 decoration: BoxDecoration(
                   image: DecorationImage(
                     image: NetworkImage(
                       'https://back-1-9ehs.onrender.com/view_image/?imagen=' +
                           serpiente.imagen,
                     ),
-                    fit: BoxFit.cover, // Cover the entire container
+                    
+                    fit: BoxFit.contain, // Cover the entire container
                   ),
                 ),
               ),
