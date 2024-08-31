@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'dart:typed_data';
-
+import 'dart:js' as js;
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:image_picker/image_picker.dart';
@@ -14,6 +15,9 @@ import 'package:sqlite_flutter_crud/Providers/report_provider.dart';
 import 'package:sqlite_flutter_crud/SQLite/sqlite.dart';
 import 'package:sqlite_flutter_crud/Views/report/allReports/allReport.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:path/path.dart' as path;
+import 'package:firebase_storage/firebase_storage.dart';
+import 'dart:io';
 
 class createReport extends StatefulWidget {
   const createReport({Key? key}) : super(key: key);
@@ -27,12 +31,30 @@ class _createReportState extends State<createReport> {
   final TextEditingController _ControllerDescription = TextEditingController();
   String? imageUrl;
   Uint8List? _image;
+  File? imageFile;
   bool isVisible = false;
   bool isVisibleConfirm = false;
   bool iscreateReportTrue = false;
   final db = DatabaseHelper();
   final _formKey = GlobalKey<FormState>();
   final storage = new FlutterSecureStorage();
+
+  Future<void> _pickFiles() async {
+    FilePickerResult? result = await FilePicker.platform.pickFiles(
+      type: FileType.custom,
+      allowedExtensions: ['jpg', 'png', 'pdf'],
+      allowMultiple: false,
+    );
+
+    if (result != null) {
+      PlatformFile file = result.files.first;
+      print(file.name);
+      print(file.path);
+    } else {
+      print('No file selected');
+    }
+  }
+
   Future<void> _pickImage(Function(Uint8List?) onImagePicked) async {
     try {
       final pickedFile =
@@ -95,6 +117,46 @@ class _createReportState extends State<createReport> {
     return response;
   }
 
+  Future<String> subirImagenFireBase(File image) async {
+    // Create a reference to the specific bucket
+    final storage =
+        FirebaseStorage.instanceFor(bucket: 'meta-snake.appspot.com');
+
+    // Create a reference to the node where the image will be stored
+    final storageRef = storage
+        .ref()
+        .child('images/${DateTime.now().millisecondsSinceEpoch}.jpg');
+
+    // Upload the image data (in Uint8List format) to Firebase Storage
+    final uploadTask = storageRef.putFile(image);
+
+    try {
+      // Wait for the image upload to complete
+      await uploadTask.whenComplete(() {});
+      final snapshot = await uploadTask.whenComplete(() {});
+      // Get the download URL of the uploaded image
+      final downloadUrl = await snapshot.ref.getDownloadURL();
+
+      // Print the download URL to the console
+      print('Imagen subida correctamente: $downloadUrl');
+
+      // Return the download URL
+      return snapshot.toString();
+    } on FirebaseException catch (error) {
+      // Handle FirebaseException error
+      return("Error uploading image: ${error.code} - ${error.message}");
+      // Optionally re-throw the exception for further handling in the calling function
+      // throw error;
+    } catch (error) {
+      // Handle other exceptions (e.g., network errors)
+      return("Unexpected error: $error");
+      // Optionally return a default value or handle the error differently
+    }
+
+    // You can optionally return a default value here if the upload fails
+    // return null;
+  }
+
   Future<void> subirImagen(Uint8List image) async {
     // Crear un multipart file
     var request = http.MultipartRequest(
@@ -127,7 +189,6 @@ class _createReportState extends State<createReport> {
 
   @override
   Widget build(BuildContext context) {
-    
     final reportProvider = context.watch<Reporte_Provider>();
 
     return Scaffold(
@@ -208,12 +269,37 @@ class _createReportState extends State<createReport> {
                       ? Image.memory(_image!)
                       : Text("no hay imagen selecionada"),
                   ElevatedButton(
-                    onPressed: () => _pickImage((bytes) {
-                      setState(() {
-                        _image = bytes;
-                      });
-                      subirImagen(_image!);
-                    }),
+                    onPressed: () async {
+                      try {
+                        // Pick an image from the gallery
+                        final pickedFile = await ImagePicker()
+                            .pickImage(source: ImageSource.gallery);
+
+                        if (pickedFile != null) {
+                          // Read the image data into a Uint8List
+                          final bytes = await pickedFile.readAsBytes();
+                          setState(() {
+                            _image = bytes;
+                          });
+                          // Call the function to upload the image to Firebase Storage
+                          File file = File(pickedFile.path);
+    
+                            print('$file');
+                          
+                           await subirImagenFireBase(file);
+                          
+                          // Do something with the uploaded image URL (e.g., display it)
+                          print(
+                              'Imagen subida correctamente: $imageUrl'); // Optional: print success message
+                        } else {
+                          // Handle user cancellation or error
+                          print('No image selected.'); // Optional: inform user
+                        }
+                      } catch (error) {
+                        // Handle any errors that might occur during image picking or upload
+                        print("Error picking or uploading image: $error");
+                      }
+                    },
                     child: Text('Seleccionar Imagen'),
                   ),
                   ElevatedButton(
@@ -225,7 +311,7 @@ class _createReportState extends State<createReport> {
                       }
                       reportProvider.fecthData = false;
 
-                      Navigator.pop(context,reportProvider.fetchAllReports());
+                      Navigator.pop(context, reportProvider.fetchAllReports());
                     },
                     child: Text('Crear Publicación'),
                   ),

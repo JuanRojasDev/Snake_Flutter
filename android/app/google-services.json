@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "766715754129",
+    "project_id": "meta-snake",
+    "storage_bucket": "meta-snake.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:766715754129:android:f20d009a47dc84f03cf130",
+        "android_client_info": {
+          "package_name": "com.example.sqlite_flutter_crud"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAWHBqhaA7C02IBRZHosb92kq0L0azHQCY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
