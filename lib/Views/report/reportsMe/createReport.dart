@@ -64,7 +64,7 @@ class _createReportState extends State<createReport> {
       "descripcion": _ControllerDescription.text,
       "imagen": imageUrl!.replaceAll(
           RegExp(r'"'), ''), // Assuming 'imageUrl' is a valid image URL
-      "serpientes_id_serpientes": 12, // Replace with actual value if dynamic
+      "serpientes_id_serpientes": 18, // Replace with actual value if dynamic
       "usuario_id_usuario": 0, // Replace with actual value if dynamic
     };
 
