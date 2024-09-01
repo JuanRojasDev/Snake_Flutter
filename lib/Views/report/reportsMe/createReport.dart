@@ -1,6 +1,5 @@
 import 'dart:io';
 import 'dart:typed_data';
-import 'dart:js' as js;
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
@@ -141,7 +140,7 @@ class _createReportState extends State<createReport> {
       print('Imagen subida correctamente: $downloadUrl');
 
       // Return the download URL
-      return snapshot.toString();
+      return downloadUrl;
     } on FirebaseException catch (error) {
       // Handle FirebaseException error
       return("Error uploading image: ${error.code} - ${error.message}");
@@ -286,7 +285,7 @@ class _createReportState extends State<createReport> {
     
                             print('$file');
                           
-                           await subirImagenFireBase(file);
+                           imageUrl = await subirImagenFireBase(file);
                           
                           // Do something with the uploaded image URL (e.g., display it)
                           print(

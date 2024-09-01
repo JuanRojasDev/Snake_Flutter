@@ -141,7 +141,7 @@ class _ReportPageState extends State<ReportPage> {
               SizedBox(height: 10),
               CachedNetworkImage(
                 imageUrl:
-                    "https://back-1-9ehs.onrender.com/view_image/?imagen=${report.imagen}",
+                    report.imagen!,
                 placeholder: (context, url) => LoadingIndicator(
                   indicatorType: Indicator.ballPulse,
                   colors: const [
