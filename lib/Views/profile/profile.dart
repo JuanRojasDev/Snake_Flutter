@@ -152,6 +152,12 @@ class _ProfilePageState extends State<ProfilePage> {
     // return null;
   }
 
+  void _saveImageUrl(String url){
+      setState(() {
+      imageUrl = url;
+    });
+  }
+
   void _saveName() {
     setState(() {
       _name = _nameController.text;
@@ -204,9 +210,14 @@ class _ProfilePageState extends State<ProfilePage> {
                     onTap: () async {
                       await _pickImage(true);
 
-                      imageUrl = await subirImagenFireBase(_profileImage!);
+                      
+                    
+                        imageUrl = await subirImagenFireBase(_profileImage!);
+                      
 
-                      await editUser();
+                        await editUser();
+
+                        _saveImageUrl(imageUrl!);
                     },
                     child: CircleAvatar(
                       radius: 90, // Ajusta el tamaño del círculo aquí
