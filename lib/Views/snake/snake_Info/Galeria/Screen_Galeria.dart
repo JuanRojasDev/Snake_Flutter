@@ -11,7 +11,6 @@ import 'package:sqlite_flutter_crud/Providers/snake_provider.dart';
 import 'package:sqlite_flutter_crud/Views/snake/snake_Info/Info_snake/info_Snale.dart';
 
 class Screen_galeria extends StatefulWidget {
-
   Screen_galeria({super.key});
 
   @override
@@ -19,13 +18,13 @@ class Screen_galeria extends StatefulWidget {
 }
 
 class _Screen_galeriaState extends State<Screen_galeria> {
-  
-
   @override
-  Widget build(BuildContext context,) {
+  Widget build(
+    BuildContext context,
+  ) {
     final snake_Provider = context.watch<Snake_Provider>();
-    
-    if(!snake_Provider.fetcdata){
+
+    if (!snake_Provider.fetcdata) {
       snake_Provider.fectSnakesPoison(true);
       snake_Provider.fetcdata = true;
     }
@@ -34,20 +33,31 @@ class _Screen_galeriaState extends State<Screen_galeria> {
       return SafeArea(
           child: Column(
         children: [
-          Row(children: [
-            GestureDetector(child: Text("Venenosas "),onTap: (){ snake_Provider.fectSnakesPoison(true); },),
-            GestureDetector(child: Text(" No Venenosas"),onTap: (){ snake_Provider.fectSnakesPoison(false);}, )],
-          mainAxisAlignment: MainAxisAlignment.center,)
-          ,
-          
-
+          Row(
+            children: [
+              GestureDetector(
+                child: Text("Venenosas "),
+                onTap: () {
+                  snake_Provider.fectSnakesPoison(true);
+                },
+              ),
+              GestureDetector(
+                child: Text(" No Venenosas"),
+                onTap: () {
+                  snake_Provider.fectSnakesPoison(false);
+                },
+              )
+            ],
+            mainAxisAlignment: MainAxisAlignment.center,
+          ),
           Expanded(
-            child: ListView.builder(
-              scrollDirection: Axis.horizontal,
-              itemCount: snake_Provider.serpientes.length,
-              itemBuilder: (context, index) {
-                return _buildListItem(context, snake_Provider.serpientes[index]);
-              },
+            child: GridView.count(
+              crossAxisCount: 2, // Adjust the number of columns as needed
+              children:
+                  List.generate(snake_Provider.serpientes.length, (index) {
+                return _buildGridTile(
+                    context, snake_Provider.serpientes[index]);
+              }),
             ),
           ),
         ],
@@ -56,6 +66,30 @@ class _Screen_galeriaState extends State<Screen_galeria> {
     return Text(
         "Lista en base de datos vacia. Agregar datos para un correcto funcionamiento");
   }
+
+  /* lista grid
+   Expanded(
+   child: GridView.count(
+  crossAxisCount: 2, // Adjust the number of columns as needed
+    children: List.generate(snake_Provider.serpientes.length, (index) {
+      return _buildGridTile(context, snake_Provider.serpientes[index]);
+    }),
+  ),
+),
+
+lista horizontal
+
+          Expanded(
+            child: ListView.builder(
+              scrollDirection: Axis.vertical,
+              itemCount: snake_Provider.serpientes.length,
+              itemBuilder: (context, index) {
+                return _buildGridTile(context, snake_Provider.serpientes[index]);
+              },
+            ),
+          ),
+
+*/
 
   Widget _buildListItem(BuildContext context, Serpiente serpiente) {
     final body_Provider = context.watch<Home_Body_Provider>();
@@ -88,7 +122,7 @@ class _Screen_galeriaState extends State<Screen_galeria> {
                       'https://back-1-9ehs.onrender.com/view_image/?imagen=' +
                           serpiente.imagen,
                     ),
-                    
+
                     fit: BoxFit.contain, // Cover the entire container
                   ),
                 ),

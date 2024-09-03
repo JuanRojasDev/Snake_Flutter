@@ -42,7 +42,7 @@ class _ProfilePageState extends State<ProfilePage> {
 
     // 3. Prepare the request body
     final Map<String, dynamic> body = {
-        "nombre": widget.usuario?.nombres,
+        "nombre": _name,
         "imagenurl": imageUrl
     };
 
@@ -80,6 +80,7 @@ class _ProfilePageState extends State<ProfilePage> {
     _nameController.text = widget.usuario?.nombres ?? 'Usuario no disponible';
     _statusController.text = _status;
     imageUrl = widget.usuario?.imagen;
+    _name = widget.usuario?.nombres ?? 'Usuario no disponible';
   }
 
   Future<void> _pickImage(bool isProfileImage) async {
@@ -158,10 +159,11 @@ class _ProfilePageState extends State<ProfilePage> {
     });
   }
 
-  void _saveName() {
+  void _saveName() async{
     setState(() {
       _name = _nameController.text;
     });
+    await editUser();
   }
 
   void _saveStatus() {
@@ -252,7 +254,7 @@ class _ProfilePageState extends State<ProfilePage> {
                     decoration: InputDecoration(
                       border: InputBorder.none,
                     ),
-                    onSubmitted: (value) => _saveName(),
+                    onSubmitted: (value) => {_saveName()},
                   ),
                   SizedBox(height: 5),
                   TextField(
