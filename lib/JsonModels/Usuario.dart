@@ -1,6 +1,6 @@
 class Usuario {
   
-  final String nombres;
+   String nombres;
   final String correo;
   final String? direccion;
   final String? contrasena;
@@ -8,7 +8,7 @@ class Usuario {
   final String fechaN;
   final int? edad;
   final String? Token;
-  final String? imagen;
+   String? imagen;
 
   Usuario({
     required this.nombres,

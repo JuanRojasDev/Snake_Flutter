@@ -5,29 +5,35 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:image_picker/image_picker.dart';
+import 'package:provider/provider.dart';
 import 'package:sqlite_flutter_crud/Authtentication/home.dart';
 import 'package:sqlite_flutter_crud/Authtentication/login.dart';
+import 'package:sqlite_flutter_crud/Providers/Home_Body_provider.dart';
+import 'package:sqlite_flutter_crud/Providers/usuer_provider.dart';
 import '../../../JsonModels/Usuario.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 class ProfilePage extends StatefulWidget {
-  final Usuario? usuario;
 
-  const ProfilePage({this.usuario, Key? key}) : super(key: key);
+  const ProfilePage({ Key? key}) : super(key: key);
 
   @override
   _ProfilePageState createState() => _ProfilePageState();
 }
 
 class _ProfilePageState extends State<ProfilePage> {
+  
+
   File? _profileImage;
   File? _coverImage;
-  String _name = "Nombre";
+  String _name = "";
   String _status = "Descripción";
-  String? imageUrl;
+  String? imageUrl = "";
   final _nameController = TextEditingController();
   final _statusController = TextEditingController();
   final storage = new FlutterSecureStorage();
+  
+  
 
   Future<http.Response> editUser() async {
     // 1. Retrieve JWT token from secure storage
@@ -37,14 +43,10 @@ class _ProfilePageState extends State<ProfilePage> {
     }
 
     // 2. Construct the request URL
-    final Uri url =
-        Uri.parse('https://back-1-9ehs.onrender.com/usuario/edit');
+    final Uri url = Uri.parse('https://back-1-9ehs.onrender.com/usuario/edit');
 
     // 3. Prepare the request body
-    final Map<String, dynamic> body = {
-        "nombre": _name,
-        "imagenurl": imageUrl
-    };
+    final Map<String, dynamic> body = {"nombre": _name, "imagenurl": imageUrl};
 
     // 4. Set request headers
     final Map<String, String> headers = {
@@ -72,16 +74,6 @@ class _ProfilePageState extends State<ProfilePage> {
 
     return response;
   }
-  
-
-  @override
-  void initState() {
-    super.initState();
-    _nameController.text = widget.usuario?.nombres ?? 'Usuario no disponible';
-    _statusController.text = _status;
-    imageUrl = widget.usuario?.imagen;
-    _name = widget.usuario?.nombres ?? 'Usuario no disponible';
-  }
 
   Future<void> _pickImage(bool isProfileImage) async {
     final pickedFile =
@@ -97,21 +89,16 @@ class _ProfilePageState extends State<ProfilePage> {
     }
   }
 
-
-    Future<File?> _pickImageFile() async {
-    final pickedFile = await ImagePicker().pickImage(source: ImageSource.gallery);
-    if (pickedFile != null){
+  Future<File?> _pickImageFile() async {
+    final pickedFile =
+        await ImagePicker().pickImage(source: ImageSource.gallery);
+    if (pickedFile != null) {
       _profileImage = File(pickedFile.path);
       return File(pickedFile.path);
-    }
-    else{
+    } else {
       return null;
     }
   }
-
-
-
-  
 
   Future<String> subirImagenFireBase(File image) async {
     // Create a reference to the specific bucket
@@ -153,17 +140,19 @@ class _ProfilePageState extends State<ProfilePage> {
     // return null;
   }
 
-  void _saveImageUrl(String url){
-      setState(() {
+  void _saveImageUrl(String url) {
+    setState(() {
       imageUrl = url;
     });
   }
 
-  void _saveName() async{
+  void _saveName() async {
+    
     setState(() {
       _name = _nameController.text;
     });
     await editUser();
+
   }
 
   void _saveStatus() {
@@ -175,6 +164,12 @@ class _ProfilePageState extends State<ProfilePage> {
   @override
   Widget build(BuildContext context) {
     print(imageUrl);
+
+
+    final user_provider = context.watch<UserProvider>();
+    _nameController.text = user_provider.usernow.nombres;
+    imageUrl = user_provider.usernow.imagen;
+
     return Scaffold(
       backgroundColor: Colors.grey[200],
       body: SingleChildScrollView(
@@ -212,21 +207,20 @@ class _ProfilePageState extends State<ProfilePage> {
                     onTap: () async {
                       await _pickImage(true);
 
-                      
-                    
-                        imageUrl = await subirImagenFireBase(_profileImage!);
-                      
+                      imageUrl = await subirImagenFireBase(_profileImage!);
 
-                        await editUser();
+                      await editUser();
 
-                        _saveImageUrl(imageUrl!);
+                      _saveImageUrl(imageUrl!);
+
+                      user_provider.setImage(imageUrl!);
                     },
                     child: CircleAvatar(
                       radius: 90, // Ajusta el tamaño del círculo aquí
                       backgroundColor: Colors.white,
                       child: CircleAvatar(
                         radius: 85, // Ajusta el tamaño de la imagen aquí
-                        backgroundImage: imageUrl != null
+                        backgroundImage: user_provider.usernow.imagen != null
                             ? NetworkImage(imageUrl!)
                             : AssetImage('lib/assets/default_profile.png')
                                 as ImageProvider,
@@ -234,10 +228,8 @@ class _ProfilePageState extends State<ProfilePage> {
                     ),
                   ),
                 ),
-                
               ],
             ),
-                              
             SizedBox(height: 55),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 30),
@@ -254,7 +246,11 @@ class _ProfilePageState extends State<ProfilePage> {
                     decoration: InputDecoration(
                       border: InputBorder.none,
                     ),
-                    onSubmitted: (value) => {_saveName()},
+                    onSubmitted: (value) => {
+                      _saveName(),
+                      user_provider.setUserName(_name)
+                      
+                      },
                   ),
                   SizedBox(height: 5),
                   TextField(

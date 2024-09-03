@@ -41,7 +41,7 @@ class _ReportPageState extends State<ReportPage> {
 
   void _deleteReport(int index) {
     setState(() {
-      widget._reports?.removeAt(index);
+      widget._reports.removeAt(index);
     });
   }
 

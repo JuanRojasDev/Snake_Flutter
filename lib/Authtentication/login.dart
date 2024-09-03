@@ -2,8 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:http/http.dart' as http;
 import 'package:loading_indicator/loading_indicator.dart';
+import 'package:provider/provider.dart';
 import 'package:sqlite_flutter_crud/Authtentication/signup.dart';
 import 'package:sqlite_flutter_crud/JsonModels/Usuario.dart';
+import 'package:sqlite_flutter_crud/Providers/Home_Body_provider.dart';
+import 'package:sqlite_flutter_crud/Providers/usuer_provider.dart';
 import 'dart:convert';
 import '../JsonModels/users.dart';
 import 'home.dart';
@@ -84,11 +87,12 @@ class _LoginScreenState extends State<LoginScreen> {
     Navigator.pushReplacement(
         context,
         MaterialPageRoute(
-            builder: (context) => HomeScreen())); // Navegar a home.dart
+            builder: (context) => HomeScreen(usuario: Usuario(nombres: "defaul", correo: "correo", fechaN: "fechaN"),))); // Navegar a home.dart
   }
 
   @override
   Widget build(BuildContext context) {
+    
     return Scaffold(
       backgroundColor: Colors.white,
       body: SingleChildScrollView(
