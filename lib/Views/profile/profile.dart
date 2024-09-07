@@ -1,6 +1,5 @@
 import 'dart:convert';
 import 'dart:io';
-
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
@@ -14,15 +13,14 @@ import '../../../JsonModels/Usuario.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 class ProfilePage extends StatefulWidget {
-
-  const ProfilePage({ Key? key}) : super(key: key);
+  const ProfilePage({Key? key}) : super(key: key);
 
   @override
   _ProfilePageState createState() => _ProfilePageState();
 }
 
 class _ProfilePageState extends State<ProfilePage> {
-  
+  bool showPosts = true;
 
   File? _profileImage;
   File? _coverImage;
@@ -31,60 +29,43 @@ class _ProfilePageState extends State<ProfilePage> {
   String? imageUrl = "";
   final _nameController = TextEditingController();
   final _statusController = TextEditingController();
-  final storage = new FlutterSecureStorage();
-  
-  
+  final storage = FlutterSecureStorage();
 
   Future<http.Response> editUser() async {
-    // 1. Retrieve JWT token from secure storage
     final String? token = await storage.read(key: 'jwt');
     if (token == null) {
-      throw Exception('Missing JWT token'); // Handle missing token error
+      throw Exception('Missing JWT token');
     }
 
-    // 2. Construct the request URL
     final Uri url = Uri.parse('https://back-1-9ehs.onrender.com/usuario/edit');
-
-    // 3. Prepare the request body
     final Map<String, dynamic> body = {"nombre": _name, "imagenurl": imageUrl};
-
-    // 4. Set request headers
     final Map<String, String> headers = {
       'Content-Type': 'application/json; charset=utf-8',
-      'Authorization': 'Bearer $token', // Include retrieved JWT token
+      'Authorization': 'Bearer $token',
       'accept': 'application/json',
     };
 
-    // 5. Send the POST request
     final http.Response response =
         await http.post(url, headers: headers, body: jsonEncode(body));
 
-    // 6. Handle the response
     if (response.statusCode == 200 || response.statusCode == 201) {
-      // Request successful, handle the response data here
       final decodedResponse = jsonDecode(response.body);
-      // Process the decoded response depending on your API's structure
-      print(decodedResponse); // Example usage
+      print(decodedResponse);
     } else {
-      // Request failed, handle the error
       print('Error: ${response.statusCode}');
       print('${response.body}');
-      throw Exception('Error creating report'); // Throw a custom exception
+      throw Exception('Error creating report');
     }
 
     return response;
   }
 
-  Future<void> _pickImage(bool isProfileImage) async {
+  Future<void> _pickImage() async {
     final pickedFile =
         await ImagePicker().pickImage(source: ImageSource.gallery);
     if (pickedFile != null) {
       setState(() {
-        if (isProfileImage) {
-          _profileImage = File(pickedFile.path);
-        } else {
-          _coverImage = File(pickedFile.path);
-        }
+        _profileImage = File(pickedFile.path);
       });
     }
   }
@@ -101,43 +82,26 @@ class _ProfilePageState extends State<ProfilePage> {
   }
 
   Future<String> subirImagenFireBase(File image) async {
-    // Create a reference to the specific bucket
     final storage =
         FirebaseStorage.instanceFor(bucket: 'meta-snake.appspot.com');
 
-    // Create a reference to the node where the image will be stored
     final storageRef = storage
         .ref()
         .child('images/${DateTime.now().millisecondsSinceEpoch}.jpg');
 
-    // Upload the image data (in Uint8List format) to Firebase Storage
     final uploadTask = storageRef.putFile(image);
 
     try {
-      // Wait for the image upload to complete
       await uploadTask.whenComplete(() {});
       final snapshot = await uploadTask.whenComplete(() {});
-      // Get the download URL of the uploaded image
       final downloadUrl = await snapshot.ref.getDownloadURL();
-
-      // Print the download URL to the console
       print('Imagen subida correctamente: $downloadUrl');
-
-      // Return the download URL
       return downloadUrl;
     } on FirebaseException catch (error) {
-      // Handle FirebaseException error
       return ("Error uploading image: ${error.code} - ${error.message}");
-      // Optionally re-throw the exception for further handling in the calling function
-      // throw error;
     } catch (error) {
-      // Handle other exceptions (e.g., network errors)
       return ("Unexpected error: $error");
-      // Optionally return a default value or handle the error differently
     }
-
-    // You can optionally return a default value here if the upload fails
-    // return null;
   }
 
   void _saveImageUrl(String url) {
@@ -147,12 +111,10 @@ class _ProfilePageState extends State<ProfilePage> {
   }
 
   void _saveName() async {
-    
     setState(() {
       _name = _nameController.text;
     });
     await editUser();
-
   }
 
   void _saveStatus() {
@@ -164,7 +126,6 @@ class _ProfilePageState extends State<ProfilePage> {
   @override
   Widget build(BuildContext context) {
     print(imageUrl);
-
 
     final user_provider = context.watch<UserProvider>();
     _nameController.text = user_provider.usernow.nombres;
@@ -205,7 +166,7 @@ class _ProfilePageState extends State<ProfilePage> {
                   left: MediaQuery.of(context).size.width / 2 - 88,
                   child: GestureDetector(
                     onTap: () async {
-                      await _pickImage(true);
+                      await _pickImage();
 
                       imageUrl = await subirImagenFireBase(_profileImage!);
 
@@ -216,10 +177,10 @@ class _ProfilePageState extends State<ProfilePage> {
                       user_provider.setImage(imageUrl!);
                     },
                     child: CircleAvatar(
-                      radius: 90, // Ajusta el tamaño del círculo aquí
+                      radius: 90,
                       backgroundColor: Colors.white,
                       child: CircleAvatar(
-                        radius: 85, // Ajusta el tamaño de la imagen aquí
+                        radius: 85,
                         backgroundImage: user_provider.usernow.imagen != null
                             ? NetworkImage(imageUrl!)
                             : AssetImage('lib/assets/default_profile.png')
@@ -246,80 +207,201 @@ class _ProfilePageState extends State<ProfilePage> {
                     decoration: InputDecoration(
                       border: InputBorder.none,
                     ),
-                    onSubmitted: (value) => {
-                      _saveName(),
-                      user_provider.setUserName(_name)
-                      
-                      },
-                  ),
-                  SizedBox(height: 5),
-                  TextField(
-                    controller: _statusController,
-                    textAlign: TextAlign.center,
-                    maxLength: 100,
-                    style: TextStyle(
-                      fontSize: 18,
-                      color: Colors.black54,
-                    ),
-                    decoration: InputDecoration(
-                      border: InputBorder.none,
-                    ),
-                    onSubmitted: (value) => _saveStatus(),
-                  ),
-                  Divider(
-                    thickness: 2,
-                    color: Colors.grey[300],
-                  ),
-                  SizedBox(height: 10),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    children: [
-                      _buildProfileOption(
-                        title: "Publicaciones",
-                        icon: Icons.article,
-                        onTap: () {
-                          // Acción al pulsar "Publicaciones"
-                        },
-                      ),
-                      _buildProfileOption(
-                        title: "Fotos",
-                        icon: Icons.photo_library,
-                        onTap: () {
-                          // Acción al pulsar "Fotos"
-                        },
-                      ),
-                    ],
+                    onSubmitted: (value) =>
+                        {_saveName(), user_provider.setUserName(_name)},
                   ),
                 ],
               ),
             ),
+            SizedBox(height: 80.0),
+            Text(
+              _name,
+              style: TextStyle(
+                fontSize: 24,
+                fontWeight: FontWeight.bold,
+                color: Colors.black87,
+              ),
+            ),
+            Text(
+              _status,
+              style: TextStyle(
+                fontSize: 18,
+                color: Colors.grey[700],
+              ),
+            ),
+            SizedBox(height: 20),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 30),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  _buildTabOption("Publicaciones", showPosts, () {
+                    setState(() {
+                      showPosts = true;
+                    });
+                  }),
+                  SizedBox(width: 10),
+                  _buildTabOption("Fotos", !showPosts, () {
+                    setState(() {
+                      showPosts = false;
+                    });
+                  }),
+                ],
+              ),
+            ),
+            Divider(thickness: 2, color: Colors.grey[300]),
+            showPosts ? _buildPosts() : _buildPhotos(),
           ],
         ),
       ),
     );
   }
 
-  Widget _buildProfileOption({
-    required String title,
-    required IconData icon,
-    required VoidCallback onTap,
-  }) {
+  Widget _buildTabOption(String title, bool isActive, VoidCallback onTap) {
     return GestureDetector(
       onTap: onTap,
       child: Column(
         children: [
-          Icon(icon, size: 30, color: Colors.green[700]),
-          SizedBox(height: 5),
           Text(
             title,
             style: TextStyle(
               fontSize: 18,
               fontWeight: FontWeight.bold,
-              color: Colors.black87,
+              color: isActive ? Color(0xFF5DB074) : Colors.grey,
+            ),
+          ),
+          if (isActive)
+            Container(
+              margin: EdgeInsets.only(top: 4),
+              height: 2,
+              width: 100,
+              color: Color(0xFF5DB074),
+            ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildPosts() {
+    return Column(
+      children: [
+        _buildPostItem(
+          "Serpiente Cuatro Narices",
+          "Hola a todos, quiero compartirles esta serpiente cuatro narices ubicada en Humadea",
+          "hace 8 min",
+        ),
+        _buildPostItem(
+          "Serpiente Coral",
+          "Iba caminando y me encontré con esta serpiente Coral ubicada en Acacias",
+          "hace 4 horas",
+        ),
+        _buildPostItem(
+          "Guio Negro",
+          "Me asusté mucho cuando lo vi! Escuché que los Guios Negros también se llaman Anaconda Verde",
+          "hace 3 días",
+        ),
+      ],
+    );
+  }
+
+  Widget _buildPostItem(String title, String description, String timeAgo) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      child: Row(
+        children: [
+          CircleAvatar(
+            radius: 25,
+            backgroundColor: Colors.grey[300],
+            backgroundImage: AssetImage('lib/assets/default_snake.png'),
+          ),
+          SizedBox(width: 10),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  title,
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.black87,
+                  ),
+                ),
+                Text(
+                  description,
+                  style: TextStyle(
+                    fontSize: 14,
+                    color: Colors.grey[700],
+                  ),
+                ),
+                Text(
+                  timeAgo,
+                  style: TextStyle(
+                    fontSize: 12,
+                    color: Colors.grey[500],
+                  ),
+                ),
+              ],
             ),
           ),
         ],
       ),
     );
   }
+
+  Widget _buildPhotos() {
+    return Container(
+      height: 300,
+      child: GridView.builder(
+        padding: EdgeInsets.symmetric(horizontal: 16),
+        itemCount: 6,
+        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+          crossAxisCount: 3,
+          crossAxisSpacing: 8,
+          mainAxisSpacing: 8,
+        ),
+        itemBuilder: (context, index) {
+          return Container(
+            decoration: BoxDecoration(
+              color: Colors.grey[300],
+              borderRadius: BorderRadius.circular(8),
+              image: DecorationImage(
+                image: AssetImage('lib/assets/default_snake.png'),
+                fit: BoxFit.cover,
+              ),
+            ),
+          );
+        },
+      ),
+    );
+  }
+}
+
+Widget _buildPhotoItem(String imagePath, String title) {
+  return Padding(
+    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+    child: Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        ClipRRect(
+          borderRadius: BorderRadius.circular(10),
+          child: Image.asset(
+            imagePath,
+            height: 200,
+            width: double.infinity,
+            fit: BoxFit.cover,
+          ),
+        ),
+        SizedBox(height: 8),
+        Text(
+          title,
+          style: TextStyle(
+            fontSize: 16,
+            fontWeight: FontWeight.bold,
+            color: Colors.black87,
+          ),
+        ),
+      ],
+    ),
+  );
 }
