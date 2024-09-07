@@ -10,6 +10,7 @@ import 'package:sqlite_flutter_crud/Authtentication/home.dart';
 import 'dart:typed_data';
 import 'package:sqlite_flutter_crud/Authtentication/login.dart';
 import 'package:sqlite_flutter_crud/JsonModels/reporte.dart';
+import 'package:sqlite_flutter_crud/Providers/Home_Body_provider.dart';
 import 'package:sqlite_flutter_crud/Providers/report_provider.dart';
 import 'package:sqlite_flutter_crud/Views/report/reportsMe/createReport.dart';
 import '../../../JsonModels/Usuario.dart';
@@ -77,50 +78,56 @@ class _ReportPageState extends State<ReportPage> {
   @override
   Widget build(BuildContext context) {
     final reportProvider = context.watch<Reporte_Provider>();
-
+    final bodyProvider = context.watch<Home_Body_Provider>();
     if (!reportProvider.fecthData) {
       fetchAllReports();
       reportProvider.fecthData = true;
     }
-
-    return Scaffold(
-        backgroundColor: Colors.white,
-        floatingActionButton: FloatingActionButton(
-          onPressed: () {
-            Navigator.push(
-                context,
-                MaterialPageRoute(
-                    builder: (context) => Scaffold(
-                          appBar: AppBar(
-                            title: Text(
-                                'Crear Publicacion'), // Mantén el título original
-                          ),
-                          body:
-                              createReport(), // Muestra solo el contenido de createReport()
-                        )));
-          },
-          child: Icon(Icons.add),
-          backgroundColor: Color(0xFF4CAF50),
-        ),
-        body: SafeArea(
-         
-            child: Column(
-          children: [
-            Expanded(
-              child: ListView.builder(
-                scrollDirection: Axis.vertical,
-                itemCount: reportProvider.reportesAll.length,
-                itemBuilder: (context, index) {
-                  return _reportCard(
-                      context, reportProvider.reportesAll[index]);
-                },
+    Future<bool> _onWillPop() async {
+    // Ejecuta la función y siempre permite retroceder
+    bodyProvider.changedBodyHome(bodyProvider.Body_ini);
+    return true;
+    }
+    return  Scaffold(
+          backgroundColor: Colors.white,
+          floatingActionButton: FloatingActionButton(
+            onPressed: () {
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => Scaffold(
+                            appBar: AppBar(
+                              title: Text(
+                                  'Crear Publicacion'), // Mantén el título original
+                            ),
+                            body:
+                                createReport(), // Muestra solo el contenido de createReport()
+                          )));
+            },
+            child: Icon(Icons.add),
+            backgroundColor: Color(0xFF4CAF50),
+          ),
+          body: SafeArea(
+           
+              child: Column(
+            children: [
+              Expanded(
+                child: ListView.builder(
+                  scrollDirection: Axis.vertical,
+                  itemCount: reportProvider.reportesAll.length,
+                  itemBuilder: (context, index) {
+                    return _reportCard(
+                        context, reportProvider.reportesAll[index]);
+                  },
+                ),
               ),
-            ),
-          ],
-        )));
+            ],
+          )),
+    );
   }
 
   Widget _reportCard(BuildContext context, Reporte report) {
+    final reportProvider = context.watch<Reporte_Provider>(); 
     
     return GestureDetector(
       onTap: () {},
@@ -207,6 +214,7 @@ class _ReportPageState extends State<ReportPage> {
                     icon: Icon(Icons.delete, color: Colors.red),
                     onPressed: () {
                       print(report.reportId);
+                      reportProvider.deleteReport(report.reportId);
                     },
                   ),
                 ],

@@ -303,15 +303,13 @@ class _createReportState extends State<createReport> {
                     child: Text('Seleccionar Imagen'),
                   ),
                   ElevatedButton(
-                    onPressed: () {
-                      // Call createReport() only if the provider is available
-                      if (reportProvider != null) {
-                        createReport();
-                        // Assuming fetchData is a method
-                      }
-                      reportProvider.fecthData = false;
+                    onPressed: () async{
 
-                      Navigator.pop(context, reportProvider.fetchAllReports());
+                       await createReport();
+
+                       reportProvider.fecthData = false;
+
+                       Navigator.pop(context, reportProvider.fetchAllReports());
                     },
                     child: Text('Crear Publicación'),
                   ),

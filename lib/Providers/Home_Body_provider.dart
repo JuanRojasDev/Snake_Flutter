@@ -4,6 +4,7 @@ import 'package:sqlite_flutter_crud/Views/snake/snake_Info/Galeria/Screen_Galeri
 
 class Home_Body_Provider extends ChangeNotifier {
   Widget Body_ini = Body_init();
+  Widget previousBody = Body_init();
   int _selectedIndex = 0; // Por defecto, selecciona el botón de inicio
   String _appBarTitle =
       'Inicio'; // Por defecto, el título del AppBar es 'Inicio'
@@ -25,7 +26,16 @@ class Home_Body_Provider extends ChangeNotifier {
   }
 
   Future<void> changedBodyHome(Widget newBody) async {
-    if (newBody != Null) Body_ini = newBody;
+    if (newBody != Null) {
+      Body_ini = newBody;  
+      previousBody = Body_ini;
+      };
+
+    notifyListeners();
+  }
+    // Function to navigate back to the previous body
+  void navigateBackToPreviousBody() {
+    Body_ini = previousBody;
     notifyListeners();
   }
 }

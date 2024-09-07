@@ -5,7 +5,7 @@ import 'package:sqlite_flutter_crud/JsonModels/Usuario.dart';
 
 
 class Reporte {
-  final int? reportId;
+  final int reportId;
   final String? titulo;
   final String? descripcion;
   final String? imagen;
@@ -18,7 +18,7 @@ class Reporte {
   final String? imagenUsuario;      // Almacenamos solo el ID del usuario
 
   Reporte({
-    this.reportId,
+    required this.reportId,
     this.titulo,
     this.descripcion,
     this.imagen,
