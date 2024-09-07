@@ -64,6 +64,8 @@ class _ReportPageState extends State<ReportPage> {
         final List<Reporte> reports =
             data.map((json) => Reporte.fromJson(json)).toList();
         reportProvider.setReportes(reports);
+        String? imagens = reports[0].imagenUsuario;
+        print("imagen$imagens");
         
       } else {
         // Handle error
@@ -78,16 +80,12 @@ class _ReportPageState extends State<ReportPage> {
   @override
   Widget build(BuildContext context) {
     final reportProvider = context.watch<Reporte_Provider>();
-    final bodyProvider = context.watch<Home_Body_Provider>();
+    
     if (!reportProvider.fecthData) {
       fetchAllReports();
       reportProvider.fecthData = true;
     }
-    Future<bool> _onWillPop() async {
-    // Ejecuta la función y siempre permite retroceder
-    bodyProvider.changedBodyHome(bodyProvider.Body_ini);
-    return true;
-    }
+
     return  Scaffold(
           backgroundColor: Colors.white,
           floatingActionButton: FloatingActionButton(
@@ -151,7 +149,7 @@ class _ReportPageState extends State<ReportPage> {
               ),
               CachedNetworkImage(
                 imageUrl:
-                    report.imagenUsuario!,
+                    report.imagenUsuario ?? "https://th.bing.com/th/id/OIP.xW3Jf1_XaGI7z-jjrAgUIAHaE8?rs=1&pid=ImgDetMain",
                 placeholder: (context, url) => LoadingIndicator(
                   indicatorType: Indicator.ballPulse,
                   colors: const [
@@ -179,7 +177,7 @@ class _ReportPageState extends State<ReportPage> {
               SizedBox(height: 10),
               CachedNetworkImage(
                 imageUrl:
-                    report.imagen!,
+                    report.imagen! ?? "https://th.bing.com/th/id/OIP.xW3Jf1_XaGI7z-jjrAgUIAHaE8?rs=1&pid=ImgDetMain",
                 placeholder: (context, url) => LoadingIndicator(
                   indicatorType: Indicator.ballPulse,
                   colors: const [
@@ -209,7 +207,7 @@ class _ReportPageState extends State<ReportPage> {
                   IconButton(
                     icon: Icon(Icons.edit),
                     onPressed: () {},
-                  ),
+                  ), 
                   IconButton(
                     icon: Icon(Icons.delete, color: Colors.red),
                     onPressed: () {
