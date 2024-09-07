@@ -12,10 +12,6 @@ class Reporte_Provider extends ChangeNotifier {
     notifyListeners();
   }
 
-  void deleteReport(int reportId) {
-    reportesAll.remove(reportId);
-  }
-
   void agregarReportes(Reporte nuevosReportes) {
     reportesAll.add(nuevosReportes);
     notifyListeners();
@@ -39,6 +35,25 @@ class Reporte_Provider extends ChangeNotifier {
     } catch (e) {
       // Handle error
       print('Error fetching reports: $e');
+    }
+  }
+
+    Future<void> deleteReport() async {
+    try {
+      final response = await http
+          .get(Uri.parse('https://back-1-9ehs.onrender.com/Reporte/all'));
+      if (response.statusCode == 200) {
+        final List<dynamic> data = jsonDecode(response.body);
+        final List<Reporte> reports =
+            data.map((json) => Reporte.fromJson(json)).toList();
+        setReportes(reports);
+      } else {
+        // Handle error
+        throw Exception('Failed to load reports');
+      }
+    } catch (e) {
+      // Handle error
+      print('Error delet reports: $e');
     }
   }
 }

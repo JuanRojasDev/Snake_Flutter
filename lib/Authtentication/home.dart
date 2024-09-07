@@ -2,6 +2,8 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:sqlite_flutter_crud/Authtentication/login.dart';
+import 'package:sqlite_flutter_crud/Providers/snake_provider.dart';
+import 'package:sqlite_flutter_crud/Providers/usuer_provider.dart';
 import 'package:sqlite_flutter_crud/Views/report/reportsMe/report.dart';
 import 'package:sqlite_flutter_crud/Views/profile/profile.dart';
 import 'package:sqlite_flutter_crud/Providers/Home_Body_provider.dart';
@@ -11,9 +13,9 @@ import '../JsonModels/Usuario.dart';
 import '../Providers/snake_class.dart';
 
 class HomeScreen extends StatefulWidget {
-  final Usuario? usuario;
+  final Usuario usuario;
 
-  const HomeScreen({this.usuario, Key? key}) : super(key: key);
+  const HomeScreen({required this.usuario, Key? key}) : super(key: key);
 
   @override
   _HomeScreenState createState() => _HomeScreenState();
@@ -31,6 +33,10 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     final body_Provider = context.watch<Home_Body_Provider>();
+    final user_provider = context.watch<UserProvider>();
+
+    user_provider.setUser(widget.usuario);
+
     int _selectedIndex = 0;
     String _appBarTitle = 'Inicio';
 
@@ -75,8 +81,8 @@ class _HomeScreenState extends State<HomeScreen> {
                 accountEmail:
                     Text(widget.usuario?.correo ?? 'Usuario no disponible'),
                 currentAccountPicture: CircleAvatar(
-                  backgroundImage:
-                      AssetImage('lib/assets/your_profile_picture.jpg'),
+                  backgroundImage: NetworkImage(widget.usuario?.imagen ??
+                      'https://www.google.com/images/branding/googlelogo/2x/googlelogo_color_272x92dp.png'),
                 ),
                 decoration: BoxDecoration(color: Color(0xFF5DB075)),
               ),
@@ -155,12 +161,15 @@ class _HomeScreenState extends State<HomeScreen> {
                 onPressed: () {
                   // Acción para el botón de escribir
 
-                  
+
+
                   body_Provider
                       .setSelectedIndex(1); // Actualiza el selectedIndex
                   body_Provider.setAppBarTitle(
                       'Publicaciones'); // Cambia el título del AppBar
-                  body_Provider.changedBodyHome(ReportPage(usuario: widget.usuario,));
+                  body_Provider.changedBodyHome(ReportPage(
+                    
+                  ));
                 },
               ),
               IconButton(
@@ -177,7 +186,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       .setSelectedIndex(0); // Actualiza el selectedIndex
                   body_Provider
                       .setAppBarTitle('Inicio'); // Cambia el título del AppBar
-                  body_Provider.changedBodyHome(Screen_galeria());
+                  body_Provider.changedBodyHome(Body_init());
                 },
               ),
               IconButton(
@@ -189,12 +198,16 @@ class _HomeScreenState extends State<HomeScreen> {
                       : Color(0xFF6e7168),
                 ),
                 onPressed: () {
+                  
                   // Acción para el botón de perfil
                   body_Provider
                       .setSelectedIndex(2); // Actualiza el selectedIndex
                   body_Provider.setAppBarTitle(
                       'Mi Perfil'); // Cambia el título del AppBar
-                  body_Provider.changedBodyHome(ProfilePage(usuario: widget.usuario));
+          
+              
+                  body_Provider
+                      .changedBodyHome(ProfilePage());
                 },
               ),
             ],
@@ -211,29 +224,10 @@ class Body_init extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final body_Provider = context.watch<Home_Body_Provider>();
-
+    final serpiente_provider = context.watch<Snake_Provider>();
     Future<void> fectSnakesPoison(bool valid) async {
-      final String url =
-          'https://back-1-9ehs.onrender.com/Snakes/poison?valid=' +
-              valid.toString(); // server ip
-
-      print(url);
-
-      final Map<String, String> headers = {'Content-Type': 'application/json'};
-
-      final response = await http.get(Uri.parse(url), headers: headers);
-      List<Serpiente> serpientes = [];
-      if (response.statusCode == 200) {
-        var jsonResponse = jsonDecode(response.body);
-
-        if (jsonResponse != []) {
-          for (var element in jsonResponse) {
-            serpientes.add(Serpiente.fromJson(element));
-          }
-        }
-
-        body_Provider.changedBodyHome(Screen_galeria());
-      }
+      serpiente_provider.fectSnakesPoison(valid);
+      body_Provider.changedBodyHome(Screen_galeria());
     }
 
     return Padding(
@@ -255,26 +249,29 @@ class Body_init extends StatelessWidget {
           ),
           SizedBox(height: 20),
           Expanded(
-            child: Column(
-              children: [
-                CategoryCard(
-                  title: 'Serpientes Venenosas',
-                  imageUrl: 'lib/assets/mamba_verde.jpg',
-                  onTap: () {
-                    // Acción al pulsar la tarjeta de serpientes venenosas
-                    fectSnakesPoison(true);
-                  },
-                ),
-                SizedBox(height: 20),
-                CategoryCard(
-                  title: 'Serpientes No Venenosas',
-                  imageUrl: 'lib/assets/mamba_negra.jpg',
-                  onTap: () {
-                    // Acción al pulsar la tarjeta de serpientes no venenosas
-                    fectSnakesPoison(false);
-                  },
-                ),
-              ],
+            child: SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              child: Row(
+                children: [
+                  CategoryCard(
+                    title: 'Serpientes Venenosas',
+                    imageUrl: 'lib/assets/mamba_verde.jpg',
+                    onTap: () {
+                      // Acción al pulsar la tarjeta de serpientes venenosas
+                      fectSnakesPoison(true);
+                    },
+                  ),
+                  SizedBox(height: 20),
+                  CategoryCard(
+                    title: 'Serpientes No Venenosas',
+                    imageUrl: 'lib/assets/mamba_negra.jpg',
+                    onTap: () {
+                      // Acción al pulsar la tarjeta de serpientes no venenosas
+                      fectSnakesPoison(false);
+                    },
+                  ),
+                ],
+              ),
             ),
           ),
           SizedBox(
@@ -305,54 +302,57 @@ class _CategoryCardState extends State<CategoryCard> {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: widget.onTap,
-      child: MouseRegion(
-        onEnter: (_) {
-          setState(() {
-            _isHovering = true;
-          });
-        },
-        onExit: (_) {
-          setState(() {
-            _isHovering = false;
-          });
-        },
-        child: AnimatedContainer(
-          duration: Duration(milliseconds: 200),
-          decoration: BoxDecoration(
-            color: _isHovering ? Colors.green : Colors.white,
-            borderRadius: BorderRadius.circular(20),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.grey.withOpacity(0.5),
-                spreadRadius: 2,
-                blurRadius: 5,
-                offset: Offset(0, 3),
-              ),
-            ],
-          ),
-          child: Column(
-            children: [
-              ClipRRect(
-                borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-                child: Image.asset(
-                  widget.imageUrl,
-                  fit: BoxFit.cover,
-                  height: 285,
-                  width: double.infinity,
+      child: Container(
+        width: MediaQuery.of(context).size.width * 0.50, // Adjust as needed
+        child: MouseRegion(
+          onEnter: (_) {
+            setState(() {
+              _isHovering = true;
+            });
+          },
+          onExit: (_) {
+            setState(() {
+              _isHovering = false;
+            });
+          },
+          child: AnimatedContainer(
+            duration: Duration(milliseconds: 200),
+            decoration: BoxDecoration(
+              color: _isHovering ? Colors.green : Colors.white,
+              borderRadius: BorderRadius.circular(20),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.grey.withOpacity(0.5),
+                  spreadRadius: 2,
+                  blurRadius: 5,
+                  offset: Offset(0, 3),
                 ),
-              ),
-              Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: Text(
-                  widget.title,
-                  style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                    color: _isHovering ? Colors.white : Colors.black,
+              ],
+            ),
+            child: Column(
+              children: [
+                ClipRRect(
+                  borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+                  child: Image.asset(
+                    widget.imageUrl,
+                    fit: BoxFit.cover,
+                    height: 285,
+                    width: double.infinity,
                   ),
                 ),
-              ),
-            ],
+                Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: Text(
+                    widget.title,
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                      color: _isHovering ? Colors.white : Colors.black,
+                    ),
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
       ),

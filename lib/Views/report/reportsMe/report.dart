@@ -41,7 +41,7 @@ class _ReportPageState extends State<ReportPage> {
 
   void _deleteReport(int index) {
     setState(() {
-      widget._reports?.removeAt(index);
+      widget._reports.removeAt(index);
     });
   }
 
@@ -63,6 +63,7 @@ class _ReportPageState extends State<ReportPage> {
         final List<Reporte> reports =
             data.map((json) => Reporte.fromJson(json)).toList();
         reportProvider.setReportes(reports);
+        
       } else {
         // Handle error
         throw Exception('Failed to load reports');
@@ -120,6 +121,7 @@ class _ReportPageState extends State<ReportPage> {
   }
 
   Widget _reportCard(BuildContext context, Reporte report) {
+    
     return GestureDetector(
       onTap: () {},
       child: Card(
@@ -130,18 +132,47 @@ class _ReportPageState extends State<ReportPage> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
+
+              Text(
+                report.usuario_nombre ?? '',
+                style: TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                ),
+                
+                textAlign: TextAlign.center,
+              ),
+              CachedNetworkImage(
+                imageUrl:
+                    report.imagenUsuario!,
+                placeholder: (context, url) => LoadingIndicator(
+                  indicatorType: Indicator.ballPulse,
+                  colors: const [
+                    Color.fromARGB(255, 36, 235, 18),
+                    Color.fromARGB(255, 25, 224, 128),
+                    Color.fromARGB(255, 59, 235, 150),
+                    Color.fromARGB(255, 116, 241, 181)
+                  ],
+                  pathBackgroundColor: Color.fromARGB(255, 138, 209, 5),
+                ),
+                errorWidget: (context, url, error) => Icon(Icons.error),
+                height: 150,
+              ),
+
               Text(
                 report.titulo ?? '',
                 style: TextStyle(
                   fontSize: 20,
                   fontWeight: FontWeight.bold,
                 ),
+                
                 textAlign: TextAlign.center,
               ),
+
               SizedBox(height: 10),
               CachedNetworkImage(
                 imageUrl:
-                    "https://back-1-9ehs.onrender.com/view_image/?imagen=${report.imagen}",
+                    report.imagen!,
                 placeholder: (context, url) => LoadingIndicator(
                   indicatorType: Indicator.ballPulse,
                   colors: const [
