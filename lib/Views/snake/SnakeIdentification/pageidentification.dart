@@ -165,7 +165,7 @@ class _pageidentification extends State<pageidentification> {
                       height: 200.0, // Adjust height as needed
                     )
                 : Image.network(
-                      "https://i.ytimg.com/vi/BIlfrjfF718/maxresdefault.jpg",
+                      "https://www.todofondos.net/wp-content/uploads/2920x1642-Fondo-de-pantalla-negro-scaled.jpg",
                       width: double.infinity, // Ensures equal width for both images
                       height: 200.0, // Adjust height as needed
                     ),

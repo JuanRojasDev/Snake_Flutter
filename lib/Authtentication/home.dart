@@ -217,13 +217,16 @@ class _HomeScreenState extends State<HomeScreen> {
                 iconSize: 30, // Ajusta el tamaño del ícono
                 icon: Icon(
                   Icons.camera,
-                  color: body_Provider.selectedIndex == 2
+                  color: body_Provider.selectedIndex == 3
                       ? Colors.green
                       : Color(0xFF6e7168),
                 ),
                 onPressed: () {
-                      Navigator.pushReplacement(context,
-                      MaterialPageRoute(builder: (context) => pageidentification()));
+                  body_Provider
+                      .setSelectedIndex(3); // Actualiza el selectedIndex
+                  body_Provider
+                      .setAppBarTitle('Identificar'); // Cambia el título del AppBar
+                  body_Provider.changedBodyHome(pageidentification());
                 },
               ),
             ],
