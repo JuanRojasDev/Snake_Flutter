@@ -7,6 +7,7 @@ import 'package:sqlite_flutter_crud/Providers/usuer_provider.dart';
 import 'package:sqlite_flutter_crud/Views/report/reportsMe/report.dart';
 import 'package:sqlite_flutter_crud/Views/profile/profile.dart';
 import 'package:sqlite_flutter_crud/Providers/Home_Body_provider.dart';
+import 'package:sqlite_flutter_crud/Views/snake/SnakeIdentification/pageidentification.dart';
 import 'package:sqlite_flutter_crud/Views/snake/snake_Info/Galeria/Screen_Galeria.dart';
 import 'package:http/http.dart' as http;
 import '../JsonModels/Usuario.dart';
@@ -135,6 +136,9 @@ class _HomeScreenState extends State<HomeScreen> {
                     Text('Cerrar Sesión', style: TextStyle(color: Colors.red)),
                 onTap: () {
                   // Acción para cerrar sesión y redirigir al login
+      
+
+
                   Navigator.pushReplacement(context,
                       MaterialPageRoute(builder: (context) => LoginScreen()));
                 },
@@ -208,6 +212,18 @@ class _HomeScreenState extends State<HomeScreen> {
               
                   body_Provider
                       .changedBodyHome(ProfilePage());
+                },
+              ),IconButton(
+                iconSize: 30, // Ajusta el tamaño del ícono
+                icon: Icon(
+                  Icons.camera,
+                  color: body_Provider.selectedIndex == 2
+                      ? Colors.green
+                      : Color(0xFF6e7168),
+                ),
+                onPressed: () {
+                      Navigator.pushReplacement(context,
+                      MaterialPageRoute(builder: (context) => pageidentification()));
                 },
               ),
             ],
