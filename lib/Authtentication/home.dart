@@ -136,8 +136,6 @@ class _HomeScreenState extends State<HomeScreen> {
                     Text('Cerrar Sesión', style: TextStyle(color: Colors.red)),
                 onTap: () {
                   // Acción para cerrar sesión y redirigir al login
-      
-
 
                   Navigator.pushReplacement(context,
                       MaterialPageRoute(builder: (context) => LoginScreen()));
@@ -165,15 +163,11 @@ class _HomeScreenState extends State<HomeScreen> {
                 onPressed: () {
                   // Acción para el botón de escribir
 
-
-
                   body_Provider
                       .setSelectedIndex(1); // Actualiza el selectedIndex
                   body_Provider.setAppBarTitle(
                       'Publicaciones'); // Cambia el título del AppBar
-                  body_Provider.changedBodyHome(ReportPage(
-                    
-                  ));
+                  body_Provider.changedBodyHome(ReportPage());
                 },
               ),
               IconButton(
@@ -202,18 +196,16 @@ class _HomeScreenState extends State<HomeScreen> {
                       : Color(0xFF6e7168),
                 ),
                 onPressed: () {
-                  
                   // Acción para el botón de perfil
                   body_Provider
                       .setSelectedIndex(2); // Actualiza el selectedIndex
                   body_Provider.setAppBarTitle(
                       'Mi Perfil'); // Cambia el título del AppBar
-          
-              
-                  body_Provider
-                      .changedBodyHome(ProfilePage());
+
+                  body_Provider.changedBodyHome(ProfilePage());
                 },
-              ),IconButton(
+              ),
+              IconButton(
                 iconSize: 30, // Ajusta el tamaño del ícono
                 icon: Icon(
                   Icons.camera,
@@ -224,8 +216,8 @@ class _HomeScreenState extends State<HomeScreen> {
                 onPressed: () {
                   body_Provider
                       .setSelectedIndex(3); // Actualiza el selectedIndex
-                  body_Provider
-                      .setAppBarTitle('Identificar'); // Cambia el título del AppBar
+                  body_Provider.setAppBarTitle(
+                      'Identificar'); // Cambia el título del AppBar
                   body_Provider.changedBodyHome(pageidentification());
                 },
               ),
@@ -244,6 +236,7 @@ class Body_init extends StatelessWidget {
   Widget build(BuildContext context) {
     final body_Provider = context.watch<Home_Body_Provider>();
     final serpiente_provider = context.watch<Snake_Provider>();
+
     Future<void> fectSnakesPoison(bool valid) async {
       serpiente_provider.fectSnakesPoison(valid);
       body_Provider.changedBodyHome(Screen_galeria());
@@ -268,33 +261,26 @@ class Body_init extends StatelessWidget {
           ),
           SizedBox(height: 20),
           Expanded(
-            child: SingleChildScrollView(
-              scrollDirection: Axis.horizontal,
-              child: Row(
-                children: [
-                  CategoryCard(
-                    title: 'Serpientes Venenosas',
-                    imageUrl: 'lib/assets/mamba_verde.jpg',
-                    onTap: () {
-                      // Acción al pulsar la tarjeta de serpientes venenosas
-                      fectSnakesPoison(true);
-                    },
-                  ),
-                  SizedBox(height: 20),
-                  CategoryCard(
-                    title: 'Serpientes No Venenosas',
-                    imageUrl: 'lib/assets/mamba_negra.jpg',
-                    onTap: () {
-                      // Acción al pulsar la tarjeta de serpientes no venenosas
-                      fectSnakesPoison(false);
-                    },
-                  ),
-                ],
-              ),
+            child: PageView(
+              children: [
+                CategoryCard(
+                  title: 'Serpientes Venenosas',
+                  imageUrl: 'lib/assets/mamba_verde.jpg',
+                  onTap: () {
+                    // Acción al pulsar la tarjeta de serpientes venenosas
+                    fectSnakesPoison(true);
+                  },
+                ),
+                CategoryCard(
+                  title: 'Serpientes No Venenosas',
+                  imageUrl: 'lib/assets/mamba_negra.jpg',
+                  onTap: () {
+                    // Acción al pulsar la tarjeta de serpientes no venenosas
+                    fectSnakesPoison(false);
+                  },
+                ),
+              ],
             ),
-          ),
-          SizedBox(
-            height: 10,
           ),
         ],
       ),
@@ -322,57 +308,42 @@ class _CategoryCardState extends State<CategoryCard> {
     return GestureDetector(
       onTap: widget.onTap,
       child: Container(
-        width: MediaQuery.of(context).size.width * 0.50, // Adjust as needed
-        child: MouseRegion(
-          onEnter: (_) {
-            setState(() {
-              _isHovering = true;
-            });
-          },
-          onExit: (_) {
-            setState(() {
-              _isHovering = false;
-            });
-          },
-          child: AnimatedContainer(
-            duration: Duration(milliseconds: 200),
-            decoration: BoxDecoration(
-              color: _isHovering ? Colors.green : Colors.white,
-              borderRadius: BorderRadius.circular(20),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.grey.withOpacity(0.5),
-                  spreadRadius: 2,
-                  blurRadius: 5,
-                  offset: Offset(0, 3),
-                ),
-              ],
+        margin: EdgeInsets.symmetric(horizontal: 10),
+        decoration: BoxDecoration(
+          color: _isHovering ? Colors.green : Colors.white,
+          borderRadius: BorderRadius.circular(20),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.grey.withOpacity(0.5),
+              spreadRadius: 2,
+              blurRadius: 5,
+              offset: Offset(0, 3),
             ),
-            child: Column(
-              children: [
-                ClipRRect(
-                  borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-                  child: Image.asset(
-                    widget.imageUrl,
-                    fit: BoxFit.cover,
-                    height: 285,
-                    width: double.infinity,
-                  ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.all(16.0),
-                  child: Text(
-                    widget.title,
-                    style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                      color: _isHovering ? Colors.white : Colors.black,
-                    ),
-                  ),
-                ),
-              ],
+          ],
+        ),
+        child: Column(
+          children: [
+            ClipRRect(
+              borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+              child: Image.asset(
+                widget.imageUrl,
+                fit: BoxFit.cover,
+                height: 285,
+                width: double.infinity,
+              ),
             ),
-          ),
+            Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Text(
+                widget.title,
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                  color: _isHovering ? Colors.white : Colors.black,
+                ),
+              ),
+            ),
+          ],
         ),
       ),
     );

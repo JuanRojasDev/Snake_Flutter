@@ -9,48 +9,98 @@ class Info_Snake extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.all(10.0),
+      padding: const EdgeInsets.all(16.0),
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           Container(
-            child: Image(
+            width: double.infinity,
+            height: 200, // Tamaño ajustado para dispositivos móviles
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(12),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.grey.withOpacity(0.5),
+                  spreadRadius: 2,
+                  blurRadius: 5,
+                  offset: Offset(0, 3),
+                ),
+              ],
+              image: DecorationImage(
                 image: NetworkImage(
-                    'https://back-1-9ehs.onrender.com/view_image/?imagen=' +
-                        infoSnake.imagen),
-                fit: BoxFit.fill,
-                alignment: Alignment.topCenter),
-            width: 900,
-            height: 250,
-            decoration: BoxDecoration(border: Border.all(color: Colors.black)),
+                  'https://back-1-9ehs.onrender.com/view_image/?imagen=' +
+                      infoSnake.imagen,
+                ),
+                fit: BoxFit.cover, // Ajuste para cubrir el contenedor
+              ),
+            ),
           ),
+          SizedBox(height: 16),
           Text(
             infoSnake.nombre3,
             style: TextStyle(
-                fontSize: 30,
-                fontStyle: FontStyle.italic,
-                fontWeight: FontWeight.bold),
+              fontSize: 30,
+              fontStyle: FontStyle.italic,
+              fontWeight: FontWeight.bold,
+              color: Colors.black87, // Negro oscuro
+            ),
           ),
-          textBasicStyle("Clase", infoSnake.clase),
-          textBasicStyle("Especie", infoSnake.especie),
-          textBasicStyle("Familia", infoSnake.familia),
-          textBasicStyle("Genero", infoSnake.genero),
-          textBasicStyle("Nombre Cientifico", infoSnake.nombreCientifico),
-          textBasicStyle("Es Venenosa", infoSnake.venenosa ? 'Si' : 'No'),
+          SizedBox(height: 16),
+          textBasicStyle("Clase", infoSnake.clase, Colors.black87),
+          textBasicStyle("Especie", infoSnake.especie, Colors.black87),
+          textBasicStyle("Familia", infoSnake.familia, Colors.black87),
+          textBasicStyle("Género", infoSnake.genero, Colors.black87),
+          textBasicStyle(
+              "Nombre Científico", infoSnake.nombreCientifico, Colors.black87),
+          textBasicStyle(
+              "Es Venenosa", infoSnake.venenosa ? 'Sí' : 'No', Colors.black87),
+          SizedBox(height: 16),
+          Container(
+            height: 200, // Tamaño ajustado para dispositivos móviles
+            width: double.infinity,
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(12),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.grey.withOpacity(0.5),
+                  spreadRadius: 2,
+                  blurRadius: 5,
+                  offset: Offset(0, 3),
+                ),
+              ],
+              image: DecorationImage(
+                image: AssetImage(
+                    'lib/assets/Villavicencio.jpg'), // Imagen de georeferencia
+                fit: BoxFit.cover, // Ajuste para cubrir el contenedor
+              ),
+            ),
+          ),
         ],
       ),
     );
   }
 
-  Row textBasicStyle(String text1, String text2) => Row(
+  Row textBasicStyle(String label, String value, Color color) => Row(
+        mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Text(
-            text1 + " : ",
-            style: TextStyle(fontSize: 20),
+          Expanded(
+            child: Text(
+              label + ":",
+              style: TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+                color: color,
+              ),
+            ),
           ),
-          Text(
-            text2,
-            style: TextStyle(fontSize: 20),
+          Expanded(
+            child: Text(
+              value,
+              style: TextStyle(
+                fontSize: 18,
+                color: Colors.black87,
+              ),
+            ),
           ),
         ],
       );

@@ -5,11 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
-import 'package:sqlite_flutter_crud/Authtentication/home.dart';
-import 'package:sqlite_flutter_crud/Authtentication/login.dart';
-import 'package:sqlite_flutter_crud/Providers/Home_Body_provider.dart';
 import 'package:sqlite_flutter_crud/Providers/usuer_provider.dart';
-import '../../../JsonModels/Usuario.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 class ProfilePage extends StatefulWidget {
@@ -21,11 +17,12 @@ class ProfilePage extends StatefulWidget {
 
 class _ProfilePageState extends State<ProfilePage> {
   bool showPosts = true;
+  bool isEditing = false;
 
   File? _profileImage;
   File? _coverImage;
-  String _name = "";
-  String _status = "Descripción";
+  String _name = "Nombre del Usuario";
+  String _status = "Esta es una descripción breve";
   String? imageUrl = "";
   final _nameController = TextEditingController();
   final _statusController = TextEditingController();
@@ -125,8 +122,6 @@ class _ProfilePageState extends State<ProfilePage> {
 
   @override
   Widget build(BuildContext context) {
-    print(imageUrl);
-
     final user_provider = context.watch<UserProvider>();
     _nameController.text = user_provider.usernow.nombres;
     imageUrl = user_provider.usernow.imagen;
@@ -154,26 +149,47 @@ class _ProfilePageState extends State<ProfilePage> {
                       color: Color(0xFF5DB074),
                     ),
                     child: _coverImage == null
-                        ? Center(
-                            child: Icon(Icons.camera_alt,
-                                color: Colors.white, size: 50),
+                        ? Stack(
+                            children: [
+                              Positioned(
+                                bottom: 20,
+                                left: 0,
+                                right: 0,
+                                child: Center(
+                                  child: Icon(
+                                    Icons.camera_alt,
+                                    color: Colors.white,
+                                    size: 70,
+                                  ),
+                                ),
+                              ),
+                            ],
                           )
                         : null,
                   ),
                 ),
+                // Ícono de lápiz para editar el perfil
                 Positioned(
-                  bottom: -50,
-                  left: MediaQuery.of(context).size.width / 2 - 88,
+                  top: 10,
+                  right: 10,
+                  child: IconButton(
+                    icon: Icon(Icons.edit, color: Colors.white, size: 30),
+                    onPressed: () {
+                      setState(() {
+                        isEditing = !isEditing;
+                      });
+                    },
+                  ),
+                ),
+                Positioned(
+                  bottom: -70,
+                  left: MediaQuery.of(context).size.width / 2 - 95,
                   child: GestureDetector(
                     onTap: () async {
                       await _pickImage();
-
                       imageUrl = await subirImagenFireBase(_profileImage!);
-
                       await editUser();
-
                       _saveImageUrl(imageUrl!);
-
                       user_provider.setImage(imageUrl!);
                     },
                     child: CircleAvatar(
@@ -199,6 +215,7 @@ class _ProfilePageState extends State<ProfilePage> {
                   TextField(
                     controller: _nameController,
                     textAlign: TextAlign.center,
+                    enabled: isEditing,
                     style: TextStyle(
                       fontSize: 28,
                       fontWeight: FontWeight.bold,
@@ -206,27 +223,27 @@ class _ProfilePageState extends State<ProfilePage> {
                     ),
                     decoration: InputDecoration(
                       border: InputBorder.none,
+                      hintText: "Nombre del usuario",
                     ),
                     onSubmitted: (value) =>
                         {_saveName(), user_provider.setUserName(_name)},
                   ),
+                  SizedBox(height: 10),
+                  TextField(
+                    controller: _statusController,
+                    textAlign: TextAlign.center,
+                    enabled: isEditing,
+                    style: TextStyle(
+                      fontSize: 18,
+                      color: Colors.grey[700],
+                    ),
+                    decoration: InputDecoration(
+                      border: InputBorder.none,
+                      hintText: "Descripción",
+                    ),
+                    onSubmitted: (value) => _saveStatus(),
+                  ),
                 ],
-              ),
-            ),
-            SizedBox(height: 80.0),
-            Text(
-              _name,
-              style: TextStyle(
-                fontSize: 24,
-                fontWeight: FontWeight.bold,
-                color: Colors.black87,
-              ),
-            ),
-            Text(
-              _status,
-              style: TextStyle(
-                fontSize: 18,
-                color: Colors.grey[700],
               ),
             ),
             SizedBox(height: 20),
@@ -254,6 +271,18 @@ class _ProfilePageState extends State<ProfilePage> {
           ],
         ),
       ),
+      floatingActionButton: isEditing
+          ? FloatingActionButton(
+              onPressed: () {
+                _saveName();
+                _saveStatus();
+                setState(() {
+                  isEditing = false;
+                });
+              },
+              child: Icon(Icons.save),
+            )
+          : null,
     );
   }
 
@@ -292,13 +321,8 @@ class _ProfilePageState extends State<ProfilePage> {
         ),
         _buildPostItem(
           "Serpiente Coral",
-          "Iba caminando y me encontré con esta serpiente Coral ubicada en Acacias",
-          "hace 4 horas",
-        ),
-        _buildPostItem(
-          "Guio Negro",
-          "Me asusté mucho cuando lo vi! Escuché que los Guios Negros también se llaman Anaconda Verde",
-          "hace 3 días",
+          "Iba caminando por el rio Humadea cuando me encontré con esta hermosa coral",
+          "hace 15 min",
         ),
       ],
     );
@@ -306,15 +330,16 @@ class _ProfilePageState extends State<ProfilePage> {
 
   Widget _buildPostItem(String title, String description, String timeAgo) {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      padding: const EdgeInsets.all(15),
       child: Row(
         children: [
           CircleAvatar(
-            radius: 25,
-            backgroundColor: Colors.grey[300],
-            backgroundImage: AssetImage('lib/assets/default_snake.png'),
+            radius: 30,
+            backgroundImage: _profileImage != null
+                ? FileImage(_profileImage!)
+                : AssetImage('lib/assets/default_profile.png') as ImageProvider,
           ),
-          SizedBox(width: 10),
+          SizedBox(width: 15),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -322,24 +347,20 @@ class _ProfilePageState extends State<ProfilePage> {
                 Text(
                   title,
                   style: TextStyle(
-                    fontSize: 16,
+                    fontSize: 18,
                     fontWeight: FontWeight.bold,
                     color: Colors.black87,
                   ),
                 ),
+                SizedBox(height: 5),
                 Text(
                   description,
-                  style: TextStyle(
-                    fontSize: 14,
-                    color: Colors.grey[700],
-                  ),
+                  style: TextStyle(fontSize: 16, color: Colors.black54),
                 ),
+                SizedBox(height: 5),
                 Text(
                   timeAgo,
-                  style: TextStyle(
-                    fontSize: 12,
-                    color: Colors.grey[500],
-                  ),
+                  style: TextStyle(fontSize: 14, color: Colors.grey),
                 ),
               ],
             ),
@@ -350,58 +371,29 @@ class _ProfilePageState extends State<ProfilePage> {
   }
 
   Widget _buildPhotos() {
-    return Container(
-      height: 300,
-      child: GridView.builder(
-        padding: EdgeInsets.symmetric(horizontal: 16),
-        itemCount: 6,
-        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-          crossAxisCount: 3,
-          crossAxisSpacing: 8,
-          mainAxisSpacing: 8,
-        ),
-        itemBuilder: (context, index) {
-          return Container(
-            decoration: BoxDecoration(
-              color: Colors.grey[300],
-              borderRadius: BorderRadius.circular(8),
-              image: DecorationImage(
-                image: AssetImage('lib/assets/default_snake.png'),
-                fit: BoxFit.cover,
-              ),
-            ),
-          );
-        },
+    return GridView.builder(
+      shrinkWrap: true,
+      physics: NeverScrollableScrollPhysics(),
+      padding: EdgeInsets.all(15),
+      itemCount: 6,
+      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+        crossAxisCount: 3,
+        crossAxisSpacing: 10,
+        mainAxisSpacing: 10,
       ),
+      itemBuilder: (context, index) {
+        return Container(
+          decoration: BoxDecoration(
+            color: Colors.grey[300],
+            borderRadius: BorderRadius.circular(10),
+          ),
+          child: Icon(
+            Icons.image,
+            size: 50,
+            color: Colors.grey[500],
+          ),
+        );
+      },
     );
   }
-}
-
-Widget _buildPhotoItem(String imagePath, String title) {
-  return Padding(
-    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-    child: Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        ClipRRect(
-          borderRadius: BorderRadius.circular(10),
-          child: Image.asset(
-            imagePath,
-            height: 200,
-            width: double.infinity,
-            fit: BoxFit.cover,
-          ),
-        ),
-        SizedBox(height: 8),
-        Text(
-          title,
-          style: TextStyle(
-            fontSize: 16,
-            fontWeight: FontWeight.bold,
-            color: Colors.black87,
-          ),
-        ),
-      ],
-    ),
-  );
 }

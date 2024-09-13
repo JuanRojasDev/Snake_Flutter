@@ -37,6 +37,4 @@ class Serpiente {
       imagen: json['imagen'] as String,
     );
   }
-
-  
 }
