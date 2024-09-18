@@ -218,7 +218,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       .setSelectedIndex(3); // Actualiza el selectedIndex
                   body_Provider.setAppBarTitle(
                       'Identificar'); // Cambia el título del AppBar
-                  body_Provider.changedBodyHome(pageidentification());
+                  body_Provider.changedBodyHome(PageIdentification());
                 },
               ),
             ],
