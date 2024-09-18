@@ -293,8 +293,11 @@ class CategoryCard extends StatefulWidget {
   final String imageUrl;
   final VoidCallback onTap;
 
-  CategoryCard(
-      {required this.title, required this.imageUrl, required this.onTap});
+  CategoryCard({
+    required this.title,
+    required this.imageUrl,
+    required this.onTap,
+  });
 
   @override
   _CategoryCardState createState() => _CategoryCardState();
@@ -310,7 +313,6 @@ class _CategoryCardState extends State<CategoryCard> {
       child: Container(
         margin: EdgeInsets.symmetric(horizontal: 10),
         decoration: BoxDecoration(
-          color: _isHovering ? Colors.green : Colors.white,
           borderRadius: BorderRadius.circular(20),
           boxShadow: [
             BoxShadow(
@@ -321,29 +323,56 @@ class _CategoryCardState extends State<CategoryCard> {
             ),
           ],
         ),
-        child: Column(
-          children: [
-            ClipRRect(
-              borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-              child: Image.asset(
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(20),
+          child: Stack(
+            children: [
+              // Imagen que cubre toda la tarjeta
+              Image.asset(
                 widget.imageUrl,
                 fit: BoxFit.cover,
-                height: 285,
+                height: double
+                    .infinity, // Esto asegura que la imagen cubra toda la tarjeta
                 width: double.infinity,
               ),
-            ),
-            Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Text(
-                widget.title,
-                style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                  color: _isHovering ? Colors.white : Colors.black,
+              // Degradado en la parte inferior
+              Positioned(
+                bottom: 0,
+                left: 0,
+                right: 0,
+                child: Container(
+                  height:
+                      400, // Ajusta el tamaño del degradado según tu preferencia
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      begin: Alignment.topCenter,
+                      end: Alignment.bottomCenter,
+                      colors: [
+                        Colors.transparent,
+                        Colors.black.withOpacity(0.7),
+                      ],
+                    ),
+                  ),
                 ),
               ),
-            ),
-          ],
+              // Texto de la tarjeta (Serpiente venenosa o no venenosa)
+              Positioned(
+                bottom: 20,
+                left: 20,
+                right: 20,
+                child: Text(
+                  widget.title.toUpperCase(),
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 24,
+                    fontWeight: FontWeight.bold,
+                    letterSpacing: 1.5,
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
