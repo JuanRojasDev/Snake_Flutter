@@ -185,21 +185,6 @@ class _ReportPageState extends State<ReportPage> {
                 ),
               ),
               SizedBox(height: 10),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: [
-                  IconButton(
-                    icon: Icon(Icons.edit),
-                    onPressed: () {},
-                  ),
-                  IconButton(
-                    icon: Icon(Icons.delete, color: Colors.red),
-                    onPressed: () {
-                      reportProvider.deleteReport(report.reportId);
-                    },
-                  ),
-                ],
-              ),
             ],
           ),
         ),

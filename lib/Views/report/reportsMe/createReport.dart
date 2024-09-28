@@ -84,9 +84,9 @@ class _createReportState extends State<createReport> {
     final Map<String, dynamic> body = {
       "titulo": _Controllertitle.text,
       "descripcion": _ControllerDescription.text,
-      "imagen": imageUrl!.replaceAll(
-          RegExp(r'"'), ''), // Assuming 'imageUrl' is a valid image URL
-      "serpientes_id_serpientes": 18, // Replace with actual value if dynamic
+      "imagen": "1",
+      "serpientes_id_serpientes": 1,
+      // Replace with actual value if dynamic
       "usuario_id_usuario": 0, // Replace with actual value if dynamic
     };
 

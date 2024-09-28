@@ -119,8 +119,7 @@ lista horizontal
                 decoration: BoxDecoration(
                   image: DecorationImage(
                     image: NetworkImage(
-                      'https://back-1-9ehs.onrender.com/view_image/?imagen=' +
-                          serpiente.imagen,
+                      serpiente.imagen,
                     ),
 
                     fit: BoxFit.contain, // Cover the entire container
@@ -164,7 +163,7 @@ lista horizontal
           decoration: BoxDecoration(
             image: DecorationImage(
               image: NetworkImage(
-                  'https://back-1-9ehs.onrender.com/view_image/?imagen=' +
+                   
                       serpiente.imagen),
               fit: BoxFit.fill,
               alignment: Alignment.topCenter,

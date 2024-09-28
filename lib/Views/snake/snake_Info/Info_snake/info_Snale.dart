@@ -28,8 +28,7 @@ class Info_Snake extends StatelessWidget {
               ],
               image: DecorationImage(
                 image: NetworkImage(
-                  'https://back-1-9ehs.onrender.com/view_image/?imagen=' +
-                      infoSnake.imagen,
+                  infoSnake.imagen,
                 ),
                 fit: BoxFit.cover, // Ajuste para cubrir el contenedor
               ),
