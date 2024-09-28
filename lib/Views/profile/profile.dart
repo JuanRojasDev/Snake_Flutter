@@ -22,8 +22,10 @@ class _ProfilePageState extends State<ProfilePage> {
   File? _profileImage;
   File? _coverImage;
   String _name = "Nombre del Usuario";
+    String _Descripcion = "Nombre del Usuario";
   String _status = "Esta es una descripción breve";
   String? imageUrl = "";
+  String? CoverimageUrl = "";
   final _nameController = TextEditingController();
   final _statusController = TextEditingController();
   final storage = FlutterSecureStorage();
@@ -35,7 +37,7 @@ class _ProfilePageState extends State<ProfilePage> {
     }
 
     final Uri url = Uri.parse('https://back-1-9ehs.onrender.com/usuario/edit');
-    final Map<String, dynamic> body = {"nombre": _name, "imagenurl": imageUrl};
+    final Map<String, dynamic> body = {"nombre": _name, "imagenurl": imageUrl, "Descripcion": _Descripcion, "imagen_fonodo": CoverimageUrl};
     final Map<String, String> headers = {
       'Content-Type': 'application/json; charset=utf-8',
       'Authorization': 'Bearer $token',
@@ -114,18 +116,26 @@ class _ProfilePageState extends State<ProfilePage> {
     await editUser();
   }
 
-  void _saveStatus() {
+    void _saveDescription() async {
     setState(() {
-      _status = _statusController.text;
+      _Descripcion = _statusController.text;
     });
+    await editUser();
   }
+
 
   @override
   Widget build(BuildContext context) {
     final user_provider = context.watch<UserProvider>();
     _nameController.text = user_provider.usernow.nombres;
+    if(user_provider.usernow.descripcion == null){
+      _statusController.text = user_provider.usernow.descripcion ?? "null" ;
+    }
+    else{
+      _statusController.text = user_provider.usernow.descripcion ?? "no null" ;      
+    }
     imageUrl = user_provider.usernow.imagen;
-
+    CoverimageUrl = user_provider.usernow.imagen_fondo;
     return Scaffold(
       backgroundColor: Colors.grey[200],
       body: SingleChildScrollView(
@@ -135,20 +145,26 @@ class _ProfilePageState extends State<ProfilePage> {
               clipBehavior: Clip.none,
               children: [
                 GestureDetector(
-                  onTap: () {},
+                   onTap: () async {
+                      await _pickImage();
+                      CoverimageUrl = await subirImagenFireBase(_profileImage!);
+                      await editUser();
+                      _saveImageUrl(CoverimageUrl!);
+                      user_provider.setImageBack(CoverimageUrl!);
+                    },
                   child: Container(
                     height: 250,
                     width: double.infinity,
                     decoration: BoxDecoration(
-                      image: _coverImage != null
+                      image: user_provider.usernow.imagen_fondo != ""
                           ? DecorationImage(
-                              image: FileImage(_coverImage!),
+                              image: NetworkImage(CoverimageUrl ?? ""),
                               fit: BoxFit.cover,
                             )
                           : null,
                       color: Color(0xFF5DB074),
                     ),
-                    child: _coverImage == null
+                    child: user_provider.usernow.imagen_fondo != ""
                         ? Stack(
                             children: [
                               Positioned(
@@ -241,7 +257,8 @@ class _ProfilePageState extends State<ProfilePage> {
                       border: InputBorder.none,
                       hintText: "Descripción",
                     ),
-                    onSubmitted: (value) => _saveStatus(),
+                    onSubmitted: (value) =>
+                        {_saveDescription(), user_provider.setUserDescription(_Descripcion)},
                   ),
                 ],
               ),
@@ -275,7 +292,7 @@ class _ProfilePageState extends State<ProfilePage> {
           ? FloatingActionButton(
               onPressed: () {
                 _saveName();
-                _saveStatus();
+                _saveDescription();
                 setState(() {
                   isEditing = false;
                 });

@@ -44,8 +44,7 @@ class _HomeScreenState extends State<HomeScreen> {
     return Scaffold(
         appBar: AppBar(
           title: Text(
-              body_Provider
-                  .appBarTitle, // Actualiza el título según el icono seleccionado
+              "inicio", // Actualiza el título según el icono seleccionado
               style: TextStyle(
                   color: Colors.black,
                   fontWeight: FontWeight.bold,
@@ -61,176 +60,269 @@ class _HomeScreenState extends State<HomeScreen> {
               },
             ),
           ],
-          leading: Builder(
-            builder: (BuildContext context) {
-              return IconButton(
-                icon: Icon(Icons.menu, color: Color(0xFF5DB075)),
-                onPressed: () {
-                  Scaffold.of(context).openDrawer();
-                },
+          leading: BuilderMenu(), ),
+        drawer: DrawerHome(widget: widget),
+        body: body_Provider.Body_ini,
+        backgroundColor: Colors.white,
+        bottomNavigationBar: ButonBarHome(body_Provider: body_Provider, widget: widget));
+  }
+}
+
+class ButonBarHome extends StatelessWidget {
+  const ButonBarHome({
+    super.key,
+    required this.body_Provider,
+    required this.widget,
+  });
+
+  final Home_Body_Provider body_Provider;
+  final HomeScreen widget;
+
+  @override
+  Widget build(BuildContext context) {
+    return BottomAppBar(
+      color: Colors.white,
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment
+            .spaceEvenly, // Ajusta el espacio entre los botones
+        children: [
+          IconButton(
+            iconSize: 30, // Ajusta el tamaño del ícono
+            icon: Icon(
+              Icons.edit,
+              color: body_Provider.selectedIndex == 1
+                  ? Colors.green
+                  : Color(0xFF6e7168),
+            ), // Resalta la opción de escribir
+            onPressed: () {
+              // Acción para el botón de escribir
+                                body_Provider
+                  .setSelectedIndex(1); // Actualiza el selectedIndex
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => Scaffold(
+                    appBar: AppBar(
+                      title: Text('Crear Publicacion'),
+                      leading: BuilderMenu(),
+                    ),
+                    drawer: DrawerHome(widget: widget),
+                    
+                    body: ReportPage(),
+                    bottomNavigationBar: ButonBarHome(body_Provider: body_Provider, widget: widget)
+                  ),
+                ),
               );
             },
           ),
-        ),
-        drawer: Drawer(
-          child: ListView(
-            padding: EdgeInsets.zero,
-            children: <Widget>[
-              UserAccountsDrawerHeader(
-                accountName:
-                    Text(widget.usuario?.nombres ?? 'Usuario no disponible'),
-                accountEmail:
-                    Text(widget.usuario?.correo ?? 'Usuario no disponible'),
-                currentAccountPicture: CircleAvatar(
-                  backgroundImage: NetworkImage(widget.usuario?.imagen ??
-                      'https://www.google.com/images/branding/googlelogo/2x/googlelogo_color_272x92dp.png'),
-                ),
-                decoration: BoxDecoration(color: Color(0xFF5DB075)),
-              ),
-              ListTile(
-                leading: Icon(Icons.person),
-                title: Text('Mi Perfil'),
-                onTap: () {
-                  // Acción para ir a Mi Perfil
-                },
-              ),
-              ListTile(
-                leading: Icon(Icons.article),
-                title: Text('Mis Publicaciones'),
-                onTap: () {
-                  // Acción para ir a Mis Publicaciones
-                },
-              ),
-              ListTile(
-                leading: Icon(Icons.favorite),
-                title: Text('Mis Me Gusta'),
-                onTap: () {
-                  // Acción para ir a Mis Me Gusta
-                },
-              ),
-              ListTile(
-                leading: Icon(Icons.message),
-                title: Text('Menciones'),
-                onTap: () {
-                  // Acción para ir a Menciones
-                },
-              ),
-              ListTile(
-                leading: Icon(Icons.settings),
-                title: Text('Configuración'),
-                onTap: () {
-                  // Acción para ir a Configuración
-                },
-              ),
-              ListTile(
-                leading: Icon(Icons.info),
-                title: Text('Acerca de'),
-                onTap: () {
-                  // Acción para ir a Acerca de
-                },
-              ),
-              Divider(),
-              ListTile(
-                leading: Icon(Icons.logout, color: Colors.red),
-                title:
-                    Text('Cerrar Sesión', style: TextStyle(color: Colors.red)),
-                onTap: () {
-                  // Acción para cerrar sesión y redirigir al login
+          IconButton(
+            iconSize: 40, // Ajusta el tamaño del ícono
+            icon: Icon(
+              Icons.home,
+              color: body_Provider.selectedIndex == 0
+                  ? Colors.green
+                  : Color(0xFF6e7168),
+            ), // Resalta la opción de inicio
+            onPressed: () {
+              // Acción para el botón de inicio
+              body_Provider
+                  .setSelectedIndex(0); // Actualiza el selectedIndex
 
-                  Navigator.pushReplacement(context,
-                      MaterialPageRoute(builder: (context) => LoginScreen()));
-                },
-              ),
-            ],
+               Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => Scaffold(
+                    appBar: AppBar(
+                      title: Text('Inicio'),
+                      leading: BuilderMenu(),
+                    ),
+                    drawer: DrawerHome(widget: widget),
+                    
+                    body:Body_init(),
+                    bottomNavigationBar: ButonBarHome(body_Provider: body_Provider, widget: widget)
+                  ),
+                ),
+              );
+              
+            },
           ),
-        ),
-        body: body_Provider.Body_ini,
-        backgroundColor: Colors.white,
-        bottomNavigationBar: BottomAppBar(
-          color: Colors.white,
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment
-                .spaceEvenly, // Ajusta el espacio entre los botones
-            children: [
-              IconButton(
-                iconSize: 30, // Ajusta el tamaño del ícono
-                icon: Icon(
-                  Icons.edit,
-                  color: body_Provider.selectedIndex == 1
-                      ? Colors.green
-                      : Color(0xFF6e7168),
-                ), // Resalta la opción de escribir
-                onPressed: () {
-                  // Acción para el botón de escribir
-
-                  body_Provider
-                      .setSelectedIndex(1); // Actualiza el selectedIndex
-                  body_Provider.setAppBarTitle(
-                      'Publicaciones'); // Cambia el título del AppBar
-                  body_Provider.changedBodyHome(ReportPage());
-                },
-              ),
-              IconButton(
-                iconSize: 40, // Ajusta el tamaño del ícono
-                icon: Icon(
-                  Icons.home,
-                  color: body_Provider.selectedIndex == 0
-                      ? Colors.green
-                      : Color(0xFF6e7168),
-                ), // Resalta la opción de inicio
-                onPressed: () {
-                  // Acción para el botón de inicio
-                  body_Provider
-                      .setSelectedIndex(0); // Actualiza el selectedIndex
-                  body_Provider
-                      .setAppBarTitle('Inicio'); // Cambia el título del AppBar
-                  body_Provider.changedBodyHome(Body_init());
-                },
-              ),
-              IconButton(
-                iconSize: 30, // Ajusta el tamaño del ícono
-                icon: Icon(
-                  Icons.person,
-                  color: body_Provider.selectedIndex == 2
-                      ? Colors.green
-                      : Color(0xFF6e7168),
+          IconButton(
+            iconSize: 30, // Ajusta el tamaño del ícono
+            icon: Icon(
+              Icons.person,
+              color: body_Provider.selectedIndex == 2
+                  ? Colors.green
+                  : Color(0xFF6e7168),
+            ),
+            onPressed: () {
+              // Acción para el botón de perfil
+              body_Provider
+                  .setSelectedIndex(2); // Actualiza el selectedIndex
+              body_Provider.setAppBarTitle(
+                  'Mi Perfil'); // Cambia el título del AppBar
+                Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => Scaffold(
+                    appBar: AppBar(
+                      title: Text("Mi Perfil"),
+                      leading: BuilderMenu(),
+                    ),
+                    drawer: DrawerHome(widget: widget),
+                    
+                    body:ProfilePage(),
+                    bottomNavigationBar: ButonBarHome(body_Provider: body_Provider, widget: widget)
+                  ),
                 ),
-                onPressed: () {
-                  // Acción para el botón de perfil
-                  body_Provider
-                      .setSelectedIndex(2); // Actualiza el selectedIndex
-                  body_Provider.setAppBarTitle(
-                      'Mi Perfil'); // Cambia el título del AppBar
-
-                  body_Provider.changedBodyHome(ProfilePage());
-                },
-              ),
-              IconButton(
-                iconSize: 30, // Ajusta el tamaño del ícono
-                icon: Icon(
-                  Icons.camera,
-                  color: body_Provider.selectedIndex == 3
-                      ? Colors.green
-                      : Color(0xFF6e7168),
-                ),
-                onPressed: () {
-                  body_Provider
-                      .setSelectedIndex(3); // Actualiza el selectedIndex
-                  body_Provider.setAppBarTitle(
-                      'Identificar'); // Cambia el título del AppBar
-                  body_Provider.changedBodyHome(PageIdentification());
-                },
-              ),
-            ],
+              );
+            },
           ),
-        ));
+          IconButton(
+            iconSize: 30, // Ajusta el tamaño del ícono
+            icon: Icon(
+              Icons.camera,
+              color: body_Provider.selectedIndex == 3
+                  ? Colors.green
+                  : Color(0xFF6e7168),
+            ),
+            onPressed: () {
+              body_Provider
+                  .setSelectedIndex(3); // Actualiza el selectedIndex
+              body_Provider.setAppBarTitle(
+                  'Identificar'); // Cambia el título del AppBar
+              body_Provider.changedBodyHome(PageIdentification());
+                              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => Scaffold(
+                    appBar: AppBar(
+                      title: Text("Identificar Serpientes"),
+                      leading: BuilderMenu(),
+                    ),
+                    drawer: DrawerHome(widget: widget),
+                    
+                    body:PageIdentification(),
+                    bottomNavigationBar: ButonBarHome(body_Provider: body_Provider, widget: widget)
+                  ),
+                ),
+              );              
+            },
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class BuilderMenu extends StatelessWidget {
+  const BuilderMenu({
+    super.key,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Builder(
+      builder: (BuildContext context) {
+        return IconButton(
+          icon: Icon(Icons.menu, color: Color(0xFF5DB075)),
+          onPressed: () {
+            Scaffold.of(context).openDrawer();
+          },
+        );
+      },
+    );
+  }
+}
+
+class DrawerHome extends StatelessWidget {
+  const DrawerHome({
+    super.key,
+    required this.widget,
+  });
+
+  final HomeScreen widget;
+
+  @override
+  Widget build(BuildContext context) {
+    return Drawer(
+      child: ListView(
+        padding: EdgeInsets.zero,
+        children: <Widget>[
+          UserAccountsDrawerHeader(
+            accountName:
+                Text(widget.usuario?.nombres ?? 'Usuario no disponible'),
+            accountEmail:
+                Text(widget.usuario?.correo ?? 'Usuario no disponible'),
+            currentAccountPicture: CircleAvatar(
+              backgroundImage: NetworkImage(widget.usuario?.imagen ??
+                  'https://www.google.com/images/branding/googlelogo/2x/googlelogo_color_272x92dp.png'),
+            ),
+            decoration: BoxDecoration(color: Color(0xFF5DB075)),
+          ),
+          ListTile(
+            leading: Icon(Icons.person),
+            title: Text('Mi Perfil'),
+            onTap: () {
+              // Acción para ir a Mi Perfil
+            },
+          ),
+          ListTile(
+            leading: Icon(Icons.article),
+            title: Text('Mis Publicaciones'),
+            onTap: () {
+              // Acción para ir a Mis Publicaciones
+            },
+          ),
+          ListTile(
+            leading: Icon(Icons.favorite),
+            title: Text('Mis Me Gusta'),
+            onTap: () {
+              // Acción para ir a Mis Me Gusta
+            },
+          ),
+          ListTile(
+            leading: Icon(Icons.message),
+            title: Text('Menciones'),
+            onTap: () {
+              // Acción para ir a Menciones
+            },
+          ),
+          ListTile(
+            leading: Icon(Icons.settings),
+            title: Text('Configuración'),
+            onTap: () {
+              // Acción para ir a Configuración
+            },
+          ),
+          ListTile(
+            leading: Icon(Icons.info),
+            title: Text('Acerca de'),
+            onTap: () {
+              // Acción para ir a Acerca de
+            },
+          ),
+          Divider(),
+          ListTile(
+            leading: Icon(Icons.logout, color: Colors.red),
+            title:
+                Text('Cerrar Sesión', style: TextStyle(color: Colors.red)),
+            onTap: () {
+              // Acción para cerrar sesión y redirigir al login
+    
+              Navigator.pushReplacement(context,
+                  MaterialPageRoute(builder: (context) => LoginScreen()));
+            },
+          ),
+        ],
+      ),
+    );
   }
 }
 
 class Body_init extends StatelessWidget {
-  final Usuario? usuario;
+  
 
-  const Body_init({Key? key, this.usuario}) : super(key: key);
+  const Body_init({Key? key }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {

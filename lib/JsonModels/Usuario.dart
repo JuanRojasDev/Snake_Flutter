@@ -1,5 +1,4 @@
 class Usuario {
-  
    String nombres;
   final String correo;
   final String? direccion;
@@ -9,6 +8,8 @@ class Usuario {
   final int? edad;
   final String? Token;
    String? imagen;
+   String? descripcion;
+   String? imagen_fondo;
 
   Usuario({
     required this.nombres,
@@ -20,6 +21,8 @@ class Usuario {
     this.edad,
     this.Token,
     this.imagen,
+    this.descripcion,
+    this.imagen_fondo,
   });
 
   factory Usuario.fromJson(Map<String, dynamic> json) {
@@ -32,11 +35,9 @@ class Usuario {
       fechaN: json['data']['fecha_n'],
       edad: json['data']['edad'],
       imagen: json['data']['imagen'],
-      Token: json['access_token']
+      Token: json['access_token'],
+      descripcion: json['data']['Descripcion'],
+      imagen_fondo: json['data']['imagen_fonodo'],
     );
   }
-
-  
-
-
 }
