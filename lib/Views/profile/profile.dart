@@ -5,6 +5,8 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
+import 'package:sqlite_flutter_crud/JsonModels/reporte.dart';
+import 'package:sqlite_flutter_crud/Providers/report_provider.dart';
 import 'package:sqlite_flutter_crud/Providers/usuer_provider.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
@@ -127,6 +129,7 @@ class _ProfilePageState extends State<ProfilePage> {
   @override
   Widget build(BuildContext context) {
     final user_provider = context.watch<UserProvider>();
+
     _nameController.text = user_provider.usernow.nombres;
     if(user_provider.usernow.descripcion == null){
       _statusController.text = user_provider.usernow.descripcion ?? "null" ;
@@ -328,32 +331,88 @@ class _ProfilePageState extends State<ProfilePage> {
     );
   }
 
-  Widget _buildPosts() {
-    return Column(
-      children: [
-        _buildPostItem(
-          "Serpiente Cuatro Narices",
-          "Hola a todos, quiero compartirles esta serpiente cuatro narices ubicada en Humadea",
-          "hace 8 min",
-        ),
-        _buildPostItem(
-          "Serpiente Coral",
-          "Iba caminando por el rio Humadea cuando me encontré con esta hermosa coral",
-          "hace 15 min",
-        ),
-      ],
-    );
-  }
+String calcularTiempoTranscurrido(String fechaString) {
+  // Convertir el string a un objeto DateTime
+  DateTime fechaPasada = DateTime.parse(fechaString);
 
-  Widget _buildPostItem(String title, String description, String timeAgo) {
+  // Obtener la fecha y hora actual
+  DateTime ahora = DateTime.now();
+
+  // Calcular la diferencia en milisegundos
+  Duration diferencia = ahora.difference(fechaPasada);
+
+  // Determinar la unidad de tiempo más apropiada
+  if (diferencia.inDays >= 365) {
+    int year = diferencia.inDays ~/ 365;
+    return "Hace $year años";
+  } else if (diferencia.inDays >= 30) {
+    int meses = diferencia.inDays ~/ 30;
+    return "Hace $meses meses";
+  } else if (diferencia.inHours >= 24) {
+    int dias = diferencia.inHours ~/ 24;
+    return "Hace $dias días";
+  } else if (diferencia.inMinutes >= 60) {
+    int horas = diferencia.inMinutes ~/ 60;
+    return "Hace $horas horas";
+  } else {
+    int minutos = diferencia.inMinutes;
+    return "Hace $minutos minutos";
+  }
+}
+
+
+
+
+
+
+
+    Widget _buildPosts() {
+      
+      final report_provider = context.watch<Reporte_Provider>();
+      int leng = report_provider.reportesMe.length;
+      if (!report_provider.fecthreportesMe){
+        report_provider.fetchMeReports();
+         
+        return const Center(child: CircularProgressIndicator());
+        
+      }
+      else{
+        if(report_provider.reportesMe.length > 0){
+          return Column(
+          children: List.generate(
+            report_provider.reportesMe.length,
+            (index) => _buildPostItem(
+              report_provider.reportesMe[index].titulo,
+              report_provider.reportesMe[index].descripcion,
+              calcularTiempoTranscurrido(report_provider.reportesMe[index].created_at ?? "2023-11-28 10:30:00"),
+              report_provider.reportesMe[index].reportId,
+            ),
+          ),
+        );
+        }
+        else{
+          return Text("null data ");
+        }
+      }
+    }
+
+
+
+
+
+
+
+  Widget _buildPostItem(String? title, String? description, String? timeAgo, int id) {
+    final user_provider = context.watch<UserProvider>();
+    final report_provider = context.watch<Reporte_Provider>();
     return Padding(
       padding: const EdgeInsets.all(15),
       child: Row(
         children: [
           CircleAvatar(
             radius: 30,
-            backgroundImage: _profileImage != null
-                ? FileImage(_profileImage!)
+            backgroundImage: user_provider.usernow.imagen != null
+                ? NetworkImage(user_provider.usernow.imagen!)
                 : AssetImage('lib/assets/default_profile.png') as ImageProvider,
           ),
           SizedBox(width: 15),
@@ -362,7 +421,7 @@ class _ProfilePageState extends State<ProfilePage> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  title,
+                  title ?? "default",
                   style: TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.bold,
@@ -371,14 +430,21 @@ class _ProfilePageState extends State<ProfilePage> {
                 ),
                 SizedBox(height: 5),
                 Text(
-                  description,
+                  description ?? "default",
                   style: TextStyle(fontSize: 16, color: Colors.black54),
                 ),
                 SizedBox(height: 5),
-                Text(
-                  timeAgo,
+                Row(children: [                Text(
+                  timeAgo ?? "default",
                   style: TextStyle(fontSize: 14, color: Colors.grey),
-                ),
+                  ),
+                  IconButton(
+                    icon: Icon(Icons.delete, color: Colors.red),
+                    onPressed: () {
+                      report_provider.deleteReport(id);
+                    },
+                  )
+                ],)
               ],
             ),
           ),
@@ -388,6 +454,7 @@ class _ProfilePageState extends State<ProfilePage> {
   }
 
   Widget _buildPhotos() {
+    
     return GridView.builder(
       shrinkWrap: true,
       physics: NeverScrollableScrollPhysics(),

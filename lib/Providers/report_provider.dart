@@ -8,8 +8,17 @@ class Reporte_Provider extends ChangeNotifier {
   List<Reporte> reportesAll = [];
   bool fecthData = false;
   final storage = new FlutterSecureStorage();
+  List<Reporte> reportesMe = [];
+  bool fecthreportesMe = false;
+
+
   void setReportes(List<Reporte> nuevosReportes) {
     reportesAll = nuevosReportes;
+    notifyListeners();
+  }
+
+  void setMeReports(List<Reporte> nuevosReportes2) {
+    reportesMe = nuevosReportes2;
     notifyListeners();
   }
 
@@ -21,6 +30,7 @@ class Reporte_Provider extends ChangeNotifier {
 
 void eliminarReportePorId(int id) {
   reportesAll.removeWhere((reporte) => reporte.reportId == id);
+  reportesMe.removeWhere((reporte) => reporte.reportId == id);
   notifyListeners();
 }
 
@@ -42,6 +52,37 @@ void eliminarReportePorId(int id) {
       print('Error fetching reports: $e');
     }
   }
+
+    Future<void> fetchMeReports() async {
+    try {
+      final String? token = await storage.read(key: 'jwt');
+      if (token == null) {
+        throw Exception('Missing JWT token'); // Handle missing token error
+      }
+      final Map<String, String> headers = {
+      'Content-Type': 'application/json; charset=utf-8',
+      'Authorization': 'Bearer $token', // Include retrieved JWT token
+      'accept': 'application/json',
+      };
+      final response = await http
+          .get(Uri.parse('https://back-1-9ehs.onrender.com/Reporte/all_me'),headers: headers);
+
+      if (response.statusCode == 200) {
+        final List<dynamic> data = jsonDecode(response.body);
+        final List<Reporte> reports = data.map((json) => Reporte.fromJsonNoUSer(json)).toList();
+        fecthreportesMe = true;
+        setMeReports(reports);
+        
+      } else {
+        // Handle error
+        throw Exception('Failed to load reports');
+      }
+    } catch (e) {
+      // Handle error
+      print('Error fetching reports: $e');
+    }
+  }
+
   Future<http.Response> deleteReport(int id) async {
     // 1. Retrieve JWT token from secure storage
     final String? token = await storage.read(key: 'jwt');

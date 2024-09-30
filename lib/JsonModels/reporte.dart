@@ -46,6 +46,17 @@ class Reporte {
     );
   }
 
+  factory Reporte.fromJsonNoUSer(Map<String, dynamic> json) {
+    return Reporte(
+      titulo: json['titulo'],
+      descripcion: json['descripcion'],
+      imagen: json['imagen'],
+      reportId: json['idReporte'],
+      serpientes_id_serpientes: json['serpientes_id_serpientes'],
+      created_at: json['created_at'],
+      usuario_id_usuario: json['usuario_id_usuario'],
+    );
+  }
   Map<String, dynamic> toMap() => {
     "titulo": titulo,
     "descripcion": descripcion,
