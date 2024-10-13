@@ -8,6 +8,7 @@ import 'package:loading_indicator/loading_indicator.dart';
 import 'package:provider/provider.dart';
 import 'dart:convert';
 import 'package:sqlite_flutter_crud/Authtentication/login.dart';
+import 'package:sqlite_flutter_crud/JsonModels/SnakeReportDefault.dart';
 import 'package:sqlite_flutter_crud/JsonModels/reporte.dart';
 import 'package:sqlite_flutter_crud/JsonModels/users.dart';
 import 'package:sqlite_flutter_crud/Providers/report_provider.dart';
@@ -19,7 +20,12 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'dart:io';
 
 class createReport extends StatefulWidget {
-  const createReport({Key? key}) : super(key: key);
+  const createReport({
+    Key? key,
+    this.defaultData,
+  }) : super(key: key);
+
+  final SnakeReportDefault? defaultData;
 
   @override
   State<createReport> createState() => _createReportState();
@@ -37,6 +43,17 @@ class _createReportState extends State<createReport> {
   final db = DatabaseHelper();
   final _formKey = GlobalKey<FormState>();
   final storage = new FlutterSecureStorage();
+
+  @protected
+  @mustCallSuper
+  void initState() {
+    if (!(widget.defaultData == null)){
+      _Controllertitle.text = widget.defaultData!.name;
+      _ControllerDescription.text = widget.defaultData!.description;
+      _image = widget.defaultData!.image;
+      subirImagenFireBaseData(_image!);
+    }
+  }
 
   Future<void> _pickFiles() async {
     FilePickerResult? result = await FilePicker.platform.pickFiles(
@@ -78,14 +95,15 @@ class _createReportState extends State<createReport> {
 
     // 2. Construct the request URL
     final Uri url =
-        Uri.parse('https://back-1-9ehs.onrender.com/Reporte/create');
+        Uri.parse('https://back-production-0678.up.railway.app/Reporte/create');
 
+    print(imageUrl);
     // 3. Prepare the request body
     final Map<String, dynamic> body = {
       "titulo": _Controllertitle.text,
       "descripcion": _ControllerDescription.text,
       "imagen": imageUrl,
-      "serpientes_id_serpientes": 1,
+      "serpientes_id_serpientes": 2,
       // Replace with actual value if dynamic
       "usuario_id_usuario": 0, // Replace with actual value if dynamic
     };
@@ -157,10 +175,51 @@ class _createReportState extends State<createReport> {
     // return null;
   }
 
+  Future<String> subirImagenFireBaseData(Uint8List image) async {
+    // Create a reference to the specific bucket
+    final storage =
+        FirebaseStorage.instanceFor(bucket: 'meta-snake.appspot.com');
+
+    // Create a reference to the node where the image will be stored
+    final storageRef = storage
+        .ref()
+        .child('images/${DateTime.now().millisecondsSinceEpoch}.jpg');
+
+    // Upload the image data (in Uint8List format) to Firebase Storage
+    final uploadTask = storageRef.putData(image);
+
+    try {
+      // Wait for the image upload to complete
+      await uploadTask.whenComplete(() {});
+      final snapshot = await uploadTask.whenComplete(() {});
+      // Get the download URL of the uploaded image
+      final downloadUrl = await snapshot.ref.getDownloadURL();
+
+      // Print the download URL to the console
+      print('Imagen subida correctamente: $downloadUrl');
+
+      // Return the download URL
+      imageUrl= downloadUrl;
+      return downloadUrl;
+    } on FirebaseException catch (error) {
+      // Handle FirebaseException error
+      return("Error uploading image: ${error.code} - ${error.message}");
+      // Optionally re-throw the exception for further handling in the calling function
+      // throw error;
+    } catch (error) {
+      // Handle other exceptions (e.g., network errors)
+      return("Unexpected error: $error");
+      // Optionally return a default value or handle the error differently
+    }
+
+    // You can optionally return a default value here if the upload fails
+    // return null;
+  }
+
   Future<void> subirImagen(Uint8List image) async {
     // Crear un multipart file
     var request = http.MultipartRequest(
-        'POST', Uri.parse("https://back-1-9ehs.onrender.com/upload_image"));
+        'POST', Uri.parse("https://back-production-0678.up.railway.app/upload_image"));
     var multipartFile = await http.MultipartFile.fromBytes(
       'image', // Nombre del campo en el servidor
       image,

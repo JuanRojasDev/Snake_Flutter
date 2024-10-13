@@ -38,7 +38,7 @@ class _ProfilePageState extends State<ProfilePage> {
       throw Exception('Missing JWT token');
     }
 
-    final Uri url = Uri.parse('https://back-1-9ehs.onrender.com/usuario/edit');
+    final Uri url = Uri.parse('https://back-production-0678.up.railway.app/usuario/edit');
     final Map<String, dynamic> body = {"nombre": _name, "imagenurl": imageUrl, "Descripcion": _Descripcion, "imagen_fonodo": CoverimageUrl};
     final Map<String, String> headers = {
       'Content-Type': 'application/json; charset=utf-8',

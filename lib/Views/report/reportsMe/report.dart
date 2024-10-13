@@ -56,7 +56,7 @@ class _ReportPageState extends State<ReportPage> {
     final reportProvider = context.watch<Reporte_Provider>();
     try {
       final response = await http
-          .get(Uri.parse('https://back-1-9ehs.onrender.com/Reporte/all'));
+          .get(Uri.parse('https://back-production-0678.up.railway.app/Reporte/all'));
       if (response.statusCode == 200) {
         final List<dynamic> data = jsonDecode(response.body);
         final List<Reporte> reports =

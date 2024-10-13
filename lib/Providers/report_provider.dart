@@ -37,7 +37,7 @@ void eliminarReportePorId(int id) {
   Future<void> fetchAllReports() async {
     try {
       final response = await http
-          .get(Uri.parse('https://back-1-9ehs.onrender.com/Reporte/all'));
+          .get(Uri.parse('https://back-production-0678.up.railway.app/Reporte/all'));
       if (response.statusCode == 200) {
         final List<dynamic> data = jsonDecode(response.body);
         final List<Reporte> reports =
@@ -65,7 +65,7 @@ void eliminarReportePorId(int id) {
       'accept': 'application/json',
       };
       final response = await http
-          .get(Uri.parse('https://back-1-9ehs.onrender.com/Reporte/all_me'),headers: headers);
+          .get(Uri.parse('https://back-production-0678.up.railway.app/Reporte/all_me'),headers: headers);
 
       if (response.statusCode == 200) {
         final List<dynamic> data = jsonDecode(response.body);
@@ -92,7 +92,7 @@ void eliminarReportePorId(int id) {
 
     // 2. Construct the request URL
     final Uri url =
-        Uri.parse('https://back-1-9ehs.onrender.com/Reporte/Eliminar?id=$id');
+        Uri.parse('https://back-production-0678.up.railway.app/Reporte/Eliminar?id=$id');
 
 
 

@@ -26,7 +26,7 @@ class _LoginScreenState extends State<LoginScreen> {
   final storage = new FlutterSecureStorage();
   Future<void> _login() async {
     final String url =
-        'https://back-1-9ehs.onrender.com/users/login'; // server ip
+        'https://back-production-0678.up.railway.app/users/login'; // server ip
 
     final Map<String, String> body = {
       'email': _usernameController.text,

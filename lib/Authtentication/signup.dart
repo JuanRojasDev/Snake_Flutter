@@ -47,8 +47,8 @@ class _SignUpState extends State<SignUp> {
         "edad": '0'
       };
       // Realizar la solicitud POST al servidor
-      var url = Uri.parse('https://back-1-9ehs.onrender.com/users/create');
-      //var url = Uri.parse('http://127.0.0.1:8000/users/create');
+      var url = Uri.parse('https://back-production-0678.up.railway.app/users/create');
+      //var url = Uri.parse('https://back-production-0678.up.railway.app/users/create');
 
       showDialog(
         context: context,

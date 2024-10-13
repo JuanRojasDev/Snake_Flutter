@@ -76,7 +76,7 @@ class ButonBarHome extends StatelessWidget {
   });
 
   final Home_Body_Provider body_Provider;
-  final HomeScreen widget;
+  final widget;
 
   @override
   Widget build(BuildContext context) {
@@ -191,7 +191,7 @@ class ButonBarHome extends StatelessWidget {
               body_Provider.setAppBarTitle(
                   'Identificar'); // Cambia el título del AppBar
               body_Provider.changedBodyHome(PageIdentification());
-                              Navigator.push(
+                Navigator.push(
                 context,
                 MaterialPageRoute(
                   builder: (context) => Scaffold(
@@ -240,7 +240,7 @@ class DrawerHome extends StatelessWidget {
     required this.widget,
   });
 
-  final HomeScreen widget;
+  final widget;
 
   @override
   Widget build(BuildContext context) {

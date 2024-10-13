@@ -6,16 +6,20 @@ import 'package:http/http.dart' as http;
 import 'package:image_picker/image_picker.dart';
 import 'package:loading_indicator/loading_indicator.dart';
 import 'package:provider/provider.dart';
+import 'package:sqlite_flutter_crud/Authtentication/home.dart';
 import 'dart:convert';
 import 'package:sqlite_flutter_crud/Authtentication/login.dart';
+import 'package:sqlite_flutter_crud/JsonModels/SnakeReportDefault.dart';
 import 'package:sqlite_flutter_crud/JsonModels/reporte.dart';
 import 'package:sqlite_flutter_crud/JsonModels/users.dart';
+import 'package:sqlite_flutter_crud/Providers/Home_Body_provider.dart';
 import 'package:sqlite_flutter_crud/Providers/report_provider.dart';
 import 'package:sqlite_flutter_crud/SQLite/sqlite.dart';
 import 'package:sqlite_flutter_crud/Views/report/allReports/allReport.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:path/path.dart' as path;
 import 'package:firebase_storage/firebase_storage.dart';
+import 'package:sqlite_flutter_crud/Views/report/reportsMe/createReport.dart';
 
 class PageIdentification extends StatefulWidget {
   const PageIdentification({Key? key}) : super(key: key);
@@ -30,6 +34,7 @@ class _PageIdentificationState extends State<PageIdentification> {
   bool isVisibleConfirm = false;
   final _formKey = GlobalKey<FormState>();
   final storage = FlutterSecureStorage();
+  late SnakeReportDefault dataDefault;
 
   Future<void> _pickImage(ImageSource source) async {
     try {
@@ -52,7 +57,7 @@ class _PageIdentificationState extends State<PageIdentification> {
     });
 
     var request = http.MultipartRequest(
-        'POST', Uri.parse("https://back-1-9ehs.onrender.com/snakeidentify"));
+        'POST', Uri.parse("https://back-production-0678.up.railway.app/snakeidentify"));
     var multipartFile = await http.MultipartFile.fromBytes(
       'image',
       image,
@@ -63,7 +68,11 @@ class _PageIdentificationState extends State<PageIdentification> {
     var response = await request.send();
     if (response.statusCode == 200) {
       final responseBody = await response.stream.bytesToString();
+      final decodedResponse = jsonDecode(responseBody);
       setState(() {
+        dataDefault = SnakeReportDefault.fromJson(decodedResponse);
+        dataDefault.image = image;
+        print("Default"+dataDefault.name);
         respuesta = responseBody.trim();
         isVisibleConfirm = false;
       });
@@ -74,6 +83,7 @@ class _PageIdentificationState extends State<PageIdentification> {
 
   @override
   Widget build(BuildContext context) {
+    final body_Provider = context.watch<Home_Body_Provider>();
     return Scaffold(
       backgroundColor: Colors.grey[100],
 
@@ -157,7 +167,9 @@ class _PageIdentificationState extends State<PageIdentification> {
                     ),
                   )
                 else if (respuesta.isNotEmpty)
-                  Card(
+                Column(
+                  children: [
+                Card(
                     elevation: 4,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(15),
@@ -171,6 +183,39 @@ class _PageIdentificationState extends State<PageIdentification> {
                       ),
                     ),
                   ),
+                  SizedBox(height: 10,),
+                    ElevatedButton.icon(
+                      icon: Icon(Icons.photo_library),
+                      label: Text('Publicar',style: TextStyle(  color: Colors.black)),
+                      onPressed: (){
+
+                      Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => Scaffold(
+                          appBar: AppBar(
+                            title: Text("Identificar Serpientes"),
+                            leading: BuilderMenu(),
+                          ),
+                          body:createReport(defaultData: dataDefault,),
+                        ),
+                      ),
+                      );              
+
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.green,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(13),
+                        ),
+                        padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                      ),
+                    ),
+                  ],
+                )
+
+                  
+
               ],
             ),
           ),

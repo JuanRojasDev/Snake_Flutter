@@ -21,7 +21,7 @@ class Snake_Provider extends ChangeNotifier {
 
   Future<void> fectSnakesPoison(bool valid) async {
       final String url =
-          'https://back-1-9ehs.onrender.com/Snakes/poison?valid=' +
+          'https://back-production-0678.up.railway.app/Snakes/poison?valid=' +
               valid.toString(); // server ip
 
       print(url);
