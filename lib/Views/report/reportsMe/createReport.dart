@@ -48,8 +48,8 @@ class _createReportState extends State<createReport> {
   @mustCallSuper
   void initState() {
     if (!(widget.defaultData == null)){
-      _Controllertitle.text = widget.defaultData!.name;
-      _ControllerDescription.text = widget.defaultData!.description;
+      _Controllertitle.text = widget.defaultData!.name!;
+      _ControllerDescription.text = widget.defaultData!.description!;
       _image = widget.defaultData!.image;
       subirImagenFireBaseData(_image!);
     }
@@ -252,6 +252,35 @@ class _createReportState extends State<createReport> {
 
     return Scaffold(
       backgroundColor: Colors.white,
+        appBar: AppBar(
+          title: Text(
+              "Crear Publicacion", // Actualiza el título según el icono seleccionado
+              style: TextStyle(
+                  color: Colors.black,
+                  fontSize: 24)),
+          backgroundColor: Colors.white,
+          elevation: 0,
+          actions: [
+            TextButton(
+                    onPressed: () async{
+
+                       await createReport();
+
+                       reportProvider.fecthData = false;
+
+                       Navigator.pop(context, reportProvider.fetchAllReports());
+                    }
+                    , 
+            child: Text("PUBLICAR",
+            style: TextStyle(
+                  color: Color.fromARGB(255, 0, 0, 0),
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                )
+                  )
+            ),
+            
+          ],),
       body: Center(
         child: SingleChildScrollView(
           child: Padding(
@@ -260,17 +289,6 @@ class _createReportState extends State<createReport> {
               key: _formKey,
               child: Column(
                 children: [
-                  const SizedBox(height: 10), // Espacio desde la parte superior
-                  const Center(
-                    child: Text(
-                      "Publicacion",
-                      style: TextStyle(
-                          fontSize: 36,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.black),
-                    ),
-                  ),
-                  const SizedBox(height: 20),
                   Container(
                     margin: const EdgeInsets.all(8),
                     padding:
@@ -304,6 +322,7 @@ class _createReportState extends State<createReport> {
                     margin: const EdgeInsets.all(8),
                     padding:
                         const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                    height: 500,
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(8),
                       color: Color(0xFFF6F6F6)
@@ -314,10 +333,12 @@ class _createReportState extends State<createReport> {
                     ),
                     child: TextFormField(
                       controller: _ControllerDescription,
+                      maxLines: 19,
                       decoration: InputDecoration(
                         icon: Icon(Icons.description),
                         border: InputBorder.none,
                         hintText: "descripcion",
+                      
                         hintStyle: TextStyle(
                             color: Color(
                                 0xFFBFBFBF)), // Color del icono // Color del texto del hint
@@ -325,53 +346,67 @@ class _createReportState extends State<createReport> {
                     ),
                   ),
                   _image != null
-                      ? Image.memory(_image!)
+                      ? Image.memory(_image! ,width: MediaQuery.of(context).size.width,)
                       : Text("no hay imagen selecionada"),
-                  ElevatedButton(
-                    onPressed: () async {
-                      try {
-                        // Pick an image from the gallery
-                        final pickedFile = await ImagePicker()
-                            .pickImage(source: ImageSource.gallery);
-
-                        if (pickedFile != null) {
-                          // Read the image data into a Uint8List
-                          final bytes = await pickedFile.readAsBytes();
-                          setState(() {
-                            _image = bytes;
-                          });
-                          // Call the function to upload the image to Firebase Storage
-                          File file = File(pickedFile.path);
-    
-                            print('$file');
-                          
-                           imageUrl = await subirImagenFireBase(file);
-                          
-                          // Do something with the uploaded image URL (e.g., display it)
-                          print(
-                              'Imagen subida correctamente: $imageUrl'); // Optional: print success message
-                        } else {
-                          // Handle user cancellation or error
-                          print('No image selected.'); // Optional: inform user
+                  Container(
+                                        margin: const EdgeInsets.all(8),
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                    width: MediaQuery.of(context).size.width,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(8),
+                      color: Color(0xFFF6F6F6)
+                          .withOpacity(0.8), // Color llamativo para el fondo
+                      border: Border.all(
+                          color: Color(0xFFBFBFBF),
+                          width: 0.4), // Borde más grueso
+                    ),
+                    
+                    child: ElevatedButton.icon(
+                      onPressed: () async {
+                        try {
+                          // Pick an image from the gallery
+                          final pickedFile = await ImagePicker()
+                              .pickImage(source: ImageSource.gallery);
+                    
+                          if (pickedFile != null) {
+                            // Read the image data into a Uint8List
+                            final bytes = await pickedFile.readAsBytes();
+                            setState(() {
+                              _image = bytes;
+                            });
+                            // Call the function to upload the image to Firebase Storage
+                            File file = File(pickedFile.path);
+                        
+                              print('$file');
+                            
+                             imageUrl = await subirImagenFireBase(file);
+                            
+                            // Do something with the uploaded image URL (e.g., display it)
+                            print(
+                                'Imagen subida correctamente: $imageUrl'); // Optional: print success message
+                          } else {
+                            // Handle user cancellation or error
+                            print('No image selected.'); // Optional: inform user
+                          }
+                        } catch (error) {
+                          // Handle any errors that might occur during image picking or upload
+                          print("Error picking or uploading image: $error");
                         }
-                      } catch (error) {
-                        // Handle any errors that might occur during image picking or upload
-                        print("Error picking or uploading image: $error");
-                      }
-                    },
-                    child: Text('Seleccionar Imagen'),
+                      },
+                        icon: Icon(Icons.photo_library),
+                        label: Text('Galería',style: TextStyle(  color: Colors.black)),
+                          style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.white,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                        ),
+                    ),
                   ),
-                  ElevatedButton(
-                    onPressed: () async{
 
-                       await createReport();
 
-                       reportProvider.fecthData = false;
-
-                       Navigator.pop(context, reportProvider.fetchAllReports());
-                    },
-                    child: Text('Crear Publicación'),
-                  ),
 
                   iscreateReportTrue
                       ? const Text(

@@ -12,6 +12,7 @@ import 'package:sqlite_flutter_crud/JsonModels/reporte.dart';
 import 'package:sqlite_flutter_crud/Providers/Home_Body_provider.dart';
 import 'package:sqlite_flutter_crud/Providers/report_provider.dart';
 import 'package:sqlite_flutter_crud/Views/report/reportsMe/createReport.dart';
+import 'package:sqlite_flutter_crud/Views/snake/SnakeIdentification/pageidentification.dart';
 import '../../../JsonModels/Usuario.dart';
 
 class ReportPage extends StatefulWidget {
@@ -78,22 +79,23 @@ class _ReportPageState extends State<ReportPage> {
       fetchAllReports();
       reportProvider.fecthData = true;
     }
-
+    final body_Provider = context.watch<Home_Body_Provider>();
     return Scaffold(
       backgroundColor: Colors.white,
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => Scaffold(
-                appBar: AppBar(
-                  title: Text('Crear Publicacion'),
-                ),
-                body: createReport(),
-              ),
-            ),
-          );
+Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => Scaffold(
+                    appBar: AppBar(
+                      title: Text("Identificar Serpientes"),
+                      leading: BuilderMenu(),
+                    ),
+                    drawer: DrawerHome(widget: widget),
+                    
+                    body:PageIdentification(),
+                    bottomNavigationBar: ButonBarHome(body_Provider: body_Provider, widget: widget))));
         },
         child: Icon(Icons.add),
         backgroundColor: Color(0xFF4CAF50),
@@ -124,7 +126,7 @@ class _ReportPageState extends State<ReportPage> {
       onTap: () {},
       child: Card(
         margin: EdgeInsets.all(10),
-        color: Color(0xFFFAF3E0),
+        color: Colors.white,
         child: Padding(
           padding: EdgeInsets.all(15),
           child: Column(
@@ -151,11 +153,19 @@ class _ReportPageState extends State<ReportPage> {
                             fontWeight: FontWeight.bold,
                           ),
                         ),
+                        
                       ],
                     ),
                   ),
                 ],
               ),
+                                      Text(
+                          utf8.decode(report.titulo!.codeUnits) ?? '',
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
               SizedBox(height: 10),
               CachedNetworkImage(
                 imageUrl: report.imagen ??
@@ -177,11 +187,11 @@ class _ReportPageState extends State<ReportPage> {
               ),
               SizedBox(height: 10),
               Text(
-                report.descripcion ?? '',
+
+                utf8.decode(report.descripcion!.codeUnits) ?? '',
                 style: TextStyle(
                   fontSize: 16,
                   fontStyle: FontStyle.italic,
-                  color: Colors.grey,
                 ),
               ),
               SizedBox(height: 10),

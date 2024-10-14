@@ -18,6 +18,10 @@ class ProfilePage extends StatefulWidget {
 }
 
 class _ProfilePageState extends State<ProfilePage> {
+  
+
+
+
   bool showPosts = true;
   bool isEditing = false;
 
@@ -128,8 +132,10 @@ class _ProfilePageState extends State<ProfilePage> {
 
   @override
   Widget build(BuildContext context) {
-    final user_provider = context.watch<UserProvider>();
 
+
+
+    final user_provider = context.watch<UserProvider>();
     _nameController.text = user_provider.usernow.nombres;
     if(user_provider.usernow.descripcion == null){
       _statusController.text = user_provider.usernow.descripcion ?? "null" ;
@@ -367,33 +373,33 @@ String calcularTiempoTranscurrido(String fechaString) {
 
 
     Widget _buildPosts() {
-      
       final report_provider = context.watch<Reporte_Provider>();
+      
+
+      
       int leng = report_provider.reportesMe.length;
       if (!report_provider.fecthreportesMe){
         report_provider.fetchMeReports();
-         
-        return const Center(child: CircularProgressIndicator());
-        
+        report_provider.fecthreportesMe = true;
       }
-      else{
-        if(report_provider.reportesMe.length > 0){
+      if(report_provider.reportesMe.length > 0){
           return Column(
           children: List.generate(
             report_provider.reportesMe.length,
             (index) => _buildPostItem(
-              report_provider.reportesMe[index].titulo,
-              report_provider.reportesMe[index].descripcion,
+              utf8.decode(report_provider.reportesMe[index].titulo!.codeUnits),
+              utf8.decode(report_provider.reportesMe[index].descripcion!.codeUnits),
               calcularTiempoTranscurrido(report_provider.reportesMe[index].created_at ?? "2023-11-28 10:30:00"),
               report_provider.reportesMe[index].reportId,
             ),
           ),
         );
-        }
-        else{
-          return Text("null data ");
-        }
       }
+        
+        else{
+          return Text("No has creado Reportes");
+        }
+      
     }
 
 

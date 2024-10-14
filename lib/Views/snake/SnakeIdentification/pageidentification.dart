@@ -72,12 +72,23 @@ class _PageIdentificationState extends State<PageIdentification> {
       setState(() {
         dataDefault = SnakeReportDefault.fromJson(decodedResponse);
         dataDefault.image = image;
-        print("Default"+dataDefault.name);
-        respuesta = responseBody.trim();
-        isVisibleConfirm = false;
+        print("Default"+dataDefault.issnake.toString());
+        if(dataDefault.name == null){
+          print("esto es null");
+        }
+        if(dataDefault.issnake){
+          respuesta = 'Nombre: ${dataDefault.name}, Descripción: ${dataDefault.description}, Es Venenosa: ${dataDefault.venomous! ? 'sí' : 'no'}';
+        }
+        else{
+          respuesta = 'Error No se identifica una serpiente en la imagne';
+        }
+          isVisibleConfirm = false;
       });
     } else {
       print('Error al subir la imagen: ${response.statusCode}');
+        setState(() {
+        isVisibleConfirm = false;
+      });
     }
   }
 
@@ -166,7 +177,7 @@ class _PageIdentificationState extends State<PageIdentification> {
                       strokeWidth: BorderSide.strokeAlignCenter,
                     ),
                   )
-                else if (respuesta.isNotEmpty)
+                else if (respuesta.isNotEmpty )
                 Column(
                   children: [
                 Card(
@@ -184,6 +195,7 @@ class _PageIdentificationState extends State<PageIdentification> {
                     ),
                   ),
                   SizedBox(height: 10,),
+                    dataDefault.issnake ?
                     ElevatedButton.icon(
                       icon: Icon(Icons.photo_library),
                       label: Text('Publicar',style: TextStyle(  color: Colors.black)),
@@ -193,10 +205,6 @@ class _PageIdentificationState extends State<PageIdentification> {
                       context,
                       MaterialPageRoute(
                         builder: (context) => Scaffold(
-                          appBar: AppBar(
-                            title: Text("Identificar Serpientes"),
-                            leading: BuilderMenu(),
-                          ),
                           body:createReport(defaultData: dataDefault,),
                         ),
                       ),
@@ -210,7 +218,11 @@ class _PageIdentificationState extends State<PageIdentification> {
                         ),
                         padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
                       ),
-                    ),
+                    )
+                    :
+                    Text("La Imagen no es una serpiente")
+                    
+                    ,
                   ],
                 )
 

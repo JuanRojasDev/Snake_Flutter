@@ -177,37 +177,6 @@ class ButonBarHome extends StatelessWidget {
               );
             },
           ),
-          IconButton(
-            iconSize: 30, // Ajusta el tamaño del ícono
-            icon: Icon(
-              Icons.camera,
-              color: body_Provider.selectedIndex == 3
-                  ? Colors.green
-                  : Color(0xFF6e7168),
-            ),
-            onPressed: () {
-              body_Provider
-                  .setSelectedIndex(3); // Actualiza el selectedIndex
-              body_Provider.setAppBarTitle(
-                  'Identificar'); // Cambia el título del AppBar
-              body_Provider.changedBodyHome(PageIdentification());
-                Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => Scaffold(
-                    appBar: AppBar(
-                      title: Text("Identificar Serpientes"),
-                      leading: BuilderMenu(),
-                    ),
-                    drawer: DrawerHome(widget: widget),
-                    
-                    body:PageIdentification(),
-                    bottomNavigationBar: ButonBarHome(body_Provider: body_Provider, widget: widget)
-                  ),
-                ),
-              );              
-            },
-          ),
         ],
       ),
     );
@@ -244,17 +213,18 @@ class DrawerHome extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final user_provider = context.watch<UserProvider>();
     return Drawer(
       child: ListView(
         padding: EdgeInsets.zero,
         children: <Widget>[
           UserAccountsDrawerHeader(
             accountName:
-                Text(widget.usuario?.nombres ?? 'Usuario no disponible'),
+                Text(user_provider.usernow.nombres),
             accountEmail:
-                Text(widget.usuario?.correo ?? 'Usuario no disponible'),
+                Text(user_provider.usernow.correo),
             currentAccountPicture: CircleAvatar(
-              backgroundImage: NetworkImage(widget.usuario?.imagen ??
+              backgroundImage: NetworkImage(user_provider.usernow.imagen ??
                   'https://www.google.com/images/branding/googlelogo/2x/googlelogo_color_272x92dp.png'),
             ),
             decoration: BoxDecoration(color: Color(0xFF5DB075)),
@@ -308,9 +278,9 @@ class DrawerHome extends StatelessWidget {
                 Text('Cerrar Sesión', style: TextStyle(color: Colors.red)),
             onTap: () {
               // Acción para cerrar sesión y redirigir al login
-    
-              Navigator.pushReplacement(context,
-                  MaterialPageRoute(builder: (context) => LoginScreen()));
+              user_provider.logoutUser();
+              Navigator.pushAndRemoveUntil(context,
+                  MaterialPageRoute(builder: (context) => LoginScreen()),(route) => false);
             },
           ),
         ],
@@ -361,6 +331,21 @@ class Body_init extends StatelessWidget {
                   onTap: () {
                     // Acción al pulsar la tarjeta de serpientes venenosas
                     fectSnakesPoison(true);
+                    Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => Scaffold(
+                        appBar: AppBar(
+                          title: Text('Serpientes'),
+                          leading: BuilderMenu(),
+                        ),
+                        drawer: DrawerHome(widget: Widget),
+                        
+                        body: Screen_galeria(),
+                        bottomNavigationBar: ButonBarHome(body_Provider: body_Provider, widget: Widget)
+                      ),
+                    ),
+                    );
                   },
                 ),
                 CategoryCard(
@@ -369,6 +354,21 @@ class Body_init extends StatelessWidget {
                   onTap: () {
                     // Acción al pulsar la tarjeta de serpientes no venenosas
                     fectSnakesPoison(false);
+                    Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => Scaffold(
+                        appBar: AppBar(
+                          title: Text('Serpientes'),
+                          leading: BuilderMenu(),
+                        ),
+                        drawer: DrawerHome(widget: Widget),
+                        
+                        body: Screen_galeria(),
+                        bottomNavigationBar: ButonBarHome(body_Provider: body_Provider, widget: Widget)
+                      ),
+                    ),
+                    );
                   },
                 ),
               ],

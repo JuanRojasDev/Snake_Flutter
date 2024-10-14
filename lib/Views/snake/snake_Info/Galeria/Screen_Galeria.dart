@@ -24,11 +24,6 @@ class _Screen_galeriaState extends State<Screen_galeria> {
   ) {
     final snake_Provider = context.watch<Snake_Provider>();
 
-    if (!snake_Provider.fetcdata) {
-      snake_Provider.fectSnakesPoison(true);
-      snake_Provider.fetcdata = true;
-    }
-
     if (snake_Provider.serpientes.length > 0) {
       return SafeArea(
           child: Column(
@@ -92,12 +87,23 @@ lista horizontal
 */
 
   Widget _buildListItem(BuildContext context, Serpiente serpiente) {
-    final body_Provider = context.watch<Home_Body_Provider>();
     return GestureDetector(
       onTap: () {
         // Replace with your tap handler logic
+        Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => Scaffold(
+                        appBar: AppBar(
+                          title: Text('Serpientes'),
+                        ),
+          
+                        body: Info_Snake(infoSnake: serpiente),
 
-        body_Provider.changedBodyHome(Info_Snake(infoSnake: serpiente));
+                      ),
+                    ),
+          );
+        
       },
       child: Container(
         // Set a width to avoid excessive stretching
@@ -147,12 +153,21 @@ lista horizontal
   }
 
   Widget _buildGridTile(BuildContext context, Serpiente serpiente) {
-    final body_Provider = context.watch<Home_Body_Provider>();
     return GestureDetector(
       onTap: () {
-        body_Provider.changedBodyHome(Info_Snake(
-          infoSnake: serpiente,
-        ));
+        Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => Scaffold(
+                        appBar: AppBar(
+                          title: Text('Informacion '+serpiente.nombre3),
+                        ),
+                        
+                        body: Info_Snake(infoSnake: serpiente),
+
+                      ),
+                    ),
+          );
       },
       child: Card(
         margin: const EdgeInsets.all(10),
