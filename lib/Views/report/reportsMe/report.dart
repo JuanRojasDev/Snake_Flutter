@@ -48,16 +48,16 @@ class _ReportPageState extends State<ReportPage> {
   void _addReport(Reporte report) {
     setState(() {
       widget._reports.add(report);
-      Provider.of<Reporte_Provider>(context, listen: false)
+      Provider.of<ReportProvider>(context, listen: false)
           .agregarReportes(report);
     });
   }
 
   Future<void> fetchAllReports() async {
-    final reportProvider = context.watch<Reporte_Provider>();
+    final reportProvider = context.watch<ReportProvider>();
     try {
-      final response = await http
-          .get(Uri.parse('https://back-production-0678.up.railway.app/Reporte/all'));
+      final response = await http.get(
+          Uri.parse('https://back-production-0678.up.railway.app/Reporte/all'));
       if (response.statusCode == 200) {
         final List<dynamic> data = jsonDecode(response.body);
         final List<Reporte> reports =
@@ -73,29 +73,29 @@ class _ReportPageState extends State<ReportPage> {
 
   @override
   Widget build(BuildContext context) {
-    final reportProvider = context.watch<Reporte_Provider>();
+    final reportProvider = context.watch<ReportProvider>();
 
-    if (!reportProvider.fecthData) {
+    if (!reportProvider.fetchData) {
       fetchAllReports();
-      reportProvider.fecthData = true;
+      reportProvider.fetchData = true;
     }
     final body_Provider = context.watch<Home_Body_Provider>();
     return Scaffold(
       backgroundColor: Colors.white,
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-Navigator.push(
-                context,
-                MaterialPageRoute(
+          Navigator.push(
+              context,
+              MaterialPageRoute(
                   builder: (context) => Scaffold(
-                    appBar: AppBar(
-                      title: Text("Identificar Serpientes"),
-                      leading: BuilderMenu(),
-                    ),
-                    drawer: DrawerHome(widget: widget),
-                    
-                    body:PageIdentification(),
-                    bottomNavigationBar: ButonBarHome(body_Provider: body_Provider, widget: widget))));
+                      appBar: AppBar(
+                        title: Text("Identificar Serpientes"),
+                        leading: BuilderMenu(),
+                      ),
+                      drawer: DrawerHome(widget: widget),
+                      body: PageIdentification(),
+                      bottomNavigationBar: ButonBarHome(
+                          body_Provider: body_Provider, widget: widget))));
         },
         child: Icon(Icons.add),
         backgroundColor: Color(0xFF4CAF50),
@@ -120,7 +120,7 @@ Navigator.push(
   }
 
   Widget _reportCard(BuildContext context, Reporte report) {
-    final reportProvider = context.watch<Reporte_Provider>();
+    final reportProvider = context.watch<ReportProvider>();
 
     return GestureDetector(
       onTap: () {},
@@ -153,19 +153,18 @@ Navigator.push(
                             fontWeight: FontWeight.bold,
                           ),
                         ),
-                        
                       ],
                     ),
                   ),
                 ],
               ),
-                                      Text(
-                          utf8.decode(report.titulo!.codeUnits) ?? '',
-                          style: TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
+              Text(
+                utf8.decode(report.titulo!.codeUnits) ?? '',
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
               SizedBox(height: 10),
               CachedNetworkImage(
                 imageUrl: report.imagen ??
@@ -187,7 +186,6 @@ Navigator.push(
               ),
               SizedBox(height: 10),
               Text(
-
                 utf8.decode(report.descripcion!.codeUnits) ?? '',
                 style: TextStyle(
                   fontSize: 16,

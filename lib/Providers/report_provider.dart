@@ -4,13 +4,12 @@ import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:sqlite_flutter_crud/JsonModels/reporte.dart';
 
-class Reporte_Provider extends ChangeNotifier {
+class ReportProvider extends ChangeNotifier {
   List<Reporte> reportesAll = [];
-  bool fecthData = false;
+  bool fetchData = false;
   final storage = new FlutterSecureStorage();
   List<Reporte> reportesMe = [];
   bool fecthreportesMe = false;
-
 
   void setReportes(List<Reporte> nuevosReportes) {
     reportesAll = nuevosReportes;
@@ -27,17 +26,16 @@ class Reporte_Provider extends ChangeNotifier {
     notifyListeners();
   }
 
-
-void eliminarReportePorId(int id) {
-  reportesAll.removeWhere((reporte) => reporte.reportId == id);
-  reportesMe.removeWhere((reporte) => reporte.reportId == id);
-  notifyListeners();
-}
+  void eliminarReportePorId(int id) {
+    reportesAll.removeWhere((reporte) => reporte.reportId == id);
+    reportesMe.removeWhere((reporte) => reporte.reportId == id);
+    notifyListeners();
+  }
 
   Future<void> fetchAllReports() async {
     try {
-      final response = await http
-          .get(Uri.parse('https://back-production-0678.up.railway.app/Reporte/all'));
+      final response = await http.get(
+          Uri.parse('https://back-production-0678.up.railway.app/Reporte/all'));
       if (response.statusCode == 200) {
         final List<dynamic> data = jsonDecode(response.body);
         final List<Reporte> reports =
@@ -53,26 +51,28 @@ void eliminarReportePorId(int id) {
     }
   }
 
-    Future<void> fetchMeReports() async {
+  Future<void> fetchMeReports() async {
     try {
       final String? token = await storage.read(key: 'jwt');
       if (token == null) {
         throw Exception('Missing JWT token'); // Handle missing token error
       }
       final Map<String, String> headers = {
-      'Content-Type': 'application/json; charset=utf-8',
-      'Authorization': 'Bearer $token', // Include retrieved JWT token
-      'accept': 'application/json',
+        'Content-Type': 'application/json; charset=utf-8',
+        'Authorization': 'Bearer $token', // Include retrieved JWT token
+        'accept': 'application/json',
       };
-      final response = await http
-          .get(Uri.parse('https://back-production-0678.up.railway.app/Reporte/all_me'),headers: headers);
+      final response = await http.get(
+          Uri.parse(
+              'https://back-production-0678.up.railway.app/Reporte/all_me'),
+          headers: headers);
 
       if (response.statusCode == 200) {
         final List<dynamic> data = jsonDecode(response.body);
-        final List<Reporte> reports = data.map((json) => Reporte.fromJsonNoUSer(json)).toList();
+        final List<Reporte> reports =
+            data.map((json) => Reporte.fromJsonNoUSer(json)).toList();
         fecthreportesMe = true;
         setMeReports(reports);
-        
       } else {
         // Handle error
         throw Exception('Failed to load reports');
@@ -91,10 +91,8 @@ void eliminarReportePorId(int id) {
     }
 
     // 2. Construct the request URL
-    final Uri url =
-        Uri.parse('https://back-production-0678.up.railway.app/Reporte/Eliminar?id=$id');
-
-
+    final Uri url = Uri.parse(
+        'https://back-production-0678.up.railway.app/Reporte/Eliminar?id=$id');
 
     // 4. Set request headers
     final Map<String, String> headers = {
@@ -104,8 +102,10 @@ void eliminarReportePorId(int id) {
     };
 
     // 5. Send the POST request
-    final http.Response response =
-        await http.delete(url, headers: headers,);
+    final http.Response response = await http.delete(
+      url,
+      headers: headers,
+    );
 
     // 6. Handle the response
     if (response.statusCode == 200 || response.statusCode == 201) {
@@ -118,11 +118,10 @@ void eliminarReportePorId(int id) {
     } else {
       // Request failed, handle the error
       print('Error: ${response.statusCode}');
-      print('${response.body}');
+      print(response.body);
       throw Exception('Error creating report'); // Throw a custom exception
     }
 
     return response;
   }
-
 }

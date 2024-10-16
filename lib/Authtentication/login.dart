@@ -6,10 +6,10 @@ import 'package:provider/provider.dart';
 import 'package:sqlite_flutter_crud/Authtentication/signup.dart';
 import 'package:sqlite_flutter_crud/JsonModels/Usuario.dart';
 import 'package:sqlite_flutter_crud/Providers/Home_Body_provider.dart';
-import 'package:sqlite_flutter_crud/Providers/usuer_provider.dart';
+import 'package:sqlite_flutter_crud/Providers/user_provider.dart';
 import 'dart:convert';
-import '../JsonModels/users.dart';
 import 'home.dart';
+import 'package:flutter/gestures.dart'; // Import necesario
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({Key? key}) : super(key: key);
@@ -23,35 +23,36 @@ class _LoginScreenState extends State<LoginScreen> {
   final TextEditingController _passwordController = TextEditingController();
   bool _isVisible = false;
   bool _isLoginTrue = false;
-  final storage = new FlutterSecureStorage();
+  bool _acceptTerms = false;
+  final storage = FlutterSecureStorage();
+
   Future<void> _login() async {
     final String url =
         'https://back-production-0678.up.railway.app/users/login'; // server ip
 
     final Map<String, String> body = {
-      'email': _usernameController.text,
+      'identifier': _usernameController.text,
       'password': _passwordController.text,
     };
 
-      showDialog(
+    showDialog(
       context: context,
       barrierDismissible: false,
       builder: (context) {
-      return Overlay(
-            initialEntries: [
-              OverlayEntry(
-                builder: (context) => Center(
-                  child: LoadingIndicator(
-                    indicatorType: Indicator.ballPulse,
-                    colors: const [Color.fromARGB(255, 36, 235, 18), Color.fromARGB(255, 25, 224, 128),Color.fromARGB(255, 59, 235, 150),Color.fromARGB(255, 116, 241, 181)],
-                    pathBackgroundColor: Color.fromARGB(255, 138, 209, 5),
-                  ),
-                ),
-              ),
+        return Center(
+          child: LoadingIndicator(
+            indicatorType: Indicator.ballPulse,
+            colors: const [
+              Color.fromARGB(255, 36, 235, 18),
+              Color.fromARGB(255, 25, 224, 128),
+              Color.fromARGB(255, 59, 235, 150),
+              Color.fromARGB(255, 116, 241, 181)
             ],
-          );
-        },
-      );
+            pathBackgroundColor: Color.fromARGB(255, 138, 209, 5),
+          ),
+        );
+      },
+    );
 
     final Map<String, String> headers = {'Content-Type': 'application/json'};
 
@@ -62,10 +63,7 @@ class _LoginScreenState extends State<LoginScreen> {
       // Inicio de sesión exitoso, navegar a la siguiente pantalla (home.dart)
       Map<String, dynamic> jsonResponse = jsonDecode(response.body);
       Usuario user = Usuario.fromJson(jsonResponse);
-      print(jsonResponse);
-      print("Hola");
-      print(user.imagen_fondo);
-      await storage.write(key: 'jwt', value: user.Token);
+      await storage.write(key: 'jwt', value: user.token);
 
       Navigator.pushReplacement(
           context,
@@ -75,13 +73,10 @@ class _LoginScreenState extends State<LoginScreen> {
                   ))); // Navegar a home.dart
     } else {
       // Mostrar un mensaje de error al usuario
-      Navigator.pop(context);
       setState(() {
         _isLoginTrue = true;
       });
     }
-
-
   }
 
   Future<void> _continueAsGuest() async {
@@ -89,12 +84,45 @@ class _LoginScreenState extends State<LoginScreen> {
     Navigator.pushReplacement(
         context,
         MaterialPageRoute(
-            builder: (context) => HomeScreen(usuario: Usuario(nombres: "defaul", correo: "correo", fechaN: "fechaN",descripcion: "Default",imagen_fondo: ""),))); // Navegar a home.dart
+            builder: (context) => HomeScreen(
+                  usuario: Usuario(
+                      nombres: "Invitado",
+                      correo: "guest@example.com",
+                      fechaN: "fechaN",
+                      descripcion: "Default",
+                      imagen_fondo: "",
+                      id: ''),
+                ))); // Navegar a home.dart
+  }
+
+  void _showTermsAndConditions() {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Términos y Condiciones'),
+          content: SingleChildScrollView(
+            child: ListBody(
+              children: <Widget>[
+                Text('Aquí van los términos y condiciones...'),
+              ],
+            ),
+          ),
+          actions: <Widget>[
+            TextButton(
+              child: Text('Aceptar'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
   }
 
   @override
   Widget build(BuildContext context) {
-    
     return Scaffold(
       backgroundColor: Colors.white,
       body: SingleChildScrollView(
@@ -132,7 +160,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       Icons.email,
                     ), // Color del icono
                     border: InputBorder.none,
-                    hintText: "Correo Electrónico",
+                    hintText: "Correo Electrónico o Nombre de Usuario",
                     hintStyle: TextStyle(
                         color: Color(
                             0xFFBFBFBF)), // Color del icono // Color del texto del hint
@@ -234,6 +262,10 @@ class _LoginScreenState extends State<LoginScreen> {
                 endIndent: 20,
               ),
               const SizedBox(height: 20),
+              const Center(
+                child: Text("O iniciar sesión con:"),
+              ),
+              const SizedBox(height: 10),
               Container(
                 height: 55,
                 width: MediaQuery.of(context).size.width * .9,
@@ -255,6 +287,30 @@ class _LoginScreenState extends State<LoginScreen> {
                     style: TextStyle(color: Colors.black, fontSize: 16.0),
                   ),
                 ),
+              ),
+              const SizedBox(height: 10),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  IconButton(
+                    icon: const Icon(Icons.g_mobiledata, size: 40),
+                    onPressed: () {
+                      // Aquí agregarías la autenticación con Google
+                    },
+                  ),
+                  IconButton(
+                    icon: const Icon(Icons.youtube_searched_for, size: 40),
+                    onPressed: () {
+                      // Aquí agregarías la autenticación con Microsoft
+                    },
+                  ),
+                  IconButton(
+                    icon: const Icon(Icons.facebook, size: 40),
+                    onPressed: () {
+                      // Aquí agregarías la autenticación con Facebook
+                    },
+                  ),
+                ],
               ),
             ],
           ),

@@ -1,5 +1,3 @@
-import 'dart:convert';
-
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
@@ -91,19 +89,16 @@ lista horizontal
       onTap: () {
         // Replace with your tap handler logic
         Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => Scaffold(
-                        appBar: AppBar(
-                          title: Text('Serpientes'),
-                        ),
-          
-                        body: Info_Snake(infoSnake: serpiente),
-
-                      ),
-                    ),
-          );
-        
+          context,
+          MaterialPageRoute(
+            builder: (context) => Scaffold(
+              appBar: AppBar(
+                title: Text('Serpientes'),
+              ),
+              body: Info_Snake(infoSnake: serpiente),
+            ),
+          ),
+        );
       },
       child: Container(
         // Set a width to avoid excessive stretching
@@ -156,18 +151,16 @@ lista horizontal
     return GestureDetector(
       onTap: () {
         Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => Scaffold(
-                        appBar: AppBar(
-                          title: Text('Informacion '+serpiente.nombre3),
-                        ),
-                        
-                        body: Info_Snake(infoSnake: serpiente),
-
-                      ),
-                    ),
-          );
+          context,
+          MaterialPageRoute(
+            builder: (context) => Scaffold(
+              appBar: AppBar(
+                title: Text('Informacion ' + serpiente.nombre3),
+              ),
+              body: Info_Snake(infoSnake: serpiente),
+            ),
+          ),
+        );
       },
       child: Card(
         margin: const EdgeInsets.all(10),
@@ -177,9 +170,7 @@ lista horizontal
         child: Container(
           decoration: BoxDecoration(
             image: DecorationImage(
-              image: NetworkImage(
-                   
-                      serpiente.imagen),
+              image: NetworkImage(serpiente.imagen),
               fit: BoxFit.fill,
               alignment: Alignment.topCenter,
             ),

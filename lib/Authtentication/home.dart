@@ -1,9 +1,9 @@
-import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:sqlite_flutter_crud/Authtentication/login.dart';
 import 'package:sqlite_flutter_crud/Providers/snake_provider.dart';
-import 'package:sqlite_flutter_crud/Providers/usuer_provider.dart';
+import 'package:sqlite_flutter_crud/Providers/user_provider.dart';
+import 'package:sqlite_flutter_crud/Views/report/allReports/allReport.dart';
 import 'package:sqlite_flutter_crud/Views/report/reportsMe/report.dart';
 import 'package:sqlite_flutter_crud/Views/profile/profile.dart';
 import 'package:sqlite_flutter_crud/Providers/Home_Body_provider.dart';
@@ -11,7 +11,6 @@ import 'package:sqlite_flutter_crud/Views/snake/SnakeIdentification/pageidentifi
 import 'package:sqlite_flutter_crud/Views/snake/snake_Info/Galeria/Screen_Galeria.dart';
 import 'package:http/http.dart' as http;
 import '../JsonModels/Usuario.dart';
-import '../Providers/snake_class.dart';
 
 class HomeScreen extends StatefulWidget {
   final Usuario usuario;
@@ -60,11 +59,13 @@ class _HomeScreenState extends State<HomeScreen> {
               },
             ),
           ],
-          leading: BuilderMenu(), ),
+          leading: BuilderMenu(),
+        ),
         drawer: DrawerHome(widget: widget),
         body: body_Provider.Body_ini,
         backgroundColor: Colors.white,
-        bottomNavigationBar: ButonBarHome(body_Provider: body_Provider, widget: widget));
+        bottomNavigationBar:
+            ButonBarHome(body_Provider: body_Provider, widget: widget));
   }
 }
 
@@ -96,21 +97,19 @@ class ButonBarHome extends StatelessWidget {
             ), // Resalta la opción de escribir
             onPressed: () {
               // Acción para el botón de escribir
-                                body_Provider
-                  .setSelectedIndex(1); // Actualiza el selectedIndex
+              body_Provider.setSelectedIndex(1); // Actualiza el selectedIndex
               Navigator.push(
                 context,
                 MaterialPageRoute(
                   builder: (context) => Scaffold(
-                    appBar: AppBar(
-                      title: Text('Crear Publicacion'),
-                      leading: BuilderMenu(),
-                    ),
-                    drawer: DrawerHome(widget: widget),
-                    
-                    body: ReportPage(),
-                    bottomNavigationBar: ButonBarHome(body_Provider: body_Provider, widget: widget)
-                  ),
+                      appBar: AppBar(
+                        title: Text('Publicaciones'),
+                        leading: BuilderMenu(),
+                      ),
+                      drawer: DrawerHome(widget: widget),
+                      body: AllReport(),
+                      bottomNavigationBar: ButonBarHome(
+                          body_Provider: body_Provider, widget: widget)),
                 ),
               );
             },
@@ -125,25 +124,22 @@ class ButonBarHome extends StatelessWidget {
             ), // Resalta la opción de inicio
             onPressed: () {
               // Acción para el botón de inicio
-              body_Provider
-                  .setSelectedIndex(0); // Actualiza el selectedIndex
+              body_Provider.setSelectedIndex(0); // Actualiza el selectedIndex
 
-               Navigator.push(
+              Navigator.push(
                 context,
                 MaterialPageRoute(
                   builder: (context) => Scaffold(
-                    appBar: AppBar(
-                      title: Text('Inicio'),
-                      leading: BuilderMenu(),
-                    ),
-                    drawer: DrawerHome(widget: widget),
-                    
-                    body:Body_init(),
-                    bottomNavigationBar: ButonBarHome(body_Provider: body_Provider, widget: widget)
-                  ),
+                      appBar: AppBar(
+                        title: Text('Inicio'),
+                        leading: BuilderMenu(),
+                      ),
+                      drawer: DrawerHome(widget: widget),
+                      body: Body_init(),
+                      bottomNavigationBar: ButonBarHome(
+                          body_Provider: body_Provider, widget: widget)),
                 ),
               );
-              
             },
           ),
           IconButton(
@@ -156,23 +152,21 @@ class ButonBarHome extends StatelessWidget {
             ),
             onPressed: () {
               // Acción para el botón de perfil
+              body_Provider.setSelectedIndex(2); // Actualiza el selectedIndex
               body_Provider
-                  .setSelectedIndex(2); // Actualiza el selectedIndex
-              body_Provider.setAppBarTitle(
-                  'Mi Perfil'); // Cambia el título del AppBar
-                Navigator.push(
+                  .setAppBarTitle('Mi Perfil'); // Cambia el título del AppBar
+              Navigator.push(
                 context,
                 MaterialPageRoute(
                   builder: (context) => Scaffold(
-                    appBar: AppBar(
-                      title: Text("Mi Perfil"),
-                      leading: BuilderMenu(),
-                    ),
-                    drawer: DrawerHome(widget: widget),
-                    
-                    body:ProfilePage(),
-                    bottomNavigationBar: ButonBarHome(body_Provider: body_Provider, widget: widget)
-                  ),
+                      appBar: AppBar(
+                        title: Text("Mi Perfil"),
+                        leading: BuilderMenu(),
+                      ),
+                      drawer: DrawerHome(widget: widget),
+                      body: ProfilePage(),
+                      bottomNavigationBar: ButonBarHome(
+                          body_Provider: body_Provider, widget: widget)),
                 ),
               );
             },
@@ -219,10 +213,8 @@ class DrawerHome extends StatelessWidget {
         padding: EdgeInsets.zero,
         children: <Widget>[
           UserAccountsDrawerHeader(
-            accountName:
-                Text(user_provider.usernow.nombres),
-            accountEmail:
-                Text(user_provider.usernow.correo),
+            accountName: Text(user_provider.usernow.nombres),
+            accountEmail: Text(user_provider.usernow.correo),
             currentAccountPicture: CircleAvatar(
               backgroundImage: NetworkImage(user_provider.usernow.imagen ??
                   'https://www.google.com/images/branding/googlelogo/2x/googlelogo_color_272x92dp.png'),
@@ -234,6 +226,20 @@ class DrawerHome extends StatelessWidget {
             title: Text('Mi Perfil'),
             onTap: () {
               // Acción para ir a Mi Perfil
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => Scaffold(
+                      appBar: AppBar(
+                        title: Text('Mi Perfil'),
+                        leading: BuilderMenu(),
+                      ),
+                      drawer: DrawerHome(widget: widget),
+                      body: ProfilePage(),
+                      bottomNavigationBar: ButonBarHome(
+                          body_Provider: Home_Body_Provider(), widget: widget)),
+                ),
+              );
             },
           ),
           ListTile(
@@ -241,6 +247,25 @@ class DrawerHome extends StatelessWidget {
             title: Text('Mis Publicaciones'),
             onTap: () {
               // Acción para ir a Mis Publicaciones
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => Scaffold(
+                    appBar: AppBar(
+                      title: Text('Mis Publicaciones'),
+                      leading: BuilderMenu(),
+                    ),
+                    drawer: DrawerHome(widget: widget),
+                    body: ReportPage(
+                        usuario:
+                            widget.usuario), // Asegúrate de pasar el usuario
+                    bottomNavigationBar: ButonBarHome(
+                      body_Provider: Home_Body_Provider(),
+                      widget: widget,
+                    ),
+                  ),
+                ),
+              );
             },
           ),
           ListTile(
@@ -274,13 +299,14 @@ class DrawerHome extends StatelessWidget {
           Divider(),
           ListTile(
             leading: Icon(Icons.logout, color: Colors.red),
-            title:
-                Text('Cerrar Sesión', style: TextStyle(color: Colors.red)),
+            title: Text('Cerrar Sesión', style: TextStyle(color: Colors.red)),
             onTap: () {
               // Acción para cerrar sesión y redirigir al login
               user_provider.logoutUser();
-              Navigator.pushAndRemoveUntil(context,
-                  MaterialPageRoute(builder: (context) => LoginScreen()),(route) => false);
+              Navigator.pushAndRemoveUntil(
+                  context,
+                  MaterialPageRoute(builder: (context) => LoginScreen()),
+                  (route) => false);
             },
           ),
         ],
@@ -290,9 +316,7 @@ class DrawerHome extends StatelessWidget {
 }
 
 class Body_init extends StatelessWidget {
-  
-
-  const Body_init({Key? key }) : super(key: key);
+  const Body_init({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -332,19 +356,18 @@ class Body_init extends StatelessWidget {
                     // Acción al pulsar la tarjeta de serpientes venenosas
                     fectSnakesPoison(true);
                     Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => Scaffold(
-                        appBar: AppBar(
-                          title: Text('Serpientes'),
-                          leading: BuilderMenu(),
-                        ),
-                        drawer: DrawerHome(widget: Widget),
-                        
-                        body: Screen_galeria(),
-                        bottomNavigationBar: ButonBarHome(body_Provider: body_Provider, widget: Widget)
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => Scaffold(
+                            appBar: AppBar(
+                              title: Text('Serpientes'),
+                              leading: BuilderMenu(),
+                            ),
+                            drawer: DrawerHome(widget: Widget),
+                            body: Screen_galeria(),
+                            bottomNavigationBar: ButonBarHome(
+                                body_Provider: body_Provider, widget: Widget)),
                       ),
-                    ),
                     );
                   },
                 ),
@@ -355,19 +378,18 @@ class Body_init extends StatelessWidget {
                     // Acción al pulsar la tarjeta de serpientes no venenosas
                     fectSnakesPoison(false);
                     Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => Scaffold(
-                        appBar: AppBar(
-                          title: Text('Serpientes'),
-                          leading: BuilderMenu(),
-                        ),
-                        drawer: DrawerHome(widget: Widget),
-                        
-                        body: Screen_galeria(),
-                        bottomNavigationBar: ButonBarHome(body_Provider: body_Provider, widget: Widget)
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => Scaffold(
+                            appBar: AppBar(
+                              title: Text('Serpientes'),
+                              leading: BuilderMenu(),
+                            ),
+                            drawer: DrawerHome(widget: Widget),
+                            body: Screen_galeria(),
+                            bottomNavigationBar: ButonBarHome(
+                                body_Provider: body_Provider, widget: Widget)),
                       ),
-                    ),
                     );
                   },
                 ),

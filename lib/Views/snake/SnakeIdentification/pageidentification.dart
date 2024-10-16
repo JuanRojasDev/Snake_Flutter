@@ -56,8 +56,8 @@ class _PageIdentificationState extends State<PageIdentification> {
       isVisibleConfirm = true;
     });
 
-    var request = http.MultipartRequest(
-        'POST', Uri.parse("https://back-production-0678.up.railway.app/snakeidentify"));
+    var request = http.MultipartRequest('POST',
+        Uri.parse("https://back-production-0678.up.railway.app/snakeidentify"));
     var multipartFile = await http.MultipartFile.fromBytes(
       'image',
       image,
@@ -72,21 +72,21 @@ class _PageIdentificationState extends State<PageIdentification> {
       setState(() {
         dataDefault = SnakeReportDefault.fromJson(decodedResponse);
         dataDefault.image = image;
-        print("Default"+dataDefault.issnake.toString());
-        if(dataDefault.name == null){
+        print("Default" + dataDefault.issnake.toString());
+        if (dataDefault.name == null) {
           print("esto es null");
         }
-        if(dataDefault.issnake){
-          respuesta = 'Nombre: ${dataDefault.name}, Descripción: ${dataDefault.description}, Es Venenosa: ${dataDefault.venomous! ? 'sí' : 'no'}';
-        }
-        else{
+        if (dataDefault.issnake) {
+          respuesta =
+              'Nombre: ${dataDefault.name}, Descripción: ${dataDefault.description}, Es Venenosa: ${dataDefault.venomous! ? 'sí' : 'no'}';
+        } else {
           respuesta = 'Error No se identifica una serpiente en la imagne';
         }
-          isVisibleConfirm = false;
+        isVisibleConfirm = false;
       });
     } else {
       print('Error al subir la imagen: ${response.statusCode}');
-        setState(() {
+      setState(() {
         isVisibleConfirm = false;
       });
     }
@@ -97,7 +97,6 @@ class _PageIdentificationState extends State<PageIdentification> {
     final body_Provider = context.watch<Home_Body_Provider>();
     return Scaffold(
       backgroundColor: Colors.grey[100],
-
       body: SingleChildScrollView(
         child: Padding(
           padding: const EdgeInsets.all(20.0),
@@ -132,26 +131,30 @@ class _PageIdentificationState extends State<PageIdentification> {
                   children: [
                     ElevatedButton.icon(
                       icon: Icon(Icons.photo_library),
-                      label: Text('Galería',style: TextStyle(  color: Colors.black)),
+                      label: Text('Galería',
+                          style: TextStyle(color: Colors.black)),
                       onPressed: () => _pickImage(ImageSource.gallery),
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.green,
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(13),
                         ),
-                        padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                        padding:
+                            EdgeInsets.symmetric(horizontal: 20, vertical: 10),
                       ),
                     ),
                     ElevatedButton.icon(
                       icon: Icon(Icons.camera_alt),
-                      label: Text('Cámara',style: TextStyle(  color: Colors.black)),
+                      label:
+                          Text('Cámara', style: TextStyle(color: Colors.black)),
                       onPressed: () => _pickImage(ImageSource.camera),
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.green,
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(13),
                         ),
-                        padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                        padding:
+                            EdgeInsets.symmetric(horizontal: 20, vertical: 10),
                       ),
                     ),
                   ],
@@ -173,61 +176,64 @@ class _PageIdentificationState extends State<PageIdentification> {
                   Center(
                     child: LoadingIndicator(
                       indicatorType: Indicator.ballRotateChase,
-                      colors: [Colors.green, const Color.fromARGB(255, 115, 214, 118), const Color.fromARGB(255, 130, 233, 134)],
+                      colors: [
+                        Colors.green,
+                        const Color.fromARGB(255, 115, 214, 118),
+                        const Color.fromARGB(255, 130, 233, 134)
+                      ],
                       strokeWidth: BorderSide.strokeAlignCenter,
                     ),
                   )
-                else if (respuesta.isNotEmpty )
-                Column(
-                  children: [
-                Card(
-                    elevation: 4,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(15),
-                    ),
-                    child: Padding(
-                      padding: const EdgeInsets.all(16.0),
-                      child: Text(
-                        respuesta,
-                        style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                        textAlign: TextAlign.center,
-                      ),
-                    ),
-                  ),
-                  SizedBox(height: 10,),
-                    dataDefault.issnake ?
-                    ElevatedButton.icon(
-                      icon: Icon(Icons.photo_library),
-                      label: Text('Publicar',style: TextStyle(  color: Colors.black)),
-                      onPressed: (){
-
-                      Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => Scaffold(
-                          body:createReport(defaultData: dataDefault,),
-                        ),
-                      ),
-                      );              
-
-                      },
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.green,
+                else if (respuesta.isNotEmpty)
+                  Column(
+                    children: [
+                      Card(
+                        elevation: 4,
                         shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(13),
+                          borderRadius: BorderRadius.circular(15),
                         ),
-                        padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                        child: Padding(
+                          padding: const EdgeInsets.all(16.0),
+                          child: Text(
+                            respuesta,
+                            style: TextStyle(
+                                fontSize: 18, fontWeight: FontWeight.bold),
+                            textAlign: TextAlign.center,
+                          ),
+                        ),
                       ),
-                    )
-                    :
-                    Text("La Imagen no es una serpiente")
-                    
-                    ,
-                  ],
-                )
-
-                  
-
+                      SizedBox(
+                        height: 10,
+                      ),
+                      dataDefault.issnake
+                          ? ElevatedButton.icon(
+                              icon: Icon(Icons.photo_library),
+                              label: Text('Publicar',
+                                  style: TextStyle(color: Colors.black)),
+                              onPressed: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => Scaffold(
+                                      body: CreateReport(
+                                        defaultData: dataDefault,
+                                      ),
+                                    ),
+                                  ),
+                                );
+                              },
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: Colors.green,
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(13),
+                                ),
+                                padding: EdgeInsets.symmetric(
+                                    horizontal: 20, vertical: 10),
+                              ),
+                            )
+                          : Text("La Imagen no es una serpiente"),
+                    ],
+                  )
               ],
             ),
           ),
