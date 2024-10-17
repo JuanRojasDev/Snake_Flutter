@@ -3,7 +3,8 @@ import 'package:provider/provider.dart';
 import 'package:sqlite_flutter_crud/Authtentication/login.dart';
 import 'package:sqlite_flutter_crud/Providers/snake_provider.dart';
 import 'package:sqlite_flutter_crud/Providers/user_provider.dart';
-import 'package:sqlite_flutter_crud/Views/report/allReports/allReport.dart';
+import 'package:sqlite_flutter_crud/Views/report/Reports_List_view/IdReport.dart';
+import 'package:sqlite_flutter_crud/Views/report/Reports_List_view/allReport.dart';
 import 'package:sqlite_flutter_crud/Views/report/reportsMe/report.dart';
 import 'package:sqlite_flutter_crud/Views/profile/profile.dart';
 import 'package:sqlite_flutter_crud/Providers/Home_Body_provider.dart';
@@ -256,9 +257,7 @@ class DrawerHome extends StatelessWidget {
                       leading: BuilderMenu(),
                     ),
                     drawer: DrawerHome(widget: widget),
-                    body: ReportPage(
-                        usuario:
-                            widget.usuario), // Asegúrate de pasar el usuario
+                    body: IdReport(id: user_provider.usernow.id,), // Asegúrate de pasar el usuario
                     bottomNavigationBar: ButonBarHome(
                       body_Provider: Home_Body_Provider(),
                       widget: widget,

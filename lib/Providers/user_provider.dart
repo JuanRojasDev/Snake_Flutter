@@ -9,14 +9,14 @@ class UserProvider extends ChangeNotifier {
       fechaN: '',
       imagen_fondo: '',
       descripcion: '',
-      id: '');
+      id: 0);
   Usuario _userdefault = Usuario(
       nombres: '',
       correo: '',
       fechaN: '',
       imagen_fondo: '',
       descripcion: '',
-      id: ''); // Initialize with default values
+      id: 0); // Initialize with default values
   bool _fetchData = false;
   final storage = new FlutterSecureStorage();
 

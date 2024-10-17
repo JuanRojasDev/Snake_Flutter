@@ -94,7 +94,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       fechaN: "fechaN",
                       descripcion: "Default",
                       imagen_fondo: "",
-                      id: ''),
+                      id: 1),
                 ))); // Navegar a home.dart
   }
 

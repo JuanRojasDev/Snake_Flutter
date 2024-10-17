@@ -15,17 +15,17 @@ import 'package:sqlite_flutter_crud/Views/report/reportsMe/createReport.dart';
 import 'package:sqlite_flutter_crud/Views/snake/SnakeIdentification/pageidentification.dart';
 import '../../../JsonModels/Usuario.dart';
 
-class ReportPage extends StatefulWidget {
-  final Usuario? usuario;
+class IdReport extends StatefulWidget {
+  final int id;
   List<Reporte> _reports = [];
 
-  ReportPage({this.usuario});
+  IdReport({required this.id});
 
   @override
-  _ReportPageState createState() => _ReportPageState();
+  _AllReportState createState() => _AllReportState();
 }
 
-class _ReportPageState extends State<ReportPage> {
+class _AllReportState extends State<IdReport> {
   Future<void> _pickImage(Function(Uint8List?) onImagePicked) async {
     try {
       final pickedFile =
@@ -39,16 +39,21 @@ class _ReportPageState extends State<ReportPage> {
     }
   }
 
-  Future<void> fetchAllReports() async {
-    final reportProvider = context.watch<ReportProvider>();
+
+
+
+
+  Future<void> fetchIdReports() async {
     try {
       final response = await http.get(
-          Uri.parse('https://back-production-0678.up.railway.app/Reporte/all'));
+          Uri.parse('https://back-production-0678.up.railway.app/Reporte/all_id?id='+widget.id.toString()));
       if (response.statusCode == 200) {
         final List<dynamic> data = jsonDecode(response.body);
         final List<Reporte> reports =
             data.map((json) => Reporte.fromJson(json)).toList();
-        reportProvider.setReportes(reports);
+        setState(() {
+          widget._reports = reports;
+        });
       } else {
         throw Exception('Failed to load reports');
       }
@@ -56,15 +61,16 @@ class _ReportPageState extends State<ReportPage> {
       print('Error fetching reports: $e');
     }
   }
+  @override
+  void initState() {
+    // TODO: implement initState
+    fetchIdReports();
+  }
 
   @override
   Widget build(BuildContext context) {
-    final reportProvider = context.watch<ReportProvider>();
 
-    if (!reportProvider.fetchData) {
-      fetchAllReports();
-      reportProvider.fetchData = true;
-    }
+
     final body_Provider = context.watch<Home_Body_Provider>();
     return Scaffold(
       backgroundColor: Colors.white,
@@ -92,10 +98,10 @@ class _ReportPageState extends State<ReportPage> {
             Expanded(
               child: ListView.builder(
                 scrollDirection: Axis.vertical,
-                itemCount: reportProvider.reportesAll.length,
+                itemCount: widget._reports.length,
                 itemBuilder: (context, index) {
                   return _reportCard(
-                      context, reportProvider.reportesAll[index]);
+                      context, widget._reports[index]);
                 },
               ),
             ),
@@ -106,7 +112,6 @@ class _ReportPageState extends State<ReportPage> {
   }
 
   Widget _reportCard(BuildContext context, Reporte report) {
-    final reportProvider = context.watch<ReportProvider>();
 
     return GestureDetector(
       onTap: () {},

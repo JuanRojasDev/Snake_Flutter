@@ -1,5 +1,5 @@
 class Usuario {
-  final String id; // Asegúrate de que este campo esté presente
+  final int id; // Asegúrate de que este campo esté presente
   String nombres;
   final String correo;
   final String? direccion;
