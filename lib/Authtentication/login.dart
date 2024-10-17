@@ -75,6 +75,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   ))); // Navegar a home.dart
     } else {
       // Mostrar un mensaje de error al usuario
+      Navigator.pop(context);
       setState(() {
         _isLoginTrue = true;
       });
