@@ -1,37 +1,31 @@
-import 'dart:typed_data';
+import 'dart:convert';
+import 'package:http/http.dart' as http;
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:cached_network_image/cached_network_image.dart';
-import 'package:sqlite_flutter_crud/JsonModels/Usuario.dart';
+import 'package:loading_indicator/loading_indicator.dart';
+import 'package:provider/provider.dart';
+import 'package:sqlite_flutter_crud/Authtentication/home.dart';
+import 'dart:typed_data';
+import 'package:sqlite_flutter_crud/Authtentication/login.dart';
+import 'package:sqlite_flutter_crud/JsonModels/reporte.dart';
+import 'package:sqlite_flutter_crud/Providers/Home_Body_provider.dart';
+import 'package:sqlite_flutter_crud/Providers/report_provider.dart';
+import 'package:sqlite_flutter_crud/Views/report/reportsMe/createReport.dart';
+import 'package:sqlite_flutter_crud/Views/snake/SnakeIdentification/pageidentification.dart';
+import '../../../JsonModels/Usuario.dart';
 
-class ReportPage extends StatefulWidget {
+class AllReport extends StatefulWidget {
   final Usuario? usuario;
+  List<Reporte> _reports = [];
 
-  ReportPage({this.usuario});
+  AllReport({this.usuario});
 
   @override
-  _ReportPageState createState() => _ReportPageState();
+  _AllReportState createState() => _AllReportState();
 }
 
-class Report {
-  final String title;
-  final String description;
-  final Uint8List? imageBytes;
-  final String userProfileImage;
-  final String userName;
-
-  Report({
-    required this.title,
-    required this.description,
-    this.imageBytes,
-    required this.userProfileImage,
-    required this.userName,
-  });
-}
-
-class _ReportPageState extends State<ReportPage> {
-  List<Report> _reports = [];
-
+class _AllReportState extends State<AllReport> {
   Future<void> _pickImage(Function(Uint8List?) onImagePicked) async {
     try {
       final pickedFile =
@@ -47,137 +41,161 @@ class _ReportPageState extends State<ReportPage> {
 
   void _deleteReport(int index) {
     setState(() {
-      _reports.removeAt(index);
+      widget._reports.removeAt(index);
     });
+  }
+
+  void _addReport(Reporte report) {
+    setState(() {
+      widget._reports.add(report);
+      Provider.of<ReportProvider>(context, listen: false)
+          .agregarReportes(report);
+    });
+  }
+
+  Future<void> fetchAllReports() async {
+    final reportProvider = context.watch<ReportProvider>();
+    try {
+      final response = await http.get(
+          Uri.parse('https://back-production-0678.up.railway.app/Reporte/all'));
+      if (response.statusCode == 200) {
+        final List<dynamic> data = jsonDecode(response.body);
+        final List<Reporte> reports =
+            data.map((json) => Reporte.fromJson(json)).toList();
+        reportProvider.setReportes(reports);
+      } else {
+        throw Exception('Failed to load reports');
+      }
+    } catch (e) {
+      print('Error fetching reports: $e');
+    }
   }
 
   @override
   Widget build(BuildContext context) {
+    final reportProvider = context.watch<ReportProvider>();
+
+    if (!reportProvider.fetchData) {
+      fetchAllReports();
+      reportProvider.fetchData = true;
+    }
+    final body_Provider = context.watch<Home_Body_Provider>();
     return Scaffold(
-      backgroundColor: Colors.grey[100],
+      backgroundColor: Colors.white,
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          showModalBottomSheet(
-            context: context,
-            builder: (BuildContext context) {
-              return Container(
-                height: 100,
-                child: Column(
-                  children: [
-                    ListTile(
-                      leading: Icon(Icons.note_add),
-                      title: Text('Escribir Reporte'),
-                      onTap: () {
-                        Navigator.of(context).pop();
-                        // Implement the action to create a new report
-                      },
-                    ),
-                  ],
-                ),
-              );
-            },
-          );
+          Navigator.push(
+              context,
+              MaterialPageRoute(
+                  builder: (context) => Scaffold(
+                      appBar: AppBar(
+                        title: Text("Identificar Serpientes"),
+                        leading: BuilderMenu(),
+                      ),
+                      drawer: DrawerHome(widget: widget),
+                      body: PageIdentification(),
+                      bottomNavigationBar: ButonBarHome(
+                          body_Provider: body_Provider, widget: widget))));
         },
         child: Icon(Icons.add),
-        backgroundColor: Color(0xFF5DB075),
+        backgroundColor: Color(0xFF4CAF50),
       ),
-      body: ListView.builder(
-        itemCount: _reports.length,
-        itemBuilder: (context, index) {
-          final report = _reports[index];
-          return Card(
-            margin: EdgeInsets.symmetric(vertical: 8, horizontal: 12),
-            elevation: 3,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(12),
+      body: SafeArea(
+        child: Column(
+          children: [
+            Expanded(
+              child: ListView.builder(
+                scrollDirection: Axis.vertical,
+                itemCount: reportProvider.reportesAll.length,
+                itemBuilder: (context, index) {
+                  return _reportCard(
+                      context, reportProvider.reportesAll[index]);
+                },
+              ),
             ),
-            child: Padding(
-              padding: EdgeInsets.all(15),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _reportCard(BuildContext context, Reporte report) {
+    final reportProvider = context.watch<ReportProvider>();
+
+    return GestureDetector(
+      onTap: () {},
+      child: Card(
+        margin: EdgeInsets.all(10),
+        color: Colors.white,
+        child: Padding(
+          padding: EdgeInsets.all(15),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
                 children: [
-                  Row(
-                    children: [
-                      CircleAvatar(
-                        backgroundImage: CachedNetworkImageProvider(
-                          report.userProfileImage,
-                        ),
-                        radius: 25,
-                      ),
-                      SizedBox(width: 10),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              report.userName,
-                              style: TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                            SizedBox(height: 4),
-                            Text(
-                              'Posted 2 hours ago', // Replace with actual timestamp if available
-                              style: TextStyle(
-                                fontSize: 12,
-                                color: Colors.grey,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ],
-                  ),
-                  SizedBox(height: 12),
-                  Text(
-                    report.title,
-                    style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
+                  CircleAvatar(
+                    backgroundImage: CachedNetworkImageProvider(
+                      report.imagenUsuario ??
+                          "https://th.bing.com/th/id/OIP.xW3Jf1_XaGI7z-jjrAgUIAHaE8?rs=1&pid=ImgDetMain",
                     ),
+                    radius: 25,
                   ),
-                  SizedBox(height: 10),
-                  report.imageBytes != null
-                      ? Image.memory(
-                          report.imageBytes!,
-                          height: 150,
-                          width: double.infinity,
-                          fit: BoxFit.cover,
-                        )
-                      : SizedBox.shrink(),
-                  SizedBox(height: 10),
-                  Text(
-                    report.description,
-                    style: TextStyle(
-                      fontSize: 14,
-                      fontStyle: FontStyle.italic,
-                      color: Colors.grey[700],
+                  SizedBox(width: 10),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          report.usuario_nombre ?? '',
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ],
                     ),
-                  ),
-                  SizedBox(height: 10),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.end,
-                    children: [
-                      IconButton(
-                        icon: Icon(Icons.edit, color: Colors.blue),
-                        onPressed: () {
-                          // Implement edit functionality
-                        },
-                      ),
-                      IconButton(
-                        icon: Icon(Icons.delete, color: Colors.red),
-                        onPressed: () {
-                          _deleteReport(index);
-                        },
-                      ),
-                    ],
                   ),
                 ],
               ),
-            ),
-          );
-        },
+              Text(
+                utf8.decode(report.titulo!.codeUnits) ?? '',
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              SizedBox(height: 10),
+              CachedNetworkImage(
+                imageUrl: report.imagen ??
+                    "https://th.bing.com/th/id/OIP.xW3Jf1_XaGI7z-jjrAgUIAHaE8?rs=1&pid=ImgDetMain",
+                placeholder: (context, url) => LoadingIndicator(
+                  indicatorType: Indicator.ballPulse,
+                  colors: const [
+                    Color.fromARGB(255, 36, 235, 18),
+                    Color.fromARGB(255, 25, 224, 128),
+                    Color.fromARGB(255, 59, 235, 150),
+                    Color.fromARGB(255, 116, 241, 181)
+                  ],
+                  pathBackgroundColor: Color.fromARGB(255, 138, 209, 5),
+                ),
+                errorWidget: (context, url, error) => Icon(Icons.error),
+                height: 250,
+                width: double.infinity,
+                fit: BoxFit.cover,
+              ),
+              SizedBox(height: 10),
+              Text(
+                utf8.decode(report.descripcion!.codeUnits) ?? '',
+                style: TextStyle(
+                  fontSize: 16,
+                  fontStyle: FontStyle.italic,
+                ),
+              ),
+              SizedBox(height: 10),
+            ],
+          ),
+        ),
       ),
     );
   }

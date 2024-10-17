@@ -7,7 +7,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 import 'package:sqlite_flutter_crud/JsonModels/reporte.dart';
 import 'package:sqlite_flutter_crud/Providers/report_provider.dart';
-import 'package:sqlite_flutter_crud/Providers/usuer_provider.dart';
+import 'package:sqlite_flutter_crud/Providers/user_provider.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 class ProfilePage extends StatefulWidget {
@@ -18,20 +18,16 @@ class ProfilePage extends StatefulWidget {
 }
 
 class _ProfilePageState extends State<ProfilePage> {
-  
-
-
-
   bool showPosts = true;
   bool isEditing = false;
 
   File? _profileImage;
   File? _coverImage;
   String _name = "Nombre del Usuario";
-    String _Descripcion = "Nombre del Usuario";
+  String _descripcion = "Descripción del Usuario";
   String _status = "Esta es una descripción breve";
   String? imageUrl = "";
-  String? CoverimageUrl = "";
+  String? coverImageUrl = "";
   final _nameController = TextEditingController();
   final _statusController = TextEditingController();
   final storage = FlutterSecureStorage();
@@ -42,8 +38,14 @@ class _ProfilePageState extends State<ProfilePage> {
       throw Exception('Missing JWT token');
     }
 
-    final Uri url = Uri.parse('https://back-production-0678.up.railway.app/usuario/edit');
-    final Map<String, dynamic> body = {"nombre": _name, "imagenurl": imageUrl, "Descripcion": _Descripcion, "imagen_fonodo": CoverimageUrl};
+    final Uri url =
+        Uri.parse('https://back-production-0678.up.railway.app/usuario/edit');
+    final Map<String, dynamic> body = {
+      "nombre": _name,
+      "imagenurl": imageUrl,
+      "Descripcion": _descripcion,
+      "imagen_fondo": coverImageUrl
+    };
     final Map<String, String> headers = {
       'Content-Type': 'application/json; charset=utf-8',
       'Authorization': 'Bearer $token',
@@ -59,7 +61,7 @@ class _ProfilePageState extends State<ProfilePage> {
     } else {
       print('Error: ${response.statusCode}');
       print('${response.body}');
-      throw Exception('Error creating report');
+      throw Exception('Error editing user');
     }
 
     return response;
@@ -75,17 +77,6 @@ class _ProfilePageState extends State<ProfilePage> {
     }
   }
 
-  Future<File?> _pickImageFile() async {
-    final pickedFile =
-        await ImagePicker().pickImage(source: ImageSource.gallery);
-    if (pickedFile != null) {
-      _profileImage = File(pickedFile.path);
-      return File(pickedFile.path);
-    } else {
-      return null;
-    }
-  }
-
   Future<String> subirImagenFireBase(File image) async {
     final storage =
         FirebaseStorage.instanceFor(bucket: 'meta-snake.appspot.com');
@@ -97,15 +88,16 @@ class _ProfilePageState extends State<ProfilePage> {
     final uploadTask = storageRef.putFile(image);
 
     try {
-      await uploadTask.whenComplete(() {});
-      final snapshot = await uploadTask.whenComplete(() {});
+      final snapshot = await uploadTask;
       final downloadUrl = await snapshot.ref.getDownloadURL();
       print('Imagen subida correctamente: $downloadUrl');
       return downloadUrl;
     } on FirebaseException catch (error) {
-      return ("Error uploading image: ${error.code} - ${error.message}");
+      print("Error uploading image: ${error.code} - ${error.message}");
+      throw error;
     } catch (error) {
-      return ("Unexpected error: $error");
+      print("Unexpected error: $error");
+      throw error;
     }
   }
 
@@ -122,29 +114,22 @@ class _ProfilePageState extends State<ProfilePage> {
     await editUser();
   }
 
-    void _saveDescription() async {
+  void _saveDescription() async {
     setState(() {
-      _Descripcion = _statusController.text;
+      _descripcion = _statusController.text;
     });
     await editUser();
   }
 
-
   @override
   Widget build(BuildContext context) {
+    final userProvider = context.watch<UserProvider>();
+    _nameController.text = userProvider.usernow.nombres;
+    _statusController.text =
+        userProvider.usernow.descripcion ?? "Sin descripción";
+    imageUrl = userProvider.usernow.imagen;
+    coverImageUrl = userProvider.usernow.imagen_fondo;
 
-
-
-    final user_provider = context.watch<UserProvider>();
-    _nameController.text = user_provider.usernow.nombres;
-    if(user_provider.usernow.descripcion == null){
-      _statusController.text = user_provider.usernow.descripcion ?? "null" ;
-    }
-    else{
-      _statusController.text = user_provider.usernow.descripcion ?? "no null" ;      
-    }
-    imageUrl = user_provider.usernow.imagen;
-    CoverimageUrl = user_provider.usernow.imagen_fondo;
     return Scaffold(
       backgroundColor: Colors.grey[200],
       body: SingleChildScrollView(
@@ -154,46 +139,43 @@ class _ProfilePageState extends State<ProfilePage> {
               clipBehavior: Clip.none,
               children: [
                 GestureDetector(
-                   onTap: () async {
-                      await _pickImage();
-                      CoverimageUrl = await subirImagenFireBase(_profileImage!);
+                  onTap: () async {
+                    await _pickImage();
+                    if (_profileImage != null) {
+                      coverImageUrl = await subirImagenFireBase(_profileImage!);
                       await editUser();
-                      _saveImageUrl(CoverimageUrl!);
-                      user_provider.setImageBack(CoverimageUrl!);
-                    },
+                      _saveImageUrl(coverImageUrl!);
+                      userProvider.setImageBack(coverImageUrl!);
+                    }
+                  },
                   child: Container(
                     height: 250,
                     width: double.infinity,
                     decoration: BoxDecoration(
-                      image: user_provider.usernow.imagen_fondo != ""
+                      image: coverImageUrl != null && coverImageUrl!.isNotEmpty
                           ? DecorationImage(
-                              image: NetworkImage(CoverimageUrl ?? ""),
+                              image: NetworkImage(coverImageUrl!),
                               fit: BoxFit.cover,
                             )
                           : null,
                       color: Color(0xFF5DB074),
                     ),
-                    child: user_provider.usernow.imagen_fondo != ""
-                        ? Stack(
-                            children: [
-                              Positioned(
-                                bottom: 20,
-                                left: 0,
-                                right: 0,
-                                child: Center(
-                                  child: Icon(
-                                    Icons.camera_alt,
-                                    color: Colors.white,
-                                    size: 70,
-                                  ),
-                                ),
+                    child: coverImageUrl != null && coverImageUrl!.isNotEmpty
+                        ? Positioned(
+                            bottom: 20,
+                            left: 0,
+                            right: 0,
+                            child: Center(
+                              child: Icon(
+                                Icons.camera_alt,
+                                color: Colors.white,
+                                size: 70,
                               ),
-                            ],
+                            ),
                           )
                         : null,
                   ),
                 ),
-                // Ícono de lápiz para editar el perfil
                 Positioned(
                   top: 10,
                   right: 10,
@@ -212,17 +194,19 @@ class _ProfilePageState extends State<ProfilePage> {
                   child: GestureDetector(
                     onTap: () async {
                       await _pickImage();
-                      imageUrl = await subirImagenFireBase(_profileImage!);
-                      await editUser();
-                      _saveImageUrl(imageUrl!);
-                      user_provider.setImage(imageUrl!);
+                      if (_profileImage != null) {
+                        imageUrl = await subirImagenFireBase(_profileImage!);
+                        await editUser();
+                        _saveImageUrl(imageUrl!);
+                        userProvider.setImage(imageUrl!);
+                      }
                     },
                     child: CircleAvatar(
                       radius: 90,
                       backgroundColor: Colors.white,
                       child: CircleAvatar(
                         radius: 85,
-                        backgroundImage: user_provider.usernow.imagen != null
+                        backgroundImage: imageUrl != null
                             ? NetworkImage(imageUrl!)
                             : AssetImage('lib/assets/default_profile.png')
                                 as ImageProvider,
@@ -251,7 +235,7 @@ class _ProfilePageState extends State<ProfilePage> {
                       hintText: "Nombre del usuario",
                     ),
                     onSubmitted: (value) =>
-                        {_saveName(), user_provider.setUserName(_name)},
+                        {_saveName(), userProvider.setUserName(_name)},
                   ),
                   SizedBox(height: 10),
                   TextField(
@@ -266,8 +250,10 @@ class _ProfilePageState extends State<ProfilePage> {
                       border: InputBorder.none,
                       hintText: "Descripción",
                     ),
-                    onSubmitted: (value) =>
-                        {_saveDescription(), user_provider.setUserDescription(_Descripcion)},
+                    onSubmitted: (value) => {
+                      _saveDescription(),
+                      userProvider.setUserDescription(_descripcion)
+                    },
                   ),
                 ],
               ),
@@ -337,153 +323,59 @@ class _ProfilePageState extends State<ProfilePage> {
     );
   }
 
-String calcularTiempoTranscurrido(String fechaString) {
-  // Convertir el string a un objeto DateTime
-  DateTime fechaPasada = DateTime.parse(fechaString);
-
-  // Obtener la fecha y hora actual
-  DateTime ahora = DateTime.now();
-
-  // Calcular la diferencia en milisegundos
-  Duration diferencia = ahora.difference(fechaPasada);
-
-  // Determinar la unidad de tiempo más apropiada
-  if (diferencia.inDays >= 365) {
-    int year = diferencia.inDays ~/ 365;
-    return "Hace $year años";
-  } else if (diferencia.inDays >= 30) {
-    int meses = diferencia.inDays ~/ 30;
-    return "Hace $meses meses";
-  } else if (diferencia.inHours >= 24) {
-    int dias = diferencia.inHours ~/ 24;
-    return "Hace $dias días";
-  } else if (diferencia.inMinutes >= 60) {
-    int horas = diferencia.inMinutes ~/ 60;
-    return "Hace $horas horas";
-  } else {
-    int minutos = diferencia.inMinutes;
-    return "Hace $minutos minutos";
-  }
-}
-
-
-
-
-
-
-
-    Widget _buildPosts() {
-      final report_provider = context.watch<Reporte_Provider>();
-      
-
-      
-      int leng = report_provider.reportesMe.length;
-      if (!report_provider.fecthreportesMe){
-        report_provider.fetchMeReports();
-        report_provider.fecthreportesMe = true;
-      }
-      if(report_provider.reportesMe.length > 0){
-          return Column(
-          children: List.generate(
-            report_provider.reportesMe.length,
-            (index) => _buildPostItem(
-              utf8.decode(report_provider.reportesMe[index].titulo!.codeUnits),
-              utf8.decode(report_provider.reportesMe[index].descripcion!.codeUnits),
-              calcularTiempoTranscurrido(report_provider.reportesMe[index].created_at ?? "2023-11-28 10:30:00"),
-              report_provider.reportesMe[index].reportId,
-            ),
-          ),
-        );
-      }
-        
-        else{
-          return Text("No has creado Reportes");
-        }
-      
+  String calcularTiempoTranscurrido(DateTime fecha) {
+    final Duration diferencia = DateTime.now().difference(fecha);
+    if (diferencia.inDays > 0) {
+      return '${diferencia.inDays} días';
+    } else if (diferencia.inHours > 0) {
+      return '${diferencia.inHours} horas';
+    } else if (diferencia.inMinutes > 0) {
+      return '${diferencia.inMinutes} minutos';
+    } else {
+      return 'Justo ahora';
     }
+  }
 
-
-
-
-
-
-
-  Widget _buildPostItem(String? title, String? description, String? timeAgo, int id) {
-    final user_provider = context.watch<UserProvider>();
-    final report_provider = context.watch<Reporte_Provider>();
-    return Padding(
-      padding: const EdgeInsets.all(15),
-      child: Row(
-        children: [
-          CircleAvatar(
-            radius: 30,
-            backgroundImage: user_provider.usernow.imagen != null
-                ? NetworkImage(user_provider.usernow.imagen!)
-                : AssetImage('lib/assets/default_profile.png') as ImageProvider,
-          ),
-          SizedBox(width: 15),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  title ?? "default",
-                  style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.black87,
-                  ),
-                ),
-                SizedBox(height: 5),
-                Text(
-                  description ?? "default",
-                  style: TextStyle(fontSize: 16, color: Colors.black54),
-                ),
-                SizedBox(height: 5),
-                Row(children: [                Text(
-                  timeAgo ?? "default",
-                  style: TextStyle(fontSize: 14, color: Colors.grey),
-                  ),
-                  IconButton(
-                    icon: Icon(Icons.delete, color: Colors.red),
-                    onPressed: () {
-                      report_provider.deleteReport(id);
-                    },
-                  )
-                ],)
-              ],
+  Widget _buildPosts() {
+    return Container(
+      height: 300,
+      child: ListView.builder(
+        itemCount: 10,
+        itemBuilder: (context, index) {
+          return Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 10),
+            child: Card(
+              elevation: 2,
+              child: ListTile(
+                title: Text('Título de publicación $index'),
+                subtitle: Text(calcularTiempoTranscurrido(
+                    DateTime.now().subtract(Duration(days: index)))),
+              ),
             ),
-          ),
-        ],
+          );
+        },
       ),
     );
   }
 
   Widget _buildPhotos() {
-    
-    return GridView.builder(
-      shrinkWrap: true,
-      physics: NeverScrollableScrollPhysics(),
-      padding: EdgeInsets.all(15),
-      itemCount: 6,
-      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: 3,
-        crossAxisSpacing: 10,
-        mainAxisSpacing: 10,
+    return Container(
+      height: 300,
+      child: ListView.builder(
+        itemCount: 10,
+        itemBuilder: (context, index) {
+          return Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 10),
+            child: Card(
+              elevation: 2,
+              child: ListTile(
+                title: Text('Título de foto $index'),
+                leading: Icon(Icons.image),
+              ),
+            ),
+          );
+        },
       ),
-      itemBuilder: (context, index) {
-        return Container(
-          decoration: BoxDecoration(
-            color: Colors.grey[300],
-            borderRadius: BorderRadius.circular(10),
-          ),
-          child: Icon(
-            Icons.image,
-            size: 50,
-            color: Colors.grey[500],
-          ),
-        );
-      },
     );
   }
 }

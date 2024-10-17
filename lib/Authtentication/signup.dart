@@ -5,6 +5,7 @@ import 'dart:convert';
 import 'package:sqlite_flutter_crud/Authtentication/login.dart';
 import 'package:sqlite_flutter_crud/JsonModels/users.dart';
 import 'package:sqlite_flutter_crud/SQLite/sqlite.dart';
+import 'package:flutter/gestures.dart';
 
 class SignUp extends StatefulWidget {
   const SignUp({Key? key}) : super(key: key);
@@ -24,31 +25,65 @@ class _SignUpState extends State<SignUp> {
   bool isVisible = false;
   bool isVisibleConfirm = false;
   bool isSignUpTrue = false;
+  bool _acceptTerms = false;
   final db = DatabaseHelper();
   final formKey = GlobalKey<FormState>();
 
+  // Función para mostrar los términos y condiciones
+  void _showTermsAndConditions() {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Términos y condiciones'),
+          content: SingleChildScrollView(
+            child: Text(
+              'Aquí puedes agregar los términos y condiciones...',
+            ),
+          ),
+          actions: [
+            TextButton(
+              child: Text('Aceptar'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   signUp() async {
     if (formKey.currentState!.validate()) {
+      if (!_acceptTerms) {
+        setState(() {
+          isSignUpTrue = true;
+        });
+        return;
+      }
+
       var user = Users(
         usrName: username.text,
         usrEmail: email.text,
         usrPassword: password.text,
         usrDob: selectedDate?.toIso8601String(),
       );
-      //crear el body de la solicitud
+      // Crear el body de la solicitud
       final Map<String, String> body = {
         "nombres": user.usrName,
         "correo": user.usrEmail,
         "direccion": "string",
         "contraseña": user.usrPassword,
         "apellido": "null",
-        "fecha_n": 'user.usrDob',
+        "fecha_n": user.usrDob ?? '', // Aquí corregimos la fecha
         "rol": "null",
         "edad": '0'
       };
+
       // Realizar la solicitud POST al servidor
-      var url = Uri.parse('https://back-production-0678.up.railway.app/users/create');
-      //var url = Uri.parse('https://back-production-0678.up.railway.app/users/create');
+      var url =
+          Uri.parse('https://back-production-0678.up.railway.app/users/create');
 
       showDialog(
         context: context,
@@ -124,203 +159,71 @@ class _SignUpState extends State<SignUp> {
                     ),
                   ),
                   const SizedBox(height: 20),
-                  Container(
-                    margin: const EdgeInsets.all(8),
-                    padding:
-                        const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(8),
-                      color: Color(0xFFF6F6F6).withOpacity(0.8),
-                      border: Border.all(
-                          color: Color(0xFFBFBFBF),
-                          width: 0.4), // Borde más grueso
-                    ),
-                    child: TextFormField(
-                      controller: username,
-                      validator: (value) {
-                        if (value!.isEmpty) {
-                          return "El nombre de usuario es requerido";
-                        }
-                        return null;
-                      },
-                      decoration: const InputDecoration(
-                        icon: Icon(Icons.person),
-                        border: InputBorder.none,
-                        hintText: "Nombre de usuario",
-                        hintStyle: TextStyle(
-                            color: Color(
-                                0xFFBFBFBF)), // Color del icono // Color del texto del hint
-                      ),
-                    ),
-                  ),
-                  Container(
-                    margin: const EdgeInsets.all(8),
-                    padding:
-                        const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(8),
-                      color: Color(0xFFF6F6F6)
-                          .withOpacity(0.8), // Color llamativo para el fondo
-                      border: Border.all(
-                          color: Color(0xFFBFBFBF),
-                          width: 0.4), // Borde más grueso
-                    ),
-                    child: TextFormField(
-                      controller: email,
-                      validator: (value) {
-                        if (value!.isEmpty) {
-                          return "El correo electrónico es requerido";
-                        } else if (!RegExp(r'^[^@]+@[^@]+\.[^@]+')
-                            .hasMatch(value)) {
-                          return "Ingrese un correo electrónico válido";
-                        }
-                        return null;
-                      },
-                      decoration: InputDecoration(
-                        icon: Icon(Icons.email),
-                        border: InputBorder.none,
-                        hintText: "Correo electrónico",
-                        hintStyle: TextStyle(
-                            color: Color(
-                                0xFFBFBFBF)), // Color del icono // Color del texto del hint
-                      ),
-                    ),
-                  ),
-                  Container(
-                    margin: const EdgeInsets.all(8),
-                    padding:
-                        const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(8),
-                      color: Color(0xFFF6F6F6)
-                          .withOpacity(0.8), // Color llamativo para el fondo
-                      border: Border.all(
-                          color: Color(0xFFBFBFBF),
-                          width: 0.4), // Borde más grueso
-                    ),
-                    child: TextFormField(
-                      controller: password,
-                      validator: (value) {
-                        if (value!.isEmpty) {
-                          return "La contraseña es requerida";
-                        } else if (value.length < 6) {
-                          return "La contraseña debe tener al menos 6 caracteres";
-                        }
-                        return null;
-                      },
-                      obscureText: !isVisible,
-                      decoration: InputDecoration(
-                        icon: Icon(Icons.lock),
-                        border: InputBorder.none,
-                        hintText: "Contraseña",
-                        hintStyle: TextStyle(
-                            color: Color(
-                                0xFFBFBFBF)), // Color del icono // Color del texto del hint
-                        suffixIcon: IconButton(
-                          onPressed: () {
-                            setState(() {
-                              isVisible = !isVisible;
-                            });
-                          },
-                          icon: Icon(
-                            isVisible ? Icons.visibility : Icons.visibility_off,
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
-                  Container(
-                    margin: const EdgeInsets.all(8),
-                    padding:
-                        const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(8),
-                      color: Color(0xFFF6F6F6)
-                          .withOpacity(0.8), // Color llamativo para el fondo
-                      border: Border.all(
-                          color: Color(0xFFBFBFBF),
-                          width: 0.4), // Borde más grueso
-                    ),
-                    child: TextFormField(
-                      controller: confirmPassword,
-                      validator: (value) {
-                        if (value!.isEmpty) {
-                          return "Confirme su contraseña";
-                        } else if (value != password.text) {
-                          return "Las contraseñas no coinciden";
-                        }
-                        return null;
-                      },
-                      obscureText: !isVisibleConfirm,
-                      decoration: InputDecoration(
-                        icon: Icon(Icons.lock),
-                        border: InputBorder.none,
-                        hintText: "Confirmar contraseña",
-                        hintStyle: TextStyle(
-                            color: Color(
-                                0xFFBFBFBF)), //Color del icono // Color del texto del hint
-                        suffixIcon: IconButton(
-                          onPressed: () {
-                            setState(() {
-                              isVisibleConfirm = !isVisibleConfirm;
-                            });
-                          },
-                          icon: Icon(
-                            isVisibleConfirm
-                                ? Icons.visibility
-                                : Icons.visibility_off,
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
-                  Container(
-                    margin: const EdgeInsets.all(8),
-                    padding:
-                        const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(8),
-                      color: Color(0xFFF6F6F6)
-                          .withOpacity(0.8), // Color llamativo para el fondo
-                      border: Border.all(
-                          color: Color(0xFFBFBFBF),
-                          width: 0.4), // Borde más grueso
-                    ),
-                    child: TextFormField(
-                      controller: birthDateController,
-                      decoration: InputDecoration(
-                        icon: Icon(Icons.calendar_today),
-                        border: InputBorder.none,
-                        hintText: "Fecha de Nacimiento",
-                        hintStyle: TextStyle(
-                            color:
-                                Color(0xFFBFBFBF)), // Color del texto del hint
-                      ),
-                      onTap: () async {
-                        DateTime? pickedDate = await showDatePicker(
-                          context: context,
-                          initialDate: DateTime.now(),
-                          firstDate: DateTime(1900),
-                          lastDate: DateTime(2100),
-                        );
-
-                        if (pickedDate != null) {
+                  // Input de nombre de usuario
+                  _buildTextField(username, "Nombre de usuario", Icons.person),
+                  // Input de correo electrónico
+                  _buildTextField(email, "Correo electrónico", Icons.email),
+                  // Input de contraseña
+                  _buildPasswordField(password, "Contraseña", isVisible),
+                  // Input de confirmar contraseña
+                  _buildPasswordField(
+                      confirmPassword, "Confirmar contraseña", isVisibleConfirm,
+                      confirmPasswordCheck: true),
+                  // Input de fecha de nacimiento
+                  _buildDatePicker(),
+                  const SizedBox(height: 10),
+                  // Checkbox de términos y condiciones
+                  Row(
+                    children: [
+                      Checkbox(
+                        value: _acceptTerms,
+                        activeColor:
+                            const Color(0xFF5DB075), // Color personalizado
+                        onChanged: (bool? value) {
                           setState(() {
-                            birthDateController.text =
-                                "${pickedDate.day}/${pickedDate.month}/${pickedDate.year}";
+                            _acceptTerms = value ?? false;
                           });
-                        }
-                      },
-                    ),
+                        },
+                      ),
+                      RichText(
+                        text: TextSpan(
+                          text: 'He leído y acepto los ',
+                          style: const TextStyle(color: Colors.black),
+                          children: [
+                            TextSpan(
+                              text: 'términos',
+                              style: const TextStyle(color: Color(0xFF5DB075)),
+                              recognizer: TapGestureRecognizer()
+                                ..onTap = () {
+                                  _showTermsAndConditions();
+                                },
+                            ),
+                            const TextSpan(
+                              text: ' y ',
+                              style: TextStyle(color: Colors.black),
+                            ),
+                            TextSpan(
+                              text: 'condiciones',
+                              style: const TextStyle(color: Color(0xFF5DB075)),
+                              recognizer: TapGestureRecognizer()
+                                ..onTap = () {
+                                  _showTermsAndConditions();
+                                },
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
                   ),
                   const SizedBox(height: 10),
+                  // Botón de registro
                   Container(
                     height: 55,
                     width: MediaQuery.of(context).size.width * .9,
                     decoration: BoxDecoration(
                       borderRadius:
                           BorderRadius.circular(27.5), // Hace el botón circular
-                      color: Color(0xFF5DB075),
+                      color: const Color(0xFF5DB075),
                     ),
                     child: TextButton(
                       onPressed: signUp,
@@ -356,6 +259,119 @@ class _SignUpState extends State<SignUp> {
                       : const SizedBox(),
                 ],
               ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  // Métodos para crear los widgets de los campos
+  Widget _buildTextField(
+      TextEditingController controller, String hint, IconData icon) {
+    return Container(
+      margin: const EdgeInsets.all(8),
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(8),
+        color: const Color(0xFFF6F6F6).withOpacity(0.8),
+        border: Border.all(color: const Color(0xFFBFBFBF), width: 0.4),
+      ),
+      child: TextFormField(
+        controller: controller,
+        validator: (value) {
+          if (value!.isEmpty) {
+            return "$hint es requerido";
+          }
+          return null;
+        },
+        decoration: InputDecoration(
+          icon: Icon(icon),
+          border: InputBorder.none,
+          hintText: hint,
+          hintStyle: const TextStyle(color: Color(0xFFBFBFBF)),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildPasswordField(
+      TextEditingController controller, String hint, bool visibility,
+      {bool confirmPasswordCheck = false}) {
+    return Container(
+      margin: const EdgeInsets.all(8),
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(8),
+        color: const Color(0xFFF6F6F6).withOpacity(0.8),
+        border: Border.all(color: const Color(0xFFBFBFBF), width: 0.4),
+      ),
+      child: TextFormField(
+        controller: controller,
+        obscureText: !visibility,
+        validator: (value) {
+          if (value!.isEmpty) {
+            return "$hint es requerido";
+          }
+          if (confirmPasswordCheck && value != password.text) {
+            return "Las contraseñas no coinciden";
+          }
+          return null;
+        },
+        decoration: InputDecoration(
+          icon: const Icon(Icons.lock),
+          border: InputBorder.none,
+          hintText: hint,
+          hintStyle: const TextStyle(color: Color(0xFFBFBFBF)),
+          suffixIcon: IconButton(
+            icon: Icon(visibility ? Icons.visibility : Icons.visibility_off),
+            onPressed: () {
+              setState(() {
+                if (confirmPasswordCheck) {
+                  isVisibleConfirm = !isVisibleConfirm;
+                } else {
+                  isVisible = !isVisible;
+                }
+              });
+            },
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildDatePicker() {
+    return GestureDetector(
+      onTap: () async {
+        DateTime? picked = await showDatePicker(
+          context: context,
+          initialDate: DateTime.now(),
+          firstDate: DateTime(1900),
+          lastDate: DateTime.now(),
+        );
+        if (picked != null) {
+          setState(() {
+            selectedDate = picked;
+            birthDateController.text = "${picked.toLocal()}".split(' ')[0];
+          });
+        }
+      },
+      child: AbsorbPointer(
+        child: Container(
+          margin: const EdgeInsets.all(8),
+          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(8),
+            color: const Color(0xFFF6F6F6).withOpacity(0.8),
+            border: Border.all(color: const Color(0xFFBFBFBF), width: 0.4),
+          ),
+          child: TextFormField(
+            controller: birthDateController,
+            decoration: const InputDecoration(
+              icon: Icon(Icons.calendar_today),
+              border: InputBorder.none,
+              hintText: "Fecha de nacimiento",
+              hintStyle: TextStyle(color: Color(0xFFBFBFBF)),
             ),
           ),
         ),
