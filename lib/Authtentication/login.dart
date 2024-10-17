@@ -63,6 +63,8 @@ class _LoginScreenState extends State<LoginScreen> {
       // Inicio de sesión exitoso, navegar a la siguiente pantalla (home.dart)
       Map<String, dynamic> jsonResponse = jsonDecode(response.body);
       Usuario user = Usuario.fromJson(jsonResponse);
+      String? token =  user.token;
+      print("este es el token"+token!);
       await storage.write(key: 'jwt', value: user.token);
 
       Navigator.pushReplacement(

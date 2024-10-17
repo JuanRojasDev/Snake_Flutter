@@ -228,7 +228,7 @@ class _PageIdentificationState extends State<PageIdentification> {
                                   context,
                                   MaterialPageRoute(
                                     builder: (context) => Scaffold(
-                                      body: CreateReport(
+                                      body: createReport(
                                         defaultData: dataDefault,
                                       ),
                                     ),
