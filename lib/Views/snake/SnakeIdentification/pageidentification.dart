@@ -64,9 +64,11 @@ class _PageIdentificationState extends State<PageIdentification> {
       filename: 'imagen.jpg',
     );
     request.files.add(multipartFile);
-
+    try{
     var response = await request.send();
-    if (response.statusCode == 200) {
+    print("esttus"+response.statusCode.toString());
+
+    if (response.statusCode == 200 ) {
       final responseBody = await response.stream.bytesToString();
       final decodedResponse = jsonDecode(responseBody);
       setState(() {
@@ -80,16 +82,27 @@ class _PageIdentificationState extends State<PageIdentification> {
           respuesta = 'Nombre: ${dataDefault.name}, Descripción: ${dataDefault.description}, Es Venenosa: ${dataDefault.venomous! ? 'sí' : 'no'}';
         }
         else{
-          respuesta = 'Error No se identifica una serpiente en la imagne';
+          respuesta = 'Error No se identifica una serpiente en la imagen';
         }
           isVisibleConfirm = false;
       });
     } else {
-      print('Error al subir la imagen: ${response.statusCode}');
+        dataDefault = SnakeReportDefault(issnake: false);
+        print('Error al subir la imagen: ${response.statusCode}');
         setState(() {
+          respuesta = 'Error al identificar imagen Se recomienda imagenes con una resolucion minima de 900x900 Codigo:${response.statusCode} ';
         isVisibleConfirm = false;
       });
     }
+    }
+    catch (error) {
+    print("Error uploading image: $error");
+    setState(() {
+      dataDefault = SnakeReportDefault(issnake: false);
+      respuesta = 'Error al subir la imagen. Intente nuevamente.';
+      isVisibleConfirm = false;
+    });
+  }
   }
 
   @override
