@@ -6,11 +6,13 @@ import 'package:http/http.dart' as http;
 import 'package:image_picker/image_picker.dart';
 import 'package:loading_indicator/loading_indicator.dart';
 import 'package:provider/provider.dart';
+import 'package:sqlite_flutter_crud/Authtentication/home.dart';
 import 'dart:convert';
 import 'package:sqlite_flutter_crud/Authtentication/login.dart';
 import 'package:sqlite_flutter_crud/JsonModels/SnakeReportDefault.dart';
 import 'package:sqlite_flutter_crud/JsonModels/reporte.dart';
 import 'package:sqlite_flutter_crud/JsonModels/users.dart';
+import 'package:sqlite_flutter_crud/Providers/Home_Body_provider.dart';
 import 'package:sqlite_flutter_crud/Providers/report_provider.dart';
 import 'package:sqlite_flutter_crud/SQLite/sqlite.dart';
 import 'package:sqlite_flutter_crud/Views/report/Reports_List_view/allReport.dart';
@@ -249,7 +251,7 @@ class _createReportState extends State<createReport> {
   @override
   Widget build(BuildContext context) {
     final reportProvider = context.watch<ReportProvider>();
-
+    final body_Provider = context.watch<Home_Body_Provider>();
     return Scaffold(
       backgroundColor: Colors.white,
         appBar: AppBar(
@@ -269,6 +271,20 @@ class _createReportState extends State<createReport> {
                        reportProvider.fetchData = false;
 
                        Navigator.pop(context, reportProvider.fetchAllReports());
+                       Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => Scaffold(
+                              appBar: AppBar(
+                                title: Text('Publicaciones'),
+                                leading: BuilderMenu(),
+                              ),
+                              drawer: DrawerHome(widget: widget),
+                              body: AllReport(),
+                              bottomNavigationBar: ButonBarHome(
+                                  body_Provider: body_Provider, widget: widget)),
+                        ),
+                      );
                     }
                     , 
             child: Text("PUBLICAR",

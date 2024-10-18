@@ -109,7 +109,7 @@ class _AllReportState extends State<AllReport> {
                 itemCount: reportProvider.reportesAll.length,
                 itemBuilder: (context, index) {
                   return _reportCard(
-                      context, reportProvider.reportesAll[index]);
+                      context, reportProvider.reportesAll[reportProvider.reportesAll.length - 1 - index]);
                 },
               ),
             ),

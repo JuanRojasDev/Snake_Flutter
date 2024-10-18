@@ -101,7 +101,7 @@ class _AllReportState extends State<IdReport> {
                 itemCount: widget._reports.length,
                 itemBuilder: (context, index) {
                   return _reportCard(
-                      context, widget._reports[index]);
+                      context, widget._reports[widget._reports.length - 1 - index]);
                 },
               ),
             ),
