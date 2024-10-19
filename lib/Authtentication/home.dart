@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:sqlite_flutter_crud/Authtentication/login.dart';
@@ -25,6 +26,8 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   Widget bodyContent = Screen_galeria();
 
+
+  
   void updateBodyContent(Widget newContent) {
     setState(() {
       bodyContent = newContent;
@@ -209,6 +212,15 @@ class DrawerHome extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final user_provider = context.watch<UserProvider>();
+    Future<bool> signOutFromGoogle() async {
+    try {
+      await user_provider.userCredential.value.signOut();
+      
+      return true;
+    } on Exception catch (_) {
+      return false;
+    }
+  }
     return Drawer(
       child: ListView(
         padding: EdgeInsets.zero,
@@ -299,13 +311,18 @@ class DrawerHome extends StatelessWidget {
           ListTile(
             leading: Icon(Icons.logout, color: Colors.red),
             title: Text('Cerrar Sesión', style: TextStyle(color: Colors.red)),
-            onTap: () {
+            onTap: () async {
               // Acción para cerrar sesión y redirigir al login
               user_provider.logoutUser();
               Navigator.pushAndRemoveUntil(
                   context,
                   MaterialPageRoute(builder: (context) => LoginScreen()),
                   (route) => false);
+                  bool result = await signOutFromGoogle();
+                  if (result){ 
+                    user_provider.userCredential.value = '';
+                    print("Cerrado de secion completo");
+                  };
             },
           ),
         ],

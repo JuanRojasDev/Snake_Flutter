@@ -26,6 +26,8 @@ dependencies:
   file_picker: ^8.0.5
   google_maps_flutter: ^2.1.1
   firebase_app_check: ^0.3.1
+  firebase_auth: ^5.2.0
+  google_sign_in: ^6.2.1
 
 dev_dependencies:
   flutter_test:
@@ -36,6 +38,7 @@ flutter:
   uses-material-design: true
 
   assets:
+    - assets/images/
     - lib/assets/mamba_verde.jpg
     - lib/assets/mamba_negra.jpg
     - lib/assets/Villavicencio.jpg

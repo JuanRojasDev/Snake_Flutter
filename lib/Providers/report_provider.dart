@@ -6,6 +6,7 @@ import 'package:sqlite_flutter_crud/JsonModels/reporte.dart';
 
 class ReportProvider extends ChangeNotifier {
   List<Reporte> reportesAll = [];
+  
   bool fetchData = false;
   final storage = new FlutterSecureStorage();
   List<Reporte> reportesMe = [];

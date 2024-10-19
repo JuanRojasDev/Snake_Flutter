@@ -23,11 +23,41 @@ class _Screen_galeriaState extends State<Screen_galeria> {
     final snake_Provider = context.watch<Snake_Provider>();
 
     if (snake_Provider.serpientes.length > 0) {
-       
-       return Info_Snake(infoSnake: (snake_Provider.serpientes[0]));
+      return SafeArea(
+          child: Column(
+        children: [
+          Row(
+            children: [
+              GestureDetector(
+                child: Text("Venenosas "),
+                onTap: () {
+                  snake_Provider.fectSnakesPoison(true);
+                },
+              ),
+              GestureDetector(
+                child: Text(" No Venenosas"),
+                onTap: () {
+                  snake_Provider.fectSnakesPoison(false);
+                },
+              )
+            ],
+            mainAxisAlignment: MainAxisAlignment.center,
+          ),
+          Expanded(
+            child: GridView.count(
+              crossAxisCount: 2, // Adjust the number of columns as needed
+              children:
+                  List.generate(snake_Provider.serpientes.length, (index) {
+                return _buildGridTile(
+                    context, snake_Provider.serpientes[index]);
+              }),
+            ),
+          ),
+        ],
+      ));
     }
     return Text(
-        "Lista vacia");
+        "Lista Basia");
   }
 
   /* lista grid
@@ -120,7 +150,17 @@ lista horizontal
   Widget _buildGridTile(BuildContext context, Serpiente serpiente) {
     return GestureDetector(
       onTap: () {
-          
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => Scaffold(
+              appBar: AppBar(
+                title: Text('Informacion ' + serpiente.nombre3),
+              ),
+              body: Info_Snake(infoSnake: serpiente),
+            ),
+          ),
+        );
       },
       child: Card(
         margin: const EdgeInsets.all(10),

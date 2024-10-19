@@ -20,6 +20,8 @@ class UserProvider extends ChangeNotifier {
   bool _fetchData = false;
   final storage = new FlutterSecureStorage();
 
+  ValueNotifier userCredential = ValueNotifier('');
+
   Usuario get usernow => _usernow;
   bool get fetchData => _fetchData;
 

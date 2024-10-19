@@ -10,6 +10,8 @@ import 'package:sqlite_flutter_crud/Providers/user_provider.dart';
 import 'dart:convert';
 import 'home.dart';
 import 'package:flutter/gestures.dart'; // Import necesario
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({Key? key}) : super(key: key);
@@ -26,15 +28,43 @@ class _LoginScreenState extends State<LoginScreen> {
   bool _acceptTerms = false;
   final storage = FlutterSecureStorage();
 
-  Future<void> _login() async {
-    final String url =
+  Future<dynamic> signInWithGoogle() async {
+    try {
+      final GoogleSignInAccount? googleUser = await GoogleSignIn(
+              signInOption: SignInOption.standard,
+              forceCodeForRefreshToken: true)
+          .signIn();
+
+      final GoogleSignInAuthentication? googleAuth =
+          await googleUser?.authentication;
+
+      final credential = GoogleAuthProvider.credential(
+        accessToken: googleAuth?.accessToken,
+        idToken: googleAuth?.idToken,
+      );
+      print("Token !");
+      print(googleAuth?.idToken);
+
+      return await FirebaseAuth.instance.signInWithCredential(credential);
+    } on Exception catch (e) {
+      // TODO
+      print('exception->$e');
+    }
+  }
+
+  Future<void> _login([String? provider]) async {
+     String url =
         'https://back-production-0678.up.railway.app/users/login'; // server ip
+
+    if (provider != null) {
+       url = provider;
+    }
 
     final Map<String, String> body = {
       'identifier': _usernameController.text,
       'password': _passwordController.text,
     };
-
+    print(url);
     showDialog(
       context: context,
       barrierDismissible: false,
@@ -63,8 +93,8 @@ class _LoginScreenState extends State<LoginScreen> {
       // Inicio de sesión exitoso, navegar a la siguiente pantalla (home.dart)
       Map<String, dynamic> jsonResponse = jsonDecode(response.body);
       Usuario user = Usuario.fromJson(jsonResponse);
-      String? token =  user.token;
-      print("este es el token"+token!);
+      String? token = user.token;
+      print("este es el token" + token!);
       await storage.write(key: 'jwt', value: user.token);
 
       Navigator.pushReplacement(
@@ -126,6 +156,26 @@ class _LoginScreenState extends State<LoginScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final user_provider = context.watch<UserProvider>();
+    ValueNotifier userCredential = ValueNotifier('');
+
+    Future<bool> signOutFromGoogle() async {
+      try {
+        await FirebaseAuth.instance.signOut();
+        await FirebaseAuth.instance.currentUser?.delete();
+        print("object TRUE");
+        var currentUser = FirebaseAuth.instance.currentUser;
+
+        if (currentUser != null) {
+          print(currentUser.uid);
+        }
+
+        return true;
+      } on Exception catch (_) {
+        return false;
+      }
+    }
+
     return Scaffold(
       backgroundColor: Colors.white,
       body: SingleChildScrollView(
@@ -296,23 +346,26 @@ class _LoginScreenState extends State<LoginScreen> {
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
                   IconButton(
-                    icon: const Icon(Icons.g_mobiledata, size: 40),
-                    onPressed: () {
-                      // Aquí agregarías la autenticación con Google
+                    iconSize: 40,
+                    icon: Image.asset(
+                      'assets/images/google.jpeg',
+                      width: 40,
+                    ),
+                    onPressed: () async {
+                      userCredential.value = await signInWithGoogle();
+                      if (FirebaseAuth.instance.currentUser != null) {
+                        print(FirebaseAuth.instance.currentUser?.uid);
+                        
+                        var idTokenResult =  FirebaseAuth.instance.currentUser?.uid;
+
+                        String url_aut =
+                            "https://back-production-0678.up.railway.app/users/google-auth?id="+idTokenResult!;
+                        print(url_aut);
+                        _login(url_aut);
+                      }
                     },
                   ),
-                  IconButton(
-                    icon: const Icon(Icons.youtube_searched_for, size: 40),
-                    onPressed: () {
-                      // Aquí agregarías la autenticación con Microsoft
-                    },
-                  ),
-                  IconButton(
-                    icon: const Icon(Icons.facebook, size: 40),
-                    onPressed: () {
-                      // Aquí agregarías la autenticación con Facebook
-                    },
-                  ),
+          
                 ],
               ),
             ],
