@@ -1,7 +1,9 @@
 import 'dart:convert';
 import 'dart:io';
 import 'package:firebase_storage/firebase_storage.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:http/http.dart' as http;
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
@@ -18,23 +20,20 @@ class ProfilePage extends StatefulWidget {
 }
 
 class _ProfilePageState extends State<ProfilePage> {
-  
-
-
-
   bool showPosts = true;
   bool isEditing = false;
 
   File? _profileImage;
   File? _coverImage;
   String _name = "Nombre del Usuario";
-    String _Descripcion = "Nombre del Usuario";
+  String _Descripcion = "Nombre del Usuario";
   String _status = "Esta es una descripción breve";
   String? imageUrl = "";
   String? CoverimageUrl = "";
   final _nameController = TextEditingController();
   final _statusController = TextEditingController();
   final storage = FlutterSecureStorage();
+  late List<Reporte>? _showreports = null;
 
   Future<http.Response> editUser() async {
     final String? token = await storage.read(key: 'jwt');
@@ -42,8 +41,14 @@ class _ProfilePageState extends State<ProfilePage> {
       throw Exception('Missing JWT token');
     }
 
-    final Uri url = Uri.parse('https://back-production-0678.up.railway.app/usuario/edit');
-    final Map<String, dynamic> body = {"nombre": _name, "imagenurl": imageUrl, "Descripcion": _Descripcion, "imagen_fonodo": CoverimageUrl};
+    final Uri url =
+        Uri.parse('https://back-production-0678.up.railway.app/usuario/edit');
+    final Map<String, dynamic> body = {
+      "nombre": _name,
+      "imagenurl": imageUrl,
+      "Descripcion": _Descripcion,
+      "imagen_fonodo": CoverimageUrl
+    };
     final Map<String, String> headers = {
       'Content-Type': 'application/json; charset=utf-8',
       'Authorization': 'Bearer $token',
@@ -122,26 +127,61 @@ class _ProfilePageState extends State<ProfilePage> {
     await editUser();
   }
 
-    void _saveDescription() async {
+  void _saveDescription() async {
     setState(() {
       _Descripcion = _statusController.text;
     });
     await editUser();
   }
 
+  Future<void> fetchMeReports() async {
+    try {
+      final String? token = await storage.read(key: 'jwt');
+      if (token == null) {
+        throw Exception('Missing JWT token'); // Handle missing token error
+      }
+      final Map<String, String> headers = {
+        'Content-Type': 'application/json; charset=utf-8',
+        'Authorization': 'Bearer $token', // Include retrieved JWT token
+        'accept': 'application/json',
+      };
+      final response = await http.get(
+          Uri.parse(
+              'https://back-production-0678.up.railway.app/Reporte/all_me'),
+          headers: headers);
+
+      if (response.statusCode == 200) {
+        final List<dynamic> data = jsonDecode(response.body);
+        final List<Reporte> reports =
+            data.map((json) => Reporte.fromJsonNoUSer(json)).toList();
+        setState(() {
+          _showreports = reports;
+        });
+      } else {
+        // Handle error
+        throw Exception('Failed to load reports');
+      }
+    } catch (e) {
+      // Handle error
+      print('Error fetching reports: $e');
+    }
+  }
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    fetchMeReports();
+    print("init");
+  }
 
   @override
   Widget build(BuildContext context) {
-
-
-
     final user_provider = context.watch<UserProvider>();
     _nameController.text = user_provider.usernow.nombres;
-    if(user_provider.usernow.descripcion == null){
-      _statusController.text = user_provider.usernow.descripcion ?? "null" ;
-    }
-    else{
-      _statusController.text = user_provider.usernow.descripcion ?? "no null" ;      
+    if (user_provider.usernow.descripcion == null) {
+      _statusController.text = user_provider.usernow.descripcion ?? "null";
+    } else {
+      _statusController.text = user_provider.usernow.descripcion ?? "no null";
     }
     imageUrl = user_provider.usernow.imagen;
     CoverimageUrl = user_provider.usernow.imagen_fondo;
@@ -154,13 +194,13 @@ class _ProfilePageState extends State<ProfilePage> {
               clipBehavior: Clip.none,
               children: [
                 GestureDetector(
-                   onTap: () async {
-                      await _pickImage();
-                      CoverimageUrl = await subirImagenFireBase(_profileImage!);
-                      await editUser();
-                      _saveImageUrl(CoverimageUrl!);
-                      user_provider.setImageBack(CoverimageUrl!);
-                    },
+                  onTap: () async {
+                    await _pickImage();
+                    CoverimageUrl = await subirImagenFireBase(_profileImage!);
+                    await editUser();
+                    _saveImageUrl(CoverimageUrl!);
+                    user_provider.setImageBack(CoverimageUrl!);
+                  },
                   child: Container(
                     height: 250,
                     width: double.infinity,
@@ -266,8 +306,10 @@ class _ProfilePageState extends State<ProfilePage> {
                       border: InputBorder.none,
                       hintText: "Descripción",
                     ),
-                    onSubmitted: (value) =>
-                        {_saveDescription(), user_provider.setUserDescription(_Descripcion)},
+                    onSubmitted: (value) => {
+                      _saveDescription(),
+                      user_provider.setUserDescription(_Descripcion)
+                    },
                   ),
                 ],
               ),
@@ -277,23 +319,48 @@ class _ProfilePageState extends State<ProfilePage> {
               padding: const EdgeInsets.symmetric(horizontal: 30),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
+                mainAxisSize: MainAxisSize.max,
                 children: [
-                  _buildTabOption("Publicaciones", showPosts, () {
-                    setState(() {
-                      showPosts = true;
-                    });
-                  }),
+                  Expanded(
+                    child: Container(
+                      padding: EdgeInsets.all(9),
+                      decoration: BoxDecoration(
+                          borderRadius: BorderRadius.only(
+                              bottomLeft: Radius.circular(22),
+                              topLeft: Radius.circular(22)),
+                          border: Border.all(
+                              width: 3,
+                              color: Color.fromARGB(150, 180, 178, 178))),
+                      child: _buildTabOption("Publicaciones", showPosts, () {
+                        setState(() {
+                          showPosts = true;
+                        });
+                      }),
+                    ),
+                  ),
                   SizedBox(width: 10),
-                  _buildTabOption("Fotos", !showPosts, () {
-                    setState(() {
-                      showPosts = false;
-                    });
-                  }),
+                  Expanded(
+                    child: Container(
+                      padding: EdgeInsets.all(9),
+                      decoration: BoxDecoration(
+                          borderRadius: BorderRadius.only(
+                              bottomRight: Radius.circular(22),
+                              topRight: Radius.circular(22)),
+                          border: Border.all(
+                              width: 3,
+                              color: Color.fromARGB(150, 180, 178, 178))),
+                      child: _buildTabOption("Fotos", !showPosts, () {
+                        setState(() {
+                          showPosts = false;
+                        });
+                      }),
+                    ),
+                  ),
                 ],
               ),
             ),
             Divider(thickness: 2, color: Colors.grey[300]),
-            showPosts ? _buildPosts() : _buildPhotos(),
+            showPosts ? _buildPosts(_showreports) : _buildPhotos(_showreports),
           ],
         ),
       ),
@@ -320,7 +387,7 @@ class _ProfilePageState extends State<ProfilePage> {
           Text(
             title,
             style: TextStyle(
-              fontSize: 18,
+              fontSize: 20,
               fontWeight: FontWeight.bold,
               color: isActive ? Color(0xFF5DB074) : Colors.grey,
             ),
@@ -337,120 +404,125 @@ class _ProfilePageState extends State<ProfilePage> {
     );
   }
 
-String calcularTiempoTranscurrido(String fechaString) {
-  // Convertir el string a un objeto DateTime
-  DateTime fechaPasada = DateTime.parse(fechaString);
+  String calcularTiempoTranscurrido(String fechaString) {
+    // Convertir el string a un objeto DateTime
+    DateTime fechaPasada = DateTime.parse(fechaString);
 
-  // Obtener la fecha y hora actual
-  DateTime ahora = DateTime.now();
+    // Obtener la fecha y hora actual
+    DateTime ahora = DateTime.now();
 
-  // Calcular la diferencia en milisegundos
-  Duration diferencia = ahora.difference(fechaPasada);
+    // Calcular la diferencia en milisegundos
+    Duration diferencia = ahora.difference(fechaPasada);
 
-  // Determinar la unidad de tiempo más apropiada
-  if (diferencia.inDays >= 365) {
-    int year = diferencia.inDays ~/ 365;
-    return "Hace $year años";
-  } else if (diferencia.inDays >= 30) {
-    int meses = diferencia.inDays ~/ 30;
-    return "Hace $meses meses";
-  } else if (diferencia.inHours >= 24) {
-    int dias = diferencia.inHours ~/ 24;
-    return "Hace $dias días";
-  } else if (diferencia.inMinutes >= 60) {
-    int horas = diferencia.inMinutes ~/ 60;
-    return "Hace $horas horas";
-  } else {
-    int minutos = diferencia.inMinutes;
-    return "Hace $minutos minutos";
+    // Determinar la unidad de tiempo más apropiada
+    if (diferencia.inDays >= 365) {
+      int year = diferencia.inDays ~/ 365;
+      return "Hace $year años";
+    } else if (diferencia.inDays >= 30) {
+      int meses = diferencia.inDays ~/ 30;
+      return "Hace $meses meses";
+    } else if (diferencia.inHours >= 24) {
+      int dias = diferencia.inHours ~/ 24;
+      return "Hace $dias días";
+    } else if (diferencia.inMinutes >= 60) {
+      int horas = diferencia.inMinutes ~/ 60;
+      return "Hace $horas horas";
+    } else {
+      int minutos = diferencia.inMinutes;
+      return "Hace $minutos minutos";
+    }
   }
-}
 
-
-
-
-
-
-
-    Widget _buildPosts() {
-      final report_provider = context.watch<ReportProvider>();
-      
-
-      
-      int leng = report_provider.reportesMe.length;
-      if (!report_provider.fecthreportesMe){
-        report_provider.fetchMeReports();
-        report_provider.fecthreportesMe = true;
-      }
-      if(report_provider.reportesMe.length > 0){
-          return Column(
+  Widget _buildPosts([List<Reporte>? reports]) {
+    if (reports != null) {
+      if (reports!.length > 0) {
+        return Column(
           children: List.generate(
-            report_provider.reportesMe.length,
+            reports!.length,
             (index) => _buildPostItem(
-              utf8.decode(report_provider.reportesMe[index].titulo!.codeUnits),
-              utf8.decode(report_provider.reportesMe[index].descripcion!.codeUnits),
-              calcularTiempoTranscurrido(report_provider.reportesMe[index].created_at ?? "2023-11-28 10:30:00"),
-              report_provider.reportesMe[index].reportId,
+              utf8.decode(reports[index].titulo!.codeUnits),
+              utf8.decode(reports[index].descripcion!.codeUnits),
+              calcularTiempoTranscurrido(
+                  reports[index].created_at ?? "2023-11-28 10:30:00"),
+              reports[index].reportId,
+              reports[index].imagen,
             ),
           ),
         );
+      } else {
+        return Text("No has creado Reportes");
       }
-        
-        else{
-          return Text("No has creado Reportes");
-        }
-      
+    } else {
+      return Text("No has creado Reportes");
     }
+  }
 
-
-
-
-
-
-
-  Widget _buildPostItem(String? title, String? description, String? timeAgo, int id) {
-    final user_provider = context.watch<UserProvider>();
+  Widget _buildPostItem(String? title, String? description, String? timeAgo,
+      int id, String? imagen) {
     final report_provider = context.watch<ReportProvider>();
     return Padding(
-      padding: const EdgeInsets.all(15),
+      padding: const EdgeInsets.all(11),
       child: Row(
         children: [
-          CircleAvatar(
-            radius: 30,
-            backgroundImage: user_provider.usernow.imagen != null
-                ? NetworkImage(user_provider.usernow.imagen!)
-                : AssetImage('lib/assets/default_profile.png') as ImageProvider,
+          Container(
+            width: 65, // Adjust the width as needed
+            height: 65, // Adjust the height as needed
+            margin: EdgeInsets.only(bottom: 33),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.all(Radius.circular(8)),
+              // Set the shape to rectangle
+              image: DecorationImage(
+                image: NetworkImage(imagen!),
+                fit: BoxFit.fill,
+                alignment: Alignment.topCenter,
+              ),
+            ),
           ),
           SizedBox(width: 15),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  mainAxisSize: MainAxisSize.max,
+                  children: [
+                    Text(
+                      title ?? "default",
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.black87,
+                      ),
+                    ),
+                    Row(
+                      children: [
+                        Text(
+                          timeAgo ?? "default",
+                          style: TextStyle(fontSize: 14, color: Colors.grey),
+                        ),
+                        IconButton(
+                          icon: Icon(Icons.delete, color: Colors.red),
+                          onPressed: () {
+                            report_provider.deleteReport(id);
+                          },
+                        )
+                      ],
+                    )
+                  ],
+                ),
+                SizedBox(height: 5),
                 Text(
-                  title ?? "default",
+                  description?.trim() ??
+                      "default", // Trim leading/trailing whitespace
+                  maxLines: 3,
+                  overflow: TextOverflow.ellipsis,
                   style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.black87,
+                    fontSize: 16,
+                    color: Colors.black54,
                   ),
                 ),
                 SizedBox(height: 5),
-                Text(
-                  description ?? "default",
-                  style: TextStyle(fontSize: 16, color: Colors.black54),
-                ),
-                SizedBox(height: 5),
-                Row(children: [                Text(
-                  timeAgo ?? "default",
-                  style: TextStyle(fontSize: 14, color: Colors.grey),
-                  ),
-                  IconButton(
-                    icon: Icon(Icons.delete, color: Colors.red),
-                    onPressed: () {
-                      report_provider.deleteReport(id);
-                    },
-                  )
-                ],)
               ],
             ),
           ),
@@ -459,31 +531,58 @@ String calcularTiempoTranscurrido(String fechaString) {
     );
   }
 
-  Widget _buildPhotos() {
-    
-    return GridView.builder(
-      shrinkWrap: true,
-      physics: NeverScrollableScrollPhysics(),
-      padding: EdgeInsets.all(15),
-      itemCount: 6,
-      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: 3,
-        crossAxisSpacing: 10,
-        mainAxisSpacing: 10,
-      ),
-      itemBuilder: (context, index) {
-        return Container(
-          decoration: BoxDecoration(
-            color: Colors.grey[300],
-            borderRadius: BorderRadius.circular(10),
+
+
+    Widget _buildPhotosItem(String? title, String? imagen) {
+    final report_provider = context.watch<ReportProvider>();
+    return Padding(
+      padding: const EdgeInsets.all(7),
+      child: Column(
+        children: [
+          Container(
+            width: double.infinity, // Adjust the width as needed
+            height: 400, // Adjust the height as needed
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.all(Radius.circular(16)),
+              // Set the shape to rectangle
+              image: DecorationImage(
+                image: NetworkImage(imagen!),
+                fit: BoxFit.fill,
+                alignment: Alignment.topCenter,
+              ),
+            ),
           ),
-          child: Icon(
-            Icons.image,
-            size: 50,
-            color: Colors.grey[500],
+                                    Text(
+                      title ?? "default",
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.black87,
+                      ),
+                    ),
+
+        ],
+      ),
+    );
+  }
+
+  Widget _buildPhotos([List<Reporte>? reports]) {
+    if (reports != null) {
+      if (reports!.length > 0) {
+        return Column(
+          children: List.generate(
+            reports!.length,
+            (index) => _buildPhotosItem(
+              utf8.decode(reports[index].titulo!.codeUnits),
+              reports[index].imagen,
+            ),
           ),
         );
-      },
-    );
+      } else {
+        return Text("No has creado Reportes");
+      }
+    } else {
+      return Text("No has creado Reportes");
+    }
   }
 }

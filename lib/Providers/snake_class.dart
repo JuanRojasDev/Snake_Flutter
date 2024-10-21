@@ -9,6 +9,7 @@ class Serpiente {
   String especie;
   String genero;
   String imagen;
+  String descripcion;
 
   Serpiente({
     required this.idSerpiente,
@@ -21,6 +22,7 @@ class Serpiente {
     required this.especie,
     required this.genero,
     required this.imagen,
+    required this.descripcion,
   });
 
   factory Serpiente.fromJson(Map<String, dynamic> json) {
@@ -35,6 +37,7 @@ class Serpiente {
       especie: json['especie'] as String,
       genero: json['genero'] as String,
       imagen: json['imagen'] as String,
+      descripcion: json['descripcion'] as String,
     );
   }
 }

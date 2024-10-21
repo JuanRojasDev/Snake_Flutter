@@ -18,135 +18,14 @@ class Screen_galeria extends StatefulWidget {
 class _Screen_galeriaState extends State<Screen_galeria> {
   @override
   Widget build(
-    BuildContext context,
-  ) {
+    BuildContext context,) {
     final snake_Provider = context.watch<Snake_Provider>();
 
     if (snake_Provider.serpientes.length > 0) {
        
-       return Info_Snake(infoSnake: (snake_Provider.serpientes[0]));
+       return ListView(children: [Info_Snake(infoSnake: (snake_Provider.serpientes[0]))]);
     }
     return Text(
         "Lista vacia");
-  }
-
-  /* lista grid
-   Expanded(
-   child: GridView.count(
-  crossAxisCount: 2, // Adjust the number of columns as needed
-    children: List.generate(snake_Provider.serpientes.length, (index) {
-      return _buildGridTile(context, snake_Provider.serpientes[index]);
-    }),
-  ),
-),
-
-lista horizontal
-
-          Expanded(
-            child: ListView.builder(
-              scrollDirection: Axis.vertical,
-              itemCount: snake_Provider.serpientes.length,
-              itemBuilder: (context, index) {
-                return _buildGridTile(context, snake_Provider.serpientes[index]);
-              },
-            ),
-          ),
-
-*/
-
-  Widget _buildListItem(BuildContext context, Serpiente serpiente) {
-    return GestureDetector(
-      onTap: () {
-        // Replace with your tap handler logic
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => Scaffold(
-              appBar: AppBar(
-                title: Text('Serpientes'),
-              ),
-              body: Info_Snake(infoSnake: serpiente),
-            ),
-          ),
-        );
-      },
-      child: Container(
-        // Set a width to avoid excessive stretching
-        width: MediaQuery.of(context).size.width * 0.75, // Adjust as needed
-        // Adjust the height as needed // Adjust as needed
-        child: Card(
-          margin: const EdgeInsets.symmetric(horizontal: 10, vertical: 40),
-          shape:
-              RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-          clipBehavior: Clip.antiAliasWithSaveLayer,
-          elevation: 5,
-          child: Stack(
-            // Use a Stack for layering image and text
-            children: [
-              // Background image filling the container
-              Container(
-                width: 400,
-                height: 600,
-                decoration: BoxDecoration(
-                  image: DecorationImage(
-                    image: NetworkImage(
-                      serpiente.imagen,
-                    ),
-
-                    fit: BoxFit.contain, // Cover the entire container
-                  ),
-                ),
-              ),
-              // Text positioned at the bottom with some padding
-              Positioned(
-                bottom: 10, // Adjust padding as needed
-                left: 10, // Adjust padding as needed
-                child: Text(
-                  serpiente.nombre3,
-                  style: TextStyle(
-                    color: Colors.white,
-                    backgroundColor: Colors.black
-                        .withOpacity(0.5), // Semi-transparent background
-                  ),
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildGridTile(BuildContext context, Serpiente serpiente) {
-    return GestureDetector(
-      onTap: () {
-          
-      },
-      child: Card(
-        margin: const EdgeInsets.all(10),
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-        clipBehavior: Clip.antiAliasWithSaveLayer,
-        elevation: 5,
-        child: Container(
-          decoration: BoxDecoration(
-            image: DecorationImage(
-              image: NetworkImage(serpiente.imagen),
-              fit: BoxFit.fill,
-              alignment: Alignment.topCenter,
-            ),
-          ),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.end,
-            children: [
-              Text(serpiente.nombre3,
-                  style: TextStyle(backgroundColor: Colors.white)),
-              SizedBox(
-                height: 8,
-              )
-            ],
-          ),
-        ),
-      ),
-    );
   }
 }

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:sqlite_flutter_crud/Authtentication/home.dart';
-import 'package:sqlite_flutter_crud/Views/snake/snake_Info/Galeria/Screen_Galeria.dart';
+import 'package:sqlite_flutter_crud/Views/snake/snake_Info/Galeria/Screen_Galeria_old.dart';
 
 class Home_Body_Provider extends ChangeNotifier {
   Widget Body_ini = Body_init();
