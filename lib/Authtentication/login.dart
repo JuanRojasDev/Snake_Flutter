@@ -28,6 +28,27 @@ class _LoginScreenState extends State<LoginScreen> {
   bool _acceptTerms = false;
   final storage = FlutterSecureStorage();
 
+  @override
+  void initState() {
+    super.initState();
+    Future<String?> data = getdatajwt();
+    print(data);
+    if(data != "null"){
+      print("token");
+    }
+    print ("inti");
+  }
+
+  Future<String> getdatajwt() async {
+    final String? token = await storage.read(key: 'jwt');
+    if (token != null){
+      return token;
+    }
+    else{
+      return "null";
+    }
+  }
+
   Future<dynamic> signInWithGoogle() async {
     try {
       final GoogleSignInAccount? googleUser = await GoogleSignIn(

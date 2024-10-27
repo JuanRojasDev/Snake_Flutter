@@ -338,7 +338,7 @@ class _createReportState extends State<createReport> {
                     margin: const EdgeInsets.all(8),
                     padding:
                         const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-                    height: 500,
+                    
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(8),
                       color: Color(0xFFF6F6F6)
@@ -349,7 +349,7 @@ class _createReportState extends State<createReport> {
                     ),
                     child: TextFormField(
                       controller: _ControllerDescription,
-                      maxLines: 19,
+                      maxLines: 10,
                       decoration: InputDecoration(
                         icon: Icon(Icons.description),
                         border: InputBorder.none,
@@ -361,6 +361,7 @@ class _createReportState extends State<createReport> {
                       ),
                     ),
                   ),
+                  SizedBox(height: 18,),
                   _image != null
                       ? Image.memory(_image! ,width: MediaQuery.of(context).size.width,)
                       : Text("no hay imagen selecionada"),

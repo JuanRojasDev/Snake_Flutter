@@ -14,6 +14,8 @@ class Reporte {
   final String? usuario_nombre; // Almacenamos solo el nombre del usuario
   final int? usuario_id;
   final String? imagenUsuario; // Almacenamos solo el ID del usuario
+  final String? imagenUsuarioFondo; // Almacenamos solo el ID del usuario
+  final String? usuarioDescripcion; // Almacenamos solo el ID del usuario
 
   Reporte({
     required this.reportId,
@@ -27,6 +29,8 @@ class Reporte {
     this.usuario_nombre,
     this.usuario_id,
     this.imagenUsuario,
+    this.imagenUsuarioFondo, 
+    this.usuarioDescripcion,
   });
 
   factory Reporte.fromJson(Map<String, dynamic> json) {
@@ -42,6 +46,8 @@ class Reporte {
           ['nombre'], // Extraemos el nombre del usuario
       usuario_id: json['usuario']['idUsuario'], // Extraemos el ID del usuario
       imagenUsuario: json['usuario']['imagen'],
+      usuarioDescripcion: json['usuario']['Descripcion'],
+      imagenUsuarioFondo: json['usuario']['imagen_fonodo'],
     );
   }
 

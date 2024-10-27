@@ -1,5 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:provider/provider.dart';
 import 'package:sqlite_flutter_crud/Authtentication/login.dart';
 import 'package:sqlite_flutter_crud/Providers/snake_provider.dart';
@@ -202,12 +203,14 @@ class BuilderMenu extends StatelessWidget {
 }
 
 class DrawerHome extends StatelessWidget {
-  const DrawerHome({
+   DrawerHome({
     super.key,
     required this.widget,
   });
 
   final widget;
+  
+  final storage = new FlutterSecureStorage();
 
   @override
   Widget build(BuildContext context) {
@@ -319,6 +322,7 @@ class DrawerHome extends StatelessWidget {
                   MaterialPageRoute(builder: (context) => LoginScreen()),
                   (route) => false);
                   bool result = await signOutFromGoogle();
+                  await storage.write(key: 'jwt', value: 'null');
                   if (result){ 
                     user_provider.userCredential.value = '';
                     print("Cerrado de secion completo");

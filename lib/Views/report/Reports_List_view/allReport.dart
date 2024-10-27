@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:flutter/cupertino.dart';
 import 'package:http/http.dart' as http;
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
@@ -11,6 +12,7 @@ import 'package:sqlite_flutter_crud/Authtentication/login.dart';
 import 'package:sqlite_flutter_crud/JsonModels/reporte.dart';
 import 'package:sqlite_flutter_crud/Providers/Home_Body_provider.dart';
 import 'package:sqlite_flutter_crud/Providers/report_provider.dart';
+import 'package:sqlite_flutter_crud/Views/profile/profileId.dart';
 import 'package:sqlite_flutter_crud/Views/report/reportsMe/createReport.dart';
 import 'package:sqlite_flutter_crud/Views/snake/SnakeIdentification/pageidentification.dart';
 import '../../../JsonModels/Usuario.dart';
@@ -51,6 +53,42 @@ class _AllReportState extends State<AllReport> {
       Provider.of<ReportProvider>(context, listen: false)
           .agregarReportes(report);
     });
+  }
+
+    String calcularTiempoTranscurrido(String fechaString) {
+    // Convertir el string a un objeto DateTime
+    final fechaPasada = DateTime.parse(fechaString);
+    print("pasado"+fechaPasada.toString());
+    // Obtener la fecha y hora actual
+    DateTime ahora = DateTime.now().toUtc().add(Duration(minutes: 300));
+    print("Ahora"+ahora.toString());
+
+    // Calcular la diferencia en milisegundos
+    Duration diferencia = ahora.difference(fechaPasada);
+
+    // Determinar la unidad de tiempo más apropiada
+    if (diferencia.inDays >= 365) {
+      int year = diferencia.inDays ~/ 365;
+      return "Hace $year años";
+    } else if (diferencia.inDays >= 30) {
+      int meses = diferencia.inDays ~/ 30;
+      return "Hace $meses meses";
+    } else if (diferencia.inHours >= 24) {
+      int dias = diferencia.inHours ~/ 24;
+      if(dias == 1){
+        return "Hace $dias día";
+      }
+      else{
+        
+        return "Hace $dias días";
+      }
+    } else if (diferencia.inMinutes >= 60) {
+      int horas = diferencia.inMinutes ~/ 60;
+      return "Hace $horas horas";
+    } else {
+      int minutos = diferencia.inMinutes;
+      return "Hace $minutos minutos";
+    }
   }
 
   Future<void> fetchAllReports() async {
@@ -121,9 +159,11 @@ class _AllReportState extends State<AllReport> {
 
   Widget _reportCard(BuildContext context, Reporte report) {
     final reportProvider = context.watch<ReportProvider>();
-
+    final body_Provider = context.watch<Home_Body_Provider>();
     return GestureDetector(
-      onTap: () {},
+      onTap: () {
+
+      },
       child: Card(
         margin: EdgeInsets.all(10),
         color: Colors.white,
@@ -134,12 +174,30 @@ class _AllReportState extends State<AllReport> {
             children: [
               Row(
                 children: [
-                  CircleAvatar(
-                    backgroundImage: CachedNetworkImageProvider(
-                      report.imagenUsuario ??
-                          "https://th.bing.com/th/id/OIP.xW3Jf1_XaGI7z-jjrAgUIAHaE8?rs=1&pid=ImgDetMain",
+                  GestureDetector(
+                    onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => Scaffold(
+                      appBar: AppBar(
+                        title: Text("Mi Perfil"),
+                        leading: BuilderMenu(),
+                      ),
+                      drawer: DrawerHome(widget: widget),
+                      body: profileId(report: report,),
+                      bottomNavigationBar: ButonBarHome(
+                          body_Provider: body_Provider, widget: widget)),
+                ),
+              );
+                    },
+                    child: CircleAvatar(
+                      backgroundImage: CachedNetworkImageProvider(
+                        report.imagenUsuario ??
+                            "https://th.bing.com/th/id/OIP.xW3Jf1_XaGI7z-jjrAgUIAHaE8?rs=1&pid=ImgDetMain",
+                      ),
+                      radius: 25,
                     ),
-                    radius: 25,
                   ),
                   SizedBox(width: 10),
                   Expanded(
@@ -148,6 +206,13 @@ class _AllReportState extends State<AllReport> {
                       children: [
                         Text(
                           report.usuario_nombre ?? '',
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                                                Text(
+                          calcularTiempoTranscurrido(report.created_at!) ?? '',
                           style: TextStyle(
                             fontSize: 16,
                             fontWeight: FontWeight.bold,

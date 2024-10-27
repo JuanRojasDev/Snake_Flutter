@@ -27,7 +27,7 @@ class UserProvider extends ChangeNotifier {
 
   Future<void> logoutUser() async {
     _usernow = _userdefault;
-    await storage.delete(key: 'jwt');
+    
   }
 
   void setUser(Usuario newUser) {
