@@ -85,6 +85,7 @@ class ReportProvider extends ChangeNotifier {
   }
 
   Future<http.Response> deleteReport(int id) async {
+    
     // 1. Retrieve JWT token from secure storage
     final String? token = await storage.read(key: 'jwt');
     if (token == null) {
@@ -122,7 +123,7 @@ class ReportProvider extends ChangeNotifier {
       print(response.body);
       throw Exception('Error creating report'); // Throw a custom exception
     }
-
+    notifyListeners();
     return response;
   }
 }

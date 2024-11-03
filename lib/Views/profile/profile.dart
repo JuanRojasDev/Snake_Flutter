@@ -167,6 +167,12 @@ class _ProfilePageState extends State<ProfilePage> {
     }
   }
 
+  void delete(int id ){
+    setState(() {
+      _showreports?.removeWhere((reporte) => reporte.reportId == id);
+    });
+  }
+
   @override
   void initState() {
     // TODO: implement initState
@@ -487,12 +493,15 @@ class _ProfilePageState extends State<ProfilePage> {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   mainAxisSize: MainAxisSize.max,
                   children: [
-                    Text(
-                      title ?? "default",
-                      style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.black87,
+                    Expanded(
+                      child: Text(
+                        title ?? "default",
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.black87,
+                          overflow: TextOverflow.ellipsis,
+                        ),
                       ),
                     ),
                     Row(
@@ -503,10 +512,35 @@ class _ProfilePageState extends State<ProfilePage> {
                         ),
                         IconButton(
                           icon: Icon(Icons.delete, color: Colors.red),
-                          onPressed: () {
-                            report_provider.deleteReport(id);
-                          },
-                        )
+                          onPressed: () => showDialog<void>(
+                            context: context,
+                            barrierDismissible:
+                                false, // User must confirm or cancel
+                            builder: (BuildContext context) {
+                              return AlertDialog(
+                                title: Text('Confirmar Eliminacion'),
+                                content: Text(
+                                    '¿Estás seguro de eliminar tu publicación? Si la eliminas no la podrás volver a ver.'),
+                                actions: <Widget>[
+                                  TextButton(
+                                    child: Text('Cancelar'),
+                                    onPressed: () => Navigator.pop(context),
+                                  ),
+                                  TextButton(
+                                    child: Text('Eliminar'),
+                                    onPressed: () {
+                                      Navigator.pop(
+                                          context); 
+                                      report_provider.deleteReport(id);
+                                      delete(id);
+                                      
+                                    },
+                                  ),
+                                ],
+                              );
+                            },
+                          ),
+                        ),
                       ],
                     )
                   ],
@@ -531,9 +565,7 @@ class _ProfilePageState extends State<ProfilePage> {
     );
   }
 
-
-
-    Widget _buildPhotosItem(String? title, String? imagen) {
+  Widget _buildPhotosItem(String? title, String? imagen) {
     final report_provider = context.watch<ReportProvider>();
     return Padding(
       padding: const EdgeInsets.all(10),
@@ -552,15 +584,14 @@ class _ProfilePageState extends State<ProfilePage> {
               ),
             ),
           ),
-                                    Text(
-                      title ?? "default",
-                      style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.black87,
-                      ),
-                    ),
-
+          Text(
+            title ?? "default",
+            style: TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.bold,
+              color: Colors.black87,
+            ),
+          ),
         ],
       ),
     );

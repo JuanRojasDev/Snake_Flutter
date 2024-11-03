@@ -316,13 +316,15 @@ class DrawerHome extends StatelessWidget {
             title: Text('Cerrar Sesión', style: TextStyle(color: Colors.red)),
             onTap: () async {
               // Acción para cerrar sesión y redirigir al login
+                                await storage.delete(key: 'jwt');
+                  await storage.delete(key: 'user');
               user_provider.logoutUser();
               Navigator.pushAndRemoveUntil(
                   context,
                   MaterialPageRoute(builder: (context) => LoginScreen()),
                   (route) => false);
                   bool result = await signOutFromGoogle();
-                  await storage.write(key: 'jwt', value: 'null');
+
                   if (result){ 
                     user_provider.userCredential.value = '';
                     print("Cerrado de secion completo");

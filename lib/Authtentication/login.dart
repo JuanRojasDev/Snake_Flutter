@@ -28,26 +28,47 @@ class _LoginScreenState extends State<LoginScreen> {
   bool _acceptTerms = false;
   final storage = FlutterSecureStorage();
 
-  @override
-  void initState() {
-    super.initState();
-    Future<String?> data = getdatajwt();
-    print(data);
-    if(data != "null"){
-      print("token");
+  Future<void> checkJwtAndNavigate() async {
+    String? jwt = await getdatajwt();
+
+    if (jwt != "null" && jwt.isNotEmpty) {
+      try {
+        final Map<String, dynamic> jsonData = jsonDecode(jwt);
+        final Usuario user = Usuario.fromJson(jsonData);
+
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+            builder: (context) => HomeScreen(usuario: user),
+          ),
+        );
+      } catch (e) {
+        // Handle JSON decoding errors or other exceptions
+        print('Error decoding JWT: $e');
+        // Navigate to the default widget or display an error message
+      }
+    } else {
+      // JWT is null or empty, navigate to the default widget
+      print("JWT is null or empty, navigate to the default widget");
     }
-    print ("inti");
   }
 
   Future<String> getdatajwt() async {
     final String? token = await storage.read(key: 'jwt');
-    if (token != null){
-      return token;
-    }
-    else{
+    final String? user = await storage.read(key: 'user');
+    if (token != null && user != null) {
+      print("Este es el usuario "+user);
+      return user;
+    } else {
       return "null";
     }
   }
+
+  @override
+void initState() {
+  super.initState();
+  checkJwtAndNavigate();
+}
 
   Future<dynamic> signInWithGoogle() async {
     try {
@@ -74,11 +95,11 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   Future<void> _login([String? provider]) async {
-     String url =
+    String url =
         'https://back-production-0678.up.railway.app/users/login'; // server ip
 
     if (provider != null) {
-       url = provider;
+      url = provider;
     }
 
     final Map<String, String> body = {
@@ -116,6 +137,8 @@ class _LoginScreenState extends State<LoginScreen> {
       Usuario user = Usuario.fromJson(jsonResponse);
       String? token = user.token;
       print("este es el token" + token!);
+      String userJson = jsonEncode(jsonResponse);
+      await storage.write(key: 'user', value: userJson);
       await storage.write(key: 'jwt', value: user.token);
 
       Navigator.pushReplacement(
@@ -376,17 +399,18 @@ class _LoginScreenState extends State<LoginScreen> {
                       userCredential.value = await signInWithGoogle();
                       if (FirebaseAuth.instance.currentUser != null) {
                         print(FirebaseAuth.instance.currentUser?.uid);
-                        
-                        var idTokenResult =  FirebaseAuth.instance.currentUser?.uid;
+
+                        var idTokenResult =
+                            FirebaseAuth.instance.currentUser?.uid;
 
                         String url_aut =
-                            "https://back-production-0678.up.railway.app/users/google-auth?id="+idTokenResult!;
+                            "https://back-production-0678.up.railway.app/users/google-auth?id=" +
+                                idTokenResult!;
                         print(url_aut);
                         _login(url_aut);
                       }
                     },
                   ),
-          
                 ],
               ),
             ],
