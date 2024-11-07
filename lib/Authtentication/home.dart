@@ -360,7 +360,7 @@ class DrawerHome extends StatelessWidget {
                 MaterialPageRoute(
                   builder: (context) => Scaffold(
                     appBar: AppBar(
-                      title: Text('Acerca de'),
+                      title: Text('Acerca de "Snake Meta"'),
                       leading: BuilderMenu(),
                     ),
                     drawer: DrawerHome(widget: widget),

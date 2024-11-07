@@ -31,6 +31,10 @@ dependencies:
   permission_handler: ^11.3.1
   device_info: ^2.0.3
   disk_space: ^0.2.1
+  url_launcher: ^6.3.1
+  font_awesome_flutter: ^10.8.0
+  flutter_svg: ^2.0.14
+  device_info_plus: ^10.0.0 
 
 dev_dependencies:
   flutter_test:
@@ -42,6 +46,9 @@ flutter:
 
   assets:
     - assets/images/
+    - lib/assets/login.png
     - lib/assets/mamba_verde.jpg
     - lib/assets/mamba_negra.jpg
+    - lib/assets/header.jpg
     - lib/assets/Villavicencio.jpg
+    - lib/assets/importancia.jpg

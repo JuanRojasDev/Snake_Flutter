@@ -1,4 +1,4 @@
-# sqlite_flutter_crud
+# Snake Meta
 
 A new Flutter project.
 
