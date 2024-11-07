@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
@@ -572,7 +574,7 @@ class _Body_initState extends State<Body_init> {
                           serpienteProvider.filteredSerpientes[index];
                       return ListTile(
                         title: Text(serpiente.nombre3),
-                        subtitle: Text(serpiente.descripcion),
+                        subtitle: Text(utf8.decode(serpiente.descripcion.codeUnits)),
                         leading: Image.network(
                           serpiente.imagen ?? 'path/to/default/image.jpg',
                           fit: BoxFit.cover,
