@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:provider/provider.dart';
 import 'package:sqlite_flutter_crud/Authtentication/login.dart';
+import 'package:sqlite_flutter_crud/Providers/snake_class.dart';
 import 'package:sqlite_flutter_crud/Providers/snake_provider.dart';
 import 'package:sqlite_flutter_crud/Providers/user_provider.dart';
 import 'package:sqlite_flutter_crud/Views/report/Reports_List_view/IdReport.dart';
@@ -25,10 +26,10 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+  late TextEditingController searchController;
+  late List<Serpiente> filteredSerpientes;
   Widget bodyContent = Screen_galeria();
 
-
-  
   void updateBodyContent(Widget newContent) {
     setState(() {
       bodyContent = newContent;
@@ -36,8 +37,36 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   @override
+  void initState() {
+    super.initState();
+    searchController = TextEditingController();
+    searchController.addListener(() {
+      setState(() {}); // Actualiza la vista cada vez que cambia el texto
+    });
+  }
+
+  void _filterSerpientes(String query) {
+    final snakeProvider = context.read<Snake_Provider>();
+    snakeProvider.filterSerpientes(query);
+    print('Query: $query');
+    print('Serpientes antes del filtro: ${snakeProvider.serpientes.length}');
+
+    setState(() {
+      if (query.isEmpty) {
+        filteredSerpientes = snakeProvider.serpientes;
+      } else {
+        filteredSerpientes = snakeProvider.serpientes.where((serpiente) {
+          return serpiente.nombre3.toLowerCase().contains(query.toLowerCase());
+        }).toList();
+      }
+      print('Serpientes filtradas: ${filteredSerpientes.length}');
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
     final body_Provider = context.watch<Home_Body_Provider>();
+    final snakeProvider = context.watch<Snake_Provider>();
     final user_provider = context.watch<UserProvider>();
 
     user_provider.setUser(widget.usuario);
@@ -47,8 +76,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
     return Scaffold(
         appBar: AppBar(
-          title: Text(
-              "inicio", // Actualiza el título según el icono seleccionado
+          title: Text("inicio",
               style: TextStyle(
                   color: Colors.black,
                   fontWeight: FontWeight.bold,
@@ -59,9 +87,7 @@ class _HomeScreenState extends State<HomeScreen> {
           actions: [
             IconButton(
               icon: Icon(Icons.filter_list, color: Color(0xFF5DB075)),
-              onPressed: () {
-                // Acción del botón de filtrar
-              },
+              onPressed: () {},
             ),
           ],
           leading: BuilderMenu(),
@@ -203,27 +229,28 @@ class BuilderMenu extends StatelessWidget {
 }
 
 class DrawerHome extends StatelessWidget {
-   DrawerHome({
+  DrawerHome({
     super.key,
     required this.widget,
   });
 
   final widget;
-  
+
   final storage = new FlutterSecureStorage();
 
   @override
   Widget build(BuildContext context) {
     final user_provider = context.watch<UserProvider>();
     Future<bool> signOutFromGoogle() async {
-    try {
-      await user_provider.userCredential.value.signOut();
-      
-      return true;
-    } on Exception catch (_) {
-      return false;
+      try {
+        await user_provider.userCredential.value.signOut();
+
+        return true;
+      } on Exception catch (_) {
+        return false;
+      }
     }
-  }
+
     return Drawer(
       child: ListView(
         padding: EdgeInsets.zero,
@@ -262,7 +289,6 @@ class DrawerHome extends StatelessWidget {
             leading: Icon(Icons.article),
             title: Text('Mis Publicaciones'),
             onTap: () {
-              // Acción para ir a Mis Publicaciones
               Navigator.push(
                 context,
                 MaterialPageRoute(
@@ -272,7 +298,9 @@ class DrawerHome extends StatelessWidget {
                       leading: BuilderMenu(),
                     ),
                     drawer: DrawerHome(widget: widget),
-                    body: IdReport(id: user_provider.usernow.id,), // Asegúrate de pasar el usuario
+                    body: IdReport(
+                      id: user_provider.usernow.id,
+                    ), // Asegúrate de pasar el usuario
                     bottomNavigationBar: ButonBarHome(
                       body_Provider: Home_Body_Provider(),
                       widget: widget,
@@ -313,22 +341,86 @@ class DrawerHome extends StatelessWidget {
           Divider(),
           ListTile(
             leading: Icon(Icons.logout, color: Colors.red),
-            title: Text('Cerrar Sesión', style: TextStyle(color: Colors.red)),
+            title: Text(
+              'Cerrar Sesión',
+              style: TextStyle(color: Colors.red),
+            ),
             onTap: () async {
-              // Acción para cerrar sesión y redirigir al login
-                                await storage.delete(key: 'jwt');
-                  await storage.delete(key: 'user');
-              user_provider.logoutUser();
-              Navigator.pushAndRemoveUntil(
+              bool shouldLogout = await showDialog(
+                context: context,
+                builder: (BuildContext context) {
+                  return AlertDialog(
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(20.0),
+                    ),
+                    title: Center(
+                      child: Text(
+                        '¿Quieres salir de la Aplicación?',
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          fontFamily: 'Inter',
+                          fontWeight: FontWeight.w600, // Semibold
+                          fontSize: 18,
+                        ),
+                      ),
+                    ),
+                    content: Text(
+                      'Si sales de la Aplicación, perderás todo el progreso que no hayas guardado.',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(fontSize: 16),
+                    ),
+                    actionsAlignment: MainAxisAlignment.spaceEvenly,
+                    actions: <Widget>[
+                      TextButton(
+                        onPressed: () {
+                          Navigator.of(context).pop(false); // No cerrar sesión
+                        },
+                        style: TextButton.styleFrom(
+                          backgroundColor: Color(0xFF898A8D), // Color de fondo
+                        ),
+                        child: Text(
+                          'Cancelar',
+                          style: TextStyle(color: Colors.white), // Texto blanco
+                        ),
+                      ),
+                      ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Color(0xFF5DB075), // Fondo del botón
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(20.0),
+                          ),
+                        ),
+                        onPressed: () {
+                          Navigator.of(context)
+                              .pop(true); // Confirmar cerrar sesión
+                        },
+                        child: Text(
+                          'Ok',
+                          style: TextStyle(color: Colors.white), // Texto blanco
+                        ),
+                      ),
+                    ],
+                  );
+                },
+              );
+
+              if (shouldLogout) {
+                // Lógica para cerrar sesión
+                await storage.delete(key: 'jwt');
+                await storage.delete(key: 'user');
+                user_provider.logoutUser();
+                Navigator.pushAndRemoveUntil(
                   context,
                   MaterialPageRoute(builder: (context) => LoginScreen()),
-                  (route) => false);
-                  bool result = await signOutFromGoogle();
+                  (route) => false,
+                );
+                bool result = await signOutFromGoogle();
 
-                  if (result){ 
-                    user_provider.userCredential.value = '';
-                    print("Cerrado de secion completo");
-                  };
+                if (result) {
+                  user_provider.userCredential.value = '';
+                  print("Cerrado de sesión completo");
+                }
+              }
             },
           ),
         ],
@@ -337,17 +429,24 @@ class DrawerHome extends StatelessWidget {
   }
 }
 
-class Body_init extends StatelessWidget {
+class Body_init extends StatefulWidget {
   const Body_init({Key? key}) : super(key: key);
 
   @override
+  _Body_initState createState() => _Body_initState();
+}
+
+class _Body_initState extends State<Body_init> {
+  final TextEditingController _searchController = TextEditingController();
+
+  @override
   Widget build(BuildContext context) {
-    final body_Provider = context.watch<Home_Body_Provider>();
-    final serpiente_provider = context.watch<Snake_Provider>();
+    final bodyProvider = context.watch<Home_Body_Provider>();
+    final serpienteProvider = context.watch<Snake_Provider>();
 
     Future<void> fectSnakesPoison(bool valid) async {
-      serpiente_provider.fectSnakesPoison(valid);
-      body_Provider.changedBodyHome(Screen_galeria());
+      await serpienteProvider.fectSnakesPoison(valid);
+      bodyProvider.changedBodyHome(Screen_galeria());
     }
 
     return Padding(
@@ -366,57 +465,103 @@ class Body_init extends StatelessWidget {
                 borderSide: BorderSide.none,
               ),
             ),
+            onChanged: (query) {
+              // Filtra las serpientes en base al texto ingresado
+              serpienteProvider.filterSerpientes(query);
+            },
           ),
           SizedBox(height: 20),
           Expanded(
-            child: PageView(
-              children: [
-                CategoryCard(
-                  title: 'Serpientes Venenosas',
-                  imageUrl: 'lib/assets/mamba_verde.jpg',
-                  onTap: () {
-                    // Acción al pulsar la tarjeta de serpientes venenosas
-                    fectSnakesPoison(true);
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => Scaffold(
-                            appBar: AppBar(
-                              title: Text('Serpientes'),
-                              leading: BuilderMenu(),
+            child: serpienteProvider.filteredSerpientes.isEmpty
+                ? PageView(
+                    // Si el campo de búsqueda está vacío, muestra las tarjetas de categoría
+                    children: [
+                      CategoryCard(
+                        title: 'Serpientes Venenosas',
+                        imageUrl: 'lib/assets/mamba_verde.jpg',
+                        onTap: () {
+                          fectSnakesPoison(true);
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => Scaffold(
+                                appBar: AppBar(
+                                  title: Text('Serpientes'),
+                                  leading: BuilderMenu(),
+                                ),
+                                drawer: DrawerHome(widget: Widget),
+                                body: Screen_galeria(),
+                                bottomNavigationBar: ButonBarHome(
+                                    body_Provider: bodyProvider,
+                                    widget: Widget),
+                              ),
                             ),
-                            drawer: DrawerHome(widget: Widget),
-                            body: Screen_galeria(),
-                            bottomNavigationBar: ButonBarHome(
-                                body_Provider: body_Provider, widget: Widget)),
+                          );
+                        },
                       ),
-                    );
-                  },
-                ),
-                CategoryCard(
-                  title: 'Serpientes No Venenosas',
-                  imageUrl: 'lib/assets/mamba_negra.jpg',
-                  onTap: () {
-                    // Acción al pulsar la tarjeta de serpientes no venenosas
-                    fectSnakesPoison(false);
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => Scaffold(
-                            appBar: AppBar(
-                              title: Text('Serpientes'),
-                              leading: BuilderMenu(),
+                      CategoryCard(
+                        title: 'Serpientes No Venenosas',
+                        imageUrl: 'lib/assets/mamba_negra.jpg',
+                        onTap: () {
+                          fectSnakesPoison(false);
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => Scaffold(
+                                appBar: AppBar(
+                                  title: Text('Serpientes'),
+                                  leading: BuilderMenu(),
+                                ),
+                                drawer: DrawerHome(widget: Widget),
+                                body: Screen_galeria(),
+                                bottomNavigationBar: ButonBarHome(
+                                    body_Provider: bodyProvider,
+                                    widget: Widget),
+                              ),
                             ),
-                            drawer: DrawerHome(widget: Widget),
-                            body: Screen_galeria(),
-                            bottomNavigationBar: ButonBarHome(
-                                body_Provider: body_Provider, widget: Widget)),
+                          );
+                        },
                       ),
-                    );
-                  },
-                ),
-              ],
-            ),
+                    ],
+                  )
+                : ListView.builder(
+                    // Si hay resultados de búsqueda, muestra la lista de coincidencias
+                    itemCount: serpienteProvider.filteredSerpientes.length,
+                    itemBuilder: (context, index) {
+                      final serpiente =
+                          serpienteProvider.filteredSerpientes[index];
+                      return ListTile(
+                        title: Text(serpiente.nombre3),
+                        subtitle: Text(serpiente.descripcion),
+                        leading: Image.network(
+                          serpiente.imagen ?? 'path/to/default/image.jpg',
+                          fit: BoxFit.cover,
+                          width: 50,
+                          height: 50,
+                        ),
+                        onTap: () {
+                          fectSnakesPoison(serpiente.venenosa);
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => Scaffold(
+                                appBar: AppBar(
+                                  title:
+                                      Text('Serpiente - ${serpiente.nombre3}'),
+                                  leading: BuilderMenu(),
+                                ),
+                                drawer: DrawerHome(widget: Widget),
+                                body: Screen_galeria(),
+                                bottomNavigationBar: ButonBarHome(
+                                    body_Provider: bodyProvider,
+                                    widget: Widget),
+                              ),
+                            ),
+                          );
+                        },
+                      );
+                    },
+                  ),
           ),
         ],
       ),
