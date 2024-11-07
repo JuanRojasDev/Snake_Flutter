@@ -6,11 +6,13 @@ import 'package:sqlite_flutter_crud/Authtentication/login.dart';
 import 'package:sqlite_flutter_crud/Providers/snake_class.dart';
 import 'package:sqlite_flutter_crud/Providers/snake_provider.dart';
 import 'package:sqlite_flutter_crud/Providers/user_provider.dart';
+import 'package:sqlite_flutter_crud/Views/info/info.dart';
 import 'package:sqlite_flutter_crud/Views/report/Reports_List_view/IdReport.dart';
 import 'package:sqlite_flutter_crud/Views/report/Reports_List_view/allReport.dart';
 import 'package:sqlite_flutter_crud/Views/report/reportsMe/report.dart';
 import 'package:sqlite_flutter_crud/Views/profile/profile.dart';
 import 'package:sqlite_flutter_crud/Providers/Home_Body_provider.dart';
+import 'package:sqlite_flutter_crud/Views/settings/settings.dart';
 import 'package:sqlite_flutter_crud/Views/snake/SnakeIdentification/pageidentification.dart';
 import 'package:sqlite_flutter_crud/Views/snake/snake_Info/Galeria/Screen_Galeria.dart';
 import 'package:http/http.dart' as http;
@@ -330,14 +332,50 @@ class DrawerHome extends StatelessWidget {
             leading: Icon(Icons.settings),
             title: Text('Configuración'),
             onTap: () {
-              // Acción para ir a Configuración
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => Scaffold(
+                    appBar: AppBar(
+                      title: Text('Configuración'),
+                      leading: BuilderMenu(),
+                    ),
+                    drawer: DrawerHome(widget: widget),
+                    body: Settings(
+                      usuario: user_provider.usernow,
+                    ), // Asegúrate de pasar el usuario
+                    bottomNavigationBar: ButonBarHome(
+                      body_Provider: Home_Body_Provider(),
+                      widget: widget,
+                    ),
+                  ),
+                ),
+              );
             },
           ),
           ListTile(
             leading: Icon(Icons.info),
             title: Text('Acerca de'),
             onTap: () {
-              // Acción para ir a Acerca de
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => Scaffold(
+                    appBar: AppBar(
+                      title: Text('Acerca de "Snake Meta"'),
+                      leading: BuilderMenu(),
+                    ),
+                    drawer: DrawerHome(widget: widget),
+                    body: Info(
+                      usuario: user_provider.usernow,
+                    ), // Asegúrate de pasar el usuario
+                    bottomNavigationBar: ButonBarHome(
+                      body_Provider: Home_Body_Provider(),
+                      widget: widget,
+                    ),
+                  ),
+                ),
+              );
             },
           ),
           Divider(),
