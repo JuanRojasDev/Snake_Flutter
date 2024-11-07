@@ -45,9 +45,11 @@ class _HomeScreenState extends State<HomeScreen> {
     });
   }
 
-  void _filterSerpientes(String query) {
+  Future<void> _filterSerpientes(String query) async {
     final snakeProvider = context.read<Snake_Provider>();
+
     snakeProvider.filterSerpientes(query);
+    
     print('Query: $query');
     print('Serpientes antes del filtro: ${snakeProvider.serpientes.length}');
 
