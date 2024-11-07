@@ -28,6 +28,9 @@ dependencies:
   firebase_app_check: ^0.3.1
   firebase_auth: ^5.2.0
   google_sign_in: ^6.2.1
+  permission_handler: ^11.3.1
+  device_info: ^2.0.3
+  disk_space: ^0.2.1
 
 dev_dependencies:
   flutter_test:
