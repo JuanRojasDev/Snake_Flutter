@@ -9,7 +9,7 @@
       "client_info": {
         "mobilesdk_app_id": "1:766715754129:android:f20d009a47dc84f03cf130",
         "android_client_info": {
-          "package_name": "sqlite_flutter_crud"
+          "package_name": "com.example.sqlite_flutter_crud"
         }
       },
       "oauth_client": [
@@ -17,7 +17,7 @@
           "client_id": "766715754129-tr1a17mrljmgpte2fmm7tqmh13p3u25q.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
-            "package_name": "sqlite_flutter_crud",
+            "package_name": "com.example.sqlite_flutter_crud",
             "certificate_hash": "af134513677a607e7743e24606a7f5060c309623"
           }
         },

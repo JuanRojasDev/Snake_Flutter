@@ -1,6 +1,5 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
-import 'package:disk_space/disk_space.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:path_provider/path_provider.dart';
@@ -82,15 +81,8 @@ class _SettingsState extends State<Settings> {
 
   Future<void> _getStorageInfo() async {
     if (Platform.isAndroid || Platform.isIOS) {
-      double? freeSpace = await DiskSpace.getFreeDiskSpace; // en MB
-      double? totalSpace = await DiskSpace.getTotalDiskSpace; // en MB
 
-      if (freeSpace != null && totalSpace != null) {
-        setState(() {
-          storageInfo =
-              "${(freeSpace / 1024).toStringAsFixed(1)}GB/${(totalSpace / 1024).toStringAsFixed(1)}GB";
-        });
-      }
+
     }
   }
 

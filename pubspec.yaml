@@ -5,7 +5,7 @@ publish_to: 'none'
 version: 1.0.0+1
 
 environment:
-  sdk: '>=3.4.0 <4.0.0'
+  sdk: '>=3.1.1 <4.0.0'
 
 dependencies:
   flutter:
@@ -30,10 +30,8 @@ dependencies:
   google_sign_in: ^6.2.1
   permission_handler: ^11.3.1
   device_info: ^2.0.3
-  disk_space: ^0.2.1
   url_launcher: ^6.3.1
   font_awesome_flutter: ^10.8.0
-  flutter_svg: ^2.0.14
   device_info_plus: ^10.0.0 
 
 dev_dependencies:
