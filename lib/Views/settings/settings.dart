@@ -237,166 +237,164 @@ class _SettingsState extends State<Settings> {
           onPressed: () => Navigator.of(context).pop(),
         ),
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Cambiar Nombre de Usuario
-            ListTile(
-              title: Text("Cambiar Nombre de Usuario"),
-              subtitle: Text("Usuario Actual: ${widget.usuario.nombres}"),
-              trailing: Icon(isUserNameExpanded
+      body: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          // Cambiar Nombre de Usuario
+          ListTile(
+            title: Text("Cambiar Nombre de Usuario"),
+            subtitle: Text("Usuario Actual: ${widget.usuario.nombres}"),
+            trailing: Icon(isUserNameExpanded
+                ? Icons.arrow_drop_down
+                : Icons.arrow_forward_ios),
+            onTap: () =>
+                setState(() => isUserNameExpanded = !isUserNameExpanded),
+          ),
+          if (isUserNameExpanded)
+            Padding(
+              padding: const EdgeInsets.only(left: 16.0, top: 8.0),
+              child: TextField(
+                controller: _nombreController,
+                decoration: InputDecoration(
+                  hintText: "Nuevo Nombre",
+                  filled: true,
+                  fillColor: Colors.grey[200],
+                  border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(10)),
+                ),
+              ),
+            ),
+          Divider(),
+          // Mostrar Correo Electrónico
+          ListTile(
+            title: Text("Cambiar Correo Electrónico"),
+            subtitle: Text("Correo Actual: ${widget.usuario.correo}"),
+            trailing: Icon(isEmailExpanded
+                ? Icons.arrow_drop_down
+                : Icons.arrow_forward_ios),
+            onTap: () => setState(() => isEmailExpanded = !isEmailExpanded),
+          ),
+          if (isEmailExpanded)
+            Padding(
+              padding: const EdgeInsets.only(left: 16.0, top: 8.0),
+              child: TextField(
+                decoration: InputDecoration(
+                  hintText: "Nuevo Correo Electrónico",
+                  filled: true,
+                  fillColor: Colors.grey[200],
+                  border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(10.0)),
+                ),
+              ),
+            ),
+      
+          Divider(),
+          // Cambiar Contraseña
+          ListTile(
+            title: Text("Cambiar Contraseña"),
+            trailing: Icon(
+              isPasswordExpanded
                   ? Icons.arrow_drop_down
-                  : Icons.arrow_forward_ios),
-              onTap: () =>
-                  setState(() => isUserNameExpanded = !isUserNameExpanded),
+                  : Icons.arrow_forward_ios,
             ),
-            if (isUserNameExpanded)
-              Padding(
-                padding: const EdgeInsets.only(left: 16.0, top: 8.0),
-                child: TextField(
-                  controller: _nombreController,
-                  decoration: InputDecoration(
-                    hintText: "Nuevo Nombre",
-                    filled: true,
-                    fillColor: Colors.grey[200],
-                    border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(10)),
-                  ),
+            onTap: () {
+              setState(() {
+                isPasswordExpanded =
+                    !isPasswordExpanded; // Alterna entre expandido/colapsado
+              });
+              _showChangePasswordDialog(); // Abre el diálogo de cambio de contraseña
+            },
+          ),
+          Divider(),
+          // Permisos
+          SwitchListTile(
+            title: Text("Habilitar Ubicación"),
+            value: locationEnabled,
+            onChanged: (bool value) {
+              setState(() {
+                locationEnabled = value;
+                _updatePermissionStatus('locationEnabled', value);
+              });
+            },
+          ),
+          Divider(),
+          SwitchListTile(
+            title: Text("Habilitar Llamadas"),
+            value: callsEnabled,
+            onChanged: (bool value) {
+              setState(() {
+                callsEnabled = value;
+                _updatePermissionStatus('callsEnabled', value);
+              });
+            },
+          ),
+          Divider(),
+          SwitchListTile(
+            title: Text("Habilitar Cámara"),
+            value: cameraEnabled,
+            onChanged: (bool value) {
+              setState(() {
+                cameraEnabled = value;
+                _updatePermissionStatus('cameraEnabled', value);
+              });
+            },
+          ),
+          Divider(),
+          SwitchListTile(
+            title: Text("Habilitar Micrófono"),
+            value: microphoneEnabled,
+            onChanged: (bool value) {
+              setState(() {
+                microphoneEnabled = value;
+                _updatePermissionStatus('microphoneEnabled', value);
+              });
+            },
+          ),
+          Divider(),
+          // Almacenamiento
+          ListTile(
+            title: Text("Almacenamiento"),
+            subtitle: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text("Espacio Disponible: $storageInfo"),
+                Text("Memoria Caché: ${cacheSize}MB",
+                    style: TextStyle(color: Colors.red)),
+              ],
+            ),
+            trailing: Icon(Icons.delete),
+            onTap: _clearCache,
+          ),
+          SizedBox(height: 16),
+      
+          // Botón Guardar Cambios
+          Spacer(), // Empuja el botón a la parte inferior
+          Center(
+            child: ElevatedButton(
+              onPressed: () {
+                // Lógica para guardar cambios
+                ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                    content: Text("Cambios guardados correctamente")));
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Color(0xFF5DB075),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10.0),
                 ),
+                padding: EdgeInsets.symmetric(
+                    horizontal: 40,
+                    vertical: 15), // Aumenta el tamaño del botón
               ),
-            Divider(),
-            // Mostrar Correo Electrónico
-            ListTile(
-              title: Text("Cambiar Correo Electrónico"),
-              subtitle: Text("Correo Actual: ${widget.usuario.correo}"),
-              trailing: Icon(isEmailExpanded
-                  ? Icons.arrow_drop_down
-                  : Icons.arrow_forward_ios),
-              onTap: () => setState(() => isEmailExpanded = !isEmailExpanded),
-            ),
-            if (isEmailExpanded)
-              Padding(
-                padding: const EdgeInsets.only(left: 16.0, top: 8.0),
-                child: TextField(
-                  decoration: InputDecoration(
-                    hintText: "Nuevo Correo Electrónico",
-                    filled: true,
-                    fillColor: Colors.grey[200],
-                    border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(10.0)),
-                  ),
-                ),
-              ),
-
-            Divider(),
-            // Cambiar Contraseña
-            ListTile(
-              title: Text("Cambiar Contraseña"),
-              trailing: Icon(
-                isPasswordExpanded
-                    ? Icons.arrow_drop_down
-                    : Icons.arrow_forward_ios,
-              ),
-              onTap: () {
-                setState(() {
-                  isPasswordExpanded =
-                      !isPasswordExpanded; // Alterna entre expandido/colapsado
-                });
-                _showChangePasswordDialog(); // Abre el diálogo de cambio de contraseña
-              },
-            ),
-            Divider(),
-            // Permisos
-            SwitchListTile(
-              title: Text("Habilitar Ubicación"),
-              value: locationEnabled,
-              onChanged: (bool value) {
-                setState(() {
-                  locationEnabled = value;
-                  _updatePermissionStatus('locationEnabled', value);
-                });
-              },
-            ),
-            Divider(),
-            SwitchListTile(
-              title: Text("Habilitar Llamadas"),
-              value: callsEnabled,
-              onChanged: (bool value) {
-                setState(() {
-                  callsEnabled = value;
-                  _updatePermissionStatus('callsEnabled', value);
-                });
-              },
-            ),
-            Divider(),
-            SwitchListTile(
-              title: Text("Habilitar Cámara"),
-              value: cameraEnabled,
-              onChanged: (bool value) {
-                setState(() {
-                  cameraEnabled = value;
-                  _updatePermissionStatus('cameraEnabled', value);
-                });
-              },
-            ),
-            Divider(),
-            SwitchListTile(
-              title: Text("Habilitar Micrófono"),
-              value: microphoneEnabled,
-              onChanged: (bool value) {
-                setState(() {
-                  microphoneEnabled = value;
-                  _updatePermissionStatus('microphoneEnabled', value);
-                });
-              },
-            ),
-            Divider(),
-            // Almacenamiento
-            ListTile(
-              title: Text("Almacenamiento"),
-              subtitle: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text("Espacio Disponible: $storageInfo"),
-                  Text("Memoria Caché: ${cacheSize}MB",
-                      style: TextStyle(color: Colors.red)),
-                ],
-              ),
-              trailing: Icon(Icons.delete),
-              onTap: _clearCache,
-            ),
-            SizedBox(height: 16),
-
-            // Botón Guardar Cambios
-            Spacer(), // Empuja el botón a la parte inferior
-            Center(
-              child: ElevatedButton(
-                onPressed: () {
-                  // Lógica para guardar cambios
-                  ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                      content: Text("Cambios guardados correctamente")));
-                },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Color(0xFF5DB075),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10.0),
-                  ),
-                  padding: EdgeInsets.symmetric(
-                      horizontal: 40,
-                      vertical: 15), // Aumenta el tamaño del botón
-                ),
-                child: Text(
-                  'Guardar Cambios',
-                  style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 16), // Aumenta el tamaño del texto
-                ),
+              child: Text(
+                'Guardar Cambios',
+                style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 16), // Aumenta el tamaño del texto
               ),
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }

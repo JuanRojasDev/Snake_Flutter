@@ -7,14 +7,14 @@ class UserProvider extends ChangeNotifier {
       nombres: '',
       correo: '',
       fechaN: '',
-      imagen_fondo: '',
+      imagenFondo: '',
       descripcion: '',
       id: 0);
   Usuario _userdefault = Usuario(
       nombres: '',
       correo: '',
       fechaN: '',
-      imagen_fondo: '',
+      imagenFondo: '',
       descripcion: '',
       id: 0); // Initialize with default values
   bool _fetchData = false;
@@ -41,7 +41,7 @@ class UserProvider extends ChangeNotifier {
   }
 
   void setImageBack(String newimagne) {
-    _usernow.imagen_fondo = newimagne;
+    _usernow.imagenFondo = newimagne;
     notifyListeners();
   }
 

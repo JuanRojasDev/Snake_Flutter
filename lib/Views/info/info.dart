@@ -26,22 +26,22 @@ class Info extends StatefulWidget {
 
 class _InfoState extends State<Info> {
   // Función para abrir el enlace en el navegador
-  _launchURL(String url) async {
-    if (await canLaunch(url)) {
-      await launch(url);
+  _launchURL(Uri url) async {
+    if (await canLaunchUrl(url)) {
+      await launchUrl(url);
     } else {
       throw 'No se pudo abrir el enlace: $url';
     }
   }
 
   // Función para realizar una llamada
-  _makePhoneCall(String phoneNumber) async {
+  _makePhoneCall(Uri phoneNumber) async {
     final Uri launchUri = Uri(
       scheme: 'tel',
-      path: phoneNumber,
+      path: phoneNumber.toString(),
     );
-    if (await canLaunch(launchUri.toString())) {
-      await launch(launchUri.toString());
+    if (await canLaunchUrl(launchUri)) {
+      await launchUrl(launchUri);
     } else {
       throw 'No se pudo realizar la llamada al número: $phoneNumber';
     }
@@ -169,7 +169,7 @@ class _InfoState extends State<Info> {
             ),
             SizedBox(height: 10),
             GestureDetector(
-              onTap: () => _makePhoneCall('3214820327'),
+              onTap: () => _makePhoneCall(Uri.parse('tel:+573214820327')),
               child: RichText(
                 text: TextSpan(
                   children: [
@@ -216,7 +216,7 @@ class _InfoState extends State<Info> {
                         size: 30,
                       ),
                       onPressed: () =>
-                          _launchURL('https://www.instagram.com/CORMACARENA'),
+                          _launchURL(Uri.parse('https://www.instagram.com/CORMACARENA')),
                     ),
                     Text('Instagram'),
                   ],
@@ -231,7 +231,7 @@ class _InfoState extends State<Info> {
                         size: 30,
                       ),
                       onPressed: () => _launchURL(
-                          'https://www.facebook.com/CORMACARENA.CDS'),
+                          Uri.parse('https://www.facebook.com/CORMACARENA.CDS')),
                     ),
                     Text('Facebook'),
                   ],
@@ -246,7 +246,7 @@ class _InfoState extends State<Info> {
                         size: 30,
                       ),
                       onPressed: () => _launchURL(
-                          'https://www.tiktok.com/@cormacarenaoficial'),
+                          Uri.parse('https://www.tiktok.com/@cormacarenaoficial')),
                     ),
                     Text('TikTok'),
                   ],
@@ -260,7 +260,7 @@ class _InfoState extends State<Info> {
                         color: Colors.blue,
                         size: 30,
                       ),
-                      onPressed: () => _launchURL('https://x.com/CORMACARENA'),
+                      onPressed: () => _launchURL(Uri.parse('https://x.com/CORMACARENA')),
                     ),
                     Text('X'),
                   ],
@@ -275,7 +275,7 @@ class _InfoState extends State<Info> {
                         size: 30,
                       ),
                       onPressed: () =>
-                          _launchURL('mailto:info@cormacarena.gov.co'),
+                          _launchURL(Uri.parse('mailto:info@cormacarena.gov.co')),
                     ),
                     Text('Gmail'),
                   ],

@@ -10,7 +10,7 @@ class Usuario {
   final String? token;
   String? imagen;
   String? descripcion;
-  String? imagen_fondo;
+  String? imagenFondo;
 
   Usuario({
     required this.id, // Agregado a los parámetros del constructor
@@ -24,7 +24,7 @@ class Usuario {
     this.token,
     this.imagen,
     this.descripcion,
-    this.imagen_fondo,
+    this.imagenFondo,
   });
 
   factory Usuario.fromJson(Map<String, dynamic> json) {
@@ -46,7 +46,7 @@ class Usuario {
       token: json['access_token'] ??
           '', // Proporciona valor por defecto si es null
       descripcion: json['data']['Descripcion'], // Permite null
-      imagen_fondo: json['data']['imagen_fondo'], // Permite null
+      imagenFondo: json['data']['imagen_fondo'], // Permite null
     );
   }
 }

@@ -167,7 +167,7 @@ void initState() {
                       correo: "guest@example.com",
                       fechaN: "fechaN",
                       descripcion: "Default",
-                      imagen_fondo: "",
+                      imagenFondo: "",
                       id: 1),
                 ))); // Navegar a home.dart
   }

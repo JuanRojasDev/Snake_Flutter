@@ -268,7 +268,10 @@ class DrawerHome extends StatelessWidget {
               backgroundImage: NetworkImage(user_provider.usernow.imagen ??
                   'https://www.google.com/images/branding/googlelogo/2x/googlelogo_color_272x92dp.png'),
             ),
-            decoration: BoxDecoration(color: Color(0xFF5DB075)),
+            decoration: BoxDecoration(
+                        color: Color(0xFF5DB075),
+                        image: DecorationImage(image: NetworkImage(user_provider.usernow.imagenFondo ?? ""), fit: BoxFit.cover)
+                        ),
           ),
           ListTile(
             leading: Icon(Icons.person),
@@ -583,6 +586,7 @@ class _Body_initState extends State<Body_init> {
                         ),
                         onTap: () {
                           fectSnakesPoison(serpiente.venenosa);
+                          serpienteProvider.filteredSerpientes.clear();
                           Navigator.push(
                             context,
                             MaterialPageRoute(

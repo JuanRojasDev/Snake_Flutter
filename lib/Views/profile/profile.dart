@@ -185,12 +185,12 @@ class _ProfilePageState extends State<ProfilePage> {
     final user_provider = context.watch<UserProvider>();
     _nameController.text = user_provider.usernow.nombres;
     if (user_provider.usernow.descripcion == null) {
-      _statusController.text = user_provider.usernow.descripcion ?? "null";
+      _statusController.text =  "Descripcion de Usuario";
     } else {
-      _statusController.text = user_provider.usernow.descripcion ?? "no null";
+      _statusController.text = utf8.decode(user_provider.usernow.descripcion!.codeUnits)  ?? "Selecciona una descripcion";
     }
     imageUrl = user_provider.usernow.imagen;
-    CoverimageUrl = user_provider.usernow.imagen_fondo;
+    CoverimageUrl = user_provider.usernow.imagenFondo;
     return Scaffold(
       backgroundColor: Colors.grey[200],
       body: SingleChildScrollView(
@@ -211,7 +211,7 @@ class _ProfilePageState extends State<ProfilePage> {
                     height: 250,
                     width: double.infinity,
                     decoration: BoxDecoration(
-                      image: user_provider.usernow.imagen_fondo != ""
+                      image: user_provider.usernow.imagenFondo != ""
                           ? DecorationImage(
                               image: NetworkImage(CoverimageUrl ?? ""),
                               fit: BoxFit.cover,
@@ -219,7 +219,7 @@ class _ProfilePageState extends State<ProfilePage> {
                           : null,
                       color: Color(0xFF5DB074),
                     ),
-                    child: user_provider.usernow.imagen_fondo != ""
+                    child: user_provider.usernow.imagenFondo != ""
                         ? Stack(
                             children: [
                               Positioned(
